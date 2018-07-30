@@ -1,0 +1,24 @@
+{
+  "name": "esoftplay",
+  "version": "0.0.2",
+  "description": "embedding data from esoftplay framework (web based) into mobile app",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node ./bin/build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esoftplay/mobile.git"
+  },
+  "keywords": [
+    "esoftplay-mobile-app"
+  ],
+  "author": "Danang Widiantoro",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/esoftplay/mobile/issues"
+  },
+  "homepage": "https://github.com/esoftplay/mobile#readme",
+  "bundleDependencies": ["react-navigation", "watch"]
+}
