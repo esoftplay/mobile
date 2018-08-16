@@ -1,60 +1,40 @@
 #!/usr/bin/env node
 
-const { exec } = require('child_process');
-var {watchTree} = require('watch')
+const { spawn } = require('child_process');
+var app = require('../watch')
+var fs = require('fs')
 
-// Watching assets/, modules/**/*.js, templates/**/*.js
 var paths = ["./assets/", "./modules/", "./templates/"]
 var args = process.argv.slice(2);
 function execution() {
-	exec('node "./node_modules/esoftplay/router"')
+	var ret = spawn('node', ['node_modules/esoftplay/bin/router.js'])
+	ret.stdout.on('data', function (data) {
+	  console.log(data.toString());
+	});
+	ret.stderr.on('data', function (data) {
+	  console.log('stderr: ' + data.toString());
+	});
+	// ret.on('exit', function (code) {
+	//   console.log('child process exited with code ' + code.toString());
+	// });
 }
-if (args[1] == "start") {
+if (args[0] == "start") {
 	for (var i = 0; i < paths.length; i++) {
 		const path = paths[i]
-		watch.watchTree(path, function (f, curr, prev) {
-			execution()
+		if (!fs.existsSync(path)) {
+			fs.mkdirSync(path);
+		}
+		app.watchTree(path, function (f, curr, prev) {
+			if (curr!=null || prev!=null) {
+				execution()
+			}
 		})
 	}
+	execution()
 }else
-if (args[1] == "stop") {
+if (args[0] == "stop") {
 	for (var i = 0; i < paths.length; i++) {
 		const path = paths[i]
-		watch.unwatchTree(path)
+		app.unwatchTree(path)
 	}
 }
-// watch.watchTree('/home/mikeal', function (f, curr, prev) {
-// 	if (typeof f == "object" && prev === null && curr === null) {
-// 		// Finished walking the tree
-// 	} else if (prev === null) {
-// 		// f is a new file
-// 	} else if (curr.nlink === 0) {
-// 		// f was removed
-// 	} else {
-// 		// f was changed
-// 	}
-// })
-// exec('watch "node ./node_modules/esoftplay/router" ./assets/', (err, stdout, stderr) => {
-//   if (err) {
-//     // node couldn't execute the command
-//     return;
-//   }
-// });
-// exec('watch "node ./node_modules/esoftplay/router" ./modules/', (err, stdout, stderr) => {
-//   if (err) {
-//     // node couldn't execute the command
-//     return;
-//   }
-// });
-// exec('watch "node ./node_modules/esoftplay/router" ./templates/', (err, stdout, stderr) => {
-//   if (err) {
-//     // node couldn't execute the command
-//     return;
-//   }
-// });
-console.log(args, "esoftplay/bin/cli.js", __dirname)
-/*
-watch 'node ./node_modules/esoftplay/router' ./assets/
-watch 'node ./node_modules/esoftplay/router' ./modules/
-watch 'node ./node_modules/esoftplay/router' ./templates/
-*/

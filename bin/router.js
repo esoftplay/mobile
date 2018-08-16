@@ -2,17 +2,14 @@
 
 const fs = require('fs');
 var checks = ['./node_modules/esoftplay/modules/', './modules/', './templates/'];
-// console.log(__dirname)
-var pathAsset = "./images";
+var pathAsset = "./assets";
 var tmpDir = "./node_modules/esoftplay/cache/";
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js)$/);
 var Text = "";
-
 /* CREATE DIRECTORY IF NOT EXISTS */
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
 }
-
 /* FETCH ALL SCRIPTS */
 var Modules = {}; // Object semua module/task yang bisa dipanggil
 var Reducers = {}; // Object semua reducer yang akan dikumpulkan
@@ -141,7 +138,6 @@ function createReducer() {
       if (err) {
         return console.log(err);
       }
-      console.log("router executed")
     })
   } else {
     setTimeout(() => {

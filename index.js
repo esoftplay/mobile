@@ -44,7 +44,7 @@ class Container extends Component {
   }
 }
 
-export default class esp {
+class esp {
 
   static asset(path) {
     return assets(path)
@@ -151,6 +151,8 @@ export default class esp {
     }
   }
 }
+module.exports = esp
+
 // var a = esp.assets("bacground")     // mengambil file dari folder images
 // var b = esp.config("data", "name")  // mengambil value dari config (bisa ditentukan di app.json)
 // var c = esp.mod("module/task")      // mengeksekusi module/task
