@@ -3,10 +3,14 @@ const fs = require('fs');
 
 // Add scripts.prestart anda scripts.poststop
 const path = "../../package.json"
+const pathScript = "../react-native-scripts/build/bin/react-native-scripts.js"
 if (fs.existsSync(path))
 {
 	var $package = JSON.parse(fs.readFileSync(path, 'utf8'));
+	var $script = fs.readFileSync(pathScript, 'utf8');
 	var args = process.argv.slice(2);
+
+	/* Update package.json
 	if (args[0] == "install")
 	{
 		// $package.scripts.prestart = "node ./node_modules/esoftplay/bin/cli.js start";
@@ -27,7 +31,42 @@ if (fs.existsSync(path))
 	  if (err) throw err;
 	  console.log('package.json has been updated');
 	});
-	// Update app.json
+	*/
+
+
+	/* Update react-native-scripts */
+	var code1    = "// the command is valid"
+	var code2    = "";
+	var match    = $script.match(new RegExp(code1+"(\s{0,}\n\s{0,}[^\n]+)\n")); // mengambil 1 baris setelah code1
+	var $script2 = $script;
+	var espCode  = false;
+	if (match) {
+		if (args[0] == "install") {
+			var reg = new RegExp(/(\[.*?\),)/g) // mengambil argument ke 2 dari .sync()
+			var tag = match[1].match(reg)
+			if (tag) {
+				if (!tag[0].match(/esoftplay/)) {
+					espCode = match[1].replace(reg, "['./node_modules/.bin/esoftplay', script],") // ganti argument ke 2 menjadi milik esoftplay
+					code2 = code1+espCode;
+					$script2 = $script.replace(code1, code2) // masukkan code ke dalam script setelah argument ke 2 di ganti ke esoftplay
+				}
+			}
+		}else
+		if (args[0] == "uninstall") {
+			if (match[1].match(/esoftplay/)) {
+				$script2 = $script.replace(match[1], code2) // hapus script dari esoftplay
+			}
+		}
+	}
+	if ($script2!=$script) {
+		fs.writeFile(pathScript, $script2, (err) => {
+		  if (err) throw err;
+		  console.log('react-native-scripts has been updated!!');
+		});
+	}
+
+
+	/* Update app.json */
 	if (args[0] == "install")
 	{
 		const appjson = "../../app.json"
@@ -47,8 +86,12 @@ if (fs.existsSync(path))
 		{
 			rewrite = true;
 			$app.config = {
-				"domain" : $name+".com",
-				"salt" : "CHANGE_INTO_YOUR_OWN_SALT"
+				"domain": $name+".com",
+				"salt": "CHANGE_INTO_YOUR_OWN_SALT",
+				"home": {
+					"public": "content",
+					"member": "content/member"
+				}
 			}
 		}
 		if (rewrite)
@@ -58,7 +101,12 @@ if (fs.existsSync(path))
 			  console.log('app.json has been updated');
 			});
 		}
-		const AppJS = "import React from 'react';\n\
+
+
+		/* Update App.js */
+		if (args[0] == "install")
+		{
+			const AppJS = "import React from 'react';\n\
 import { AppLoading, Font } from 'expo';\n\
 import { applyMiddleware, createStore } from 'redux';\n\
 import thunk from 'redux-thunk';\n\
@@ -94,10 +142,11 @@ export default class App extends React.Component {\n\
       </Provider>\n\
   }\n\
 }";
-		fs.writeFile("../../App.js", AppJS, (err) => {
-		  if (err) throw err;
-		  console.log('App.js has been updated');
-		});
+			fs.writeFile("../../App.js", AppJS, (err) => {
+			  if (err) throw err;
+			  console.log('App.js has been updated');
+			});
+		}
 	}
 }else{
 	console.log(path+" not found!!")
