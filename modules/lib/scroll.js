@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from '../../../../react'
 import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 import { Dimensions, View } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
 
@@ -93,4 +93,4 @@ class Escroll extends Component {
     )
   }
 }
-module.exports = new Escroll();
+module.exports = Escroll;
