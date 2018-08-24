@@ -2,7 +2,7 @@ import {
   Linking,
   Platform,
   Clipboard
-} from '../../../node_modules/react-native/Libraries/react-native/react-native-implementation.js';
+} from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import moment from 'moment/min/moment-with-locales'
 
 class Eutils {

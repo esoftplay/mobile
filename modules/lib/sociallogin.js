@@ -1,5 +1,5 @@
 import * as React from '../../../react'
-import { View, WebView, AsyncStorage } from '../../node_modules/react-native/Libraries/react-native/react-native-implementation.js';
+import { View, WebView, AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import utils from './utils'
 
 class EsocialLogin extends React.Component {
