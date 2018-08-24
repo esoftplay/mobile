@@ -1,10 +1,10 @@
-import React, { Component } from '../../../../react';
-import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, Image, Linking, BackHandler, Platform } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react';
+import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, Image, Linking, BackHandler, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Container, Button, Text, Icon, Thumbnail, Drawer } from 'native-base';
-import { defaultStyle, colorPrimary, colorAccent, width } from '../../style';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 import esp from '../../index';
+const { defaultStyle, colorPrimary, colorAccent, width } = esp.mod('lib/style');
 const config = esp.config();
 const utils = esp.mod('lib/utils');
 const Curl = esp.mod('mod/curl');
@@ -16,7 +16,7 @@ const ViewTypes = {
   ITEM: 1,
 };
 
-class Elist extends Component {
+class Elist extends React.Component {
   constructor(props) {
     super(props);
     moment.locale('id')
@@ -293,7 +293,7 @@ class Elist extends Component {
 
 
 
-class Item extends Component {
+class Item extends React.Component {
 
   constructor(props) {
     super(props);

@@ -1,5 +1,5 @@
-import * as React from '../../../../react'
-import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react'
+import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import esp from '../../index';
 
 /*

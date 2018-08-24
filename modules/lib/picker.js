@@ -1,6 +1,6 @@
-import React from '../../../../react';
-import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
-import * as Permissions from '../../../../expo/src/Permissions.js';
+import React from '../../../react';
+import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as Permissions from '../../../expo/src/Permissions.js';
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 import update from 'immutability-helper';
 import { Ionicons } from '@expo/vector-icons';

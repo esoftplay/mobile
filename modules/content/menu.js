@@ -1,12 +1,12 @@
-import React, { Component } from '../../../../react'
-import { View, AsyncStorage, ScrollView, Image, Platform } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react'
+import { View, AsyncStorage, ScrollView, Image, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { configConsole } from '../../config';
-import { BlurView } from '../../../../expo';
+import { BlurView } from '../../../expo';
 import esp from '../../index';
 const Curl = esp.mod('lib/curl')
 const NestedMenu = esp.mod('lib/nestedmenu');
 
-export default class ContentMenu extends Component {
+class ContentMenu extends React.Component {
 
   constructor(props) {
     super(props)
@@ -86,3 +86,4 @@ export default class ContentMenu extends Component {
     )
   }
 }
+module.exports = ContentMenu;

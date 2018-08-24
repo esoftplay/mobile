@@ -1,9 +1,9 @@
 //import liraries
-import React, { Component } from '../../../../react'
-import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react'
+import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Text, Button, Container, Icon, Item, Input, Thumbnail } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
-import { colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } from '../../style';
+const { colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
 import Modal from 'react-native-modal';
 import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 import esp from '../../index';
@@ -34,7 +34,7 @@ class ContextHelper extends ContextProvider {
   }
 }
 
-class Ecomment extends Component {
+class Ecomment extends React.Component {
   constructor(props) {
     super(props)
     props = props.hasOwnProperty('id') || props.hasOwnProperty('url') ? props : props.navigation.state.params
@@ -88,7 +88,7 @@ class Ecomment extends Component {
   }
 }
 
-class CommentList extends Component {
+class CommentList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -259,7 +259,7 @@ class CommentList extends Component {
   }
 }
 
-class CommentItem extends Component {
+class CommentItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = { isOpenChild: false };
@@ -370,4 +370,4 @@ const styles = StyleSheet.create({
 })
 
 //make this component available to the app
-export default Ecomment;
+module.exports = Ecomment;

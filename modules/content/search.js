@@ -1,11 +1,11 @@
 //import liraries
-import React, { Component } from '../../../../react';
-import { View, StyleSheet } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react';
+import { View, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Button, Icon, Input } from 'native-base';
 import { elevation } from '../style';
 
 // create a component
-class Esearch extends Component {
+class Esearch extends React.Component {
   componentWillMount = () => {
     this.inputSearch = this.props.defaultValue || ''
   }

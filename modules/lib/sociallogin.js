@@ -1,8 +1,8 @@
-import React, { Component } from '../../../../react'
+import * as React from '../../../react'
 import { View, WebView, AsyncStorage } from '../../node_modules/react-native/Libraries/react-native/react-native-implementation.js';
 import utils from './utils'
 
-class EsocialLogin extends Component {
+class EsocialLogin extends React.Component {
 
   setUser(params) {
     AsyncStorage.setItem(config.domain + '_user', params)

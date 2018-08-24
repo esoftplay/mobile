@@ -1,9 +1,9 @@
 //import liraries
-import React, { Component } from '../../../../react'
-import { Audio } from '../../../../expo';
+import * as React from '../../../react'
+import { Audio } from '../../../expo';
 
 // create a component
-class Eaudio extends Component {
+class Eaudio extends React.Component {
   constructor(props) {
     super(props)
     this.playbackInstance = null

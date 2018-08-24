@@ -1,7 +1,7 @@
-import React, { Component } from '../../../../react';
-import { Text, StyleSheet } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react';
+import { Text, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
-class EtextStyle extends Component {
+class EtextStyle extends React.Component {
   static largeTitle = 'largeTitle'
   static title1 = 'title1'
   static title2 = 'title2'

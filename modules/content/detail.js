@@ -1,12 +1,12 @@
 //import liraries
-import React, { Component } from '../../../../react';
-import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { colorPrimary, width, colorPrimaryDark } from '../../style';
-import { Left, Button, Icon, Text,ListItem } from 'native-base';
-import { LinearGradient } from '../../../../expo';
+import * as React from '../../../react';
+import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { Left, Button, Icon, Text, ListItem } from 'native-base';
+import { LinearGradient } from '../../../expo';
 import moment from 'moment/min/moment-with-locales'
 
 import esp from '../../index';
+const { colorPrimary, width, colorPrimaryDark } = esp.mod('lib/style');
 const { Item } = esp.mod('content/list');
 const utils = esp.mod('lib/utils');
 const config = esp.config();
@@ -19,12 +19,11 @@ var HEADER_MAX_HEIGHT = width * 8 / 10;
 var HEADER_MIN_HEIGHT = 50;
 var HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-
 const download = (result) => {
   Linking.openURL(result.link)
 }
 
-class Detail extends Component {
+class Detail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -445,4 +444,4 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-export default Detail;
+module.exports = Detail;

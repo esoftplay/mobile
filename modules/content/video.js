@@ -1,8 +1,8 @@
-import React, { Component } from '../../../../react'
-import { WebView, StyleSheet } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from '../../../react'
+import { WebView, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
 
-class Evideo extends Component {
+class Evideo extends React.Component {
   render() {
     const code = this.props.code
     if (!code) {

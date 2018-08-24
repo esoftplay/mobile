@@ -1,4 +1,4 @@
-import SQLite from '../../../../expo/src/SQLite.js';
+import SQLite from '../../../expo/src/SQLite.js';
 
 /* EXAMPLE CREATE CLASS DB EXTENDS HELPER
 

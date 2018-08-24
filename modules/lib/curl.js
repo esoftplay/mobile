@@ -1,4 +1,4 @@
-import react from '../../../../react';
+import react from '../../../react';
 import momentTimeZone from 'moment-timezone'
 import moment from 'moment/min/moment-with-locales'
 import esp from 'esoftplay';
