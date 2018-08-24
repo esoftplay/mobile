@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import * as React from '../../../react'
 import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
-import { Dimensions, View } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { Dimensions, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
 /*
 Using ScrollView
@@ -52,7 +52,7 @@ class ContextHelper extends ContextProvider {
   }
 }
 
-class Escroll extends Component {
+class Escroll extends React.Component {
   constructor(props) {
     super(props);
     this.layoutProvider = new LayoutProvider(
@@ -93,4 +93,4 @@ class Escroll extends Component {
     )
   }
 }
-module.exports = new Escroll();
+module.exports = Escroll;

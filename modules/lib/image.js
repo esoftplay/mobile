@@ -1,6 +1,6 @@
-import * as React from '../../../../react'
-import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
-import esp from 'esoftplay';
+import * as React from '../../../react'
+import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import esp from '../../index';
 
 /*
 USAGE
@@ -19,6 +19,7 @@ source = same as image source props
 quality = float = 0.1 - 1 ( 1 mean one pixel image === 1 pixel display )
 resizeMode = string = only support for contain/cover mode
 */
+
 class Eimage extends React.PureComponent {
 
   state = {
@@ -112,4 +113,5 @@ class Eimage extends React.PureComponent {
     return <Image style={[{ resizeMode: 'contain' }, { ...style }]} source={this.state.image} />
   }
 }
-module.exports = new Eimage();
+
+module.exports = Eimage;

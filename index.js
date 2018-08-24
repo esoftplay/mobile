@@ -1,4 +1,4 @@
-import React, { Component } from '../react';
+import * as React from '../react';
 import { AsyncStorage, View } from '../react-native';
 import { createStackNavigator } from '../react-navigation';
 import assets from './cache/assets';
@@ -7,7 +7,7 @@ import reducers from './cache/reducers';
 import routers from './cache/routers';
 import app from '../../app.json'
 
-class Container extends Component {
+class Container extends React.Component {
   state = {
     loading: true
   }

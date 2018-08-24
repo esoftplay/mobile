@@ -1,6 +1,6 @@
-import * as Permissions  from '../../../../expo/src/Permissions.js';
-import Notifications from '../../../../expo/src/Notifications.js';
-import { AsyncStorage } from '../../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as Permissions  from '../../../expo/src/Permissions.js';
+import Notifications from '../../../expo/src/Notifications.js';
+import { AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import esp from 'esoftplay';
 /*
 // https://github.com/dev-esoftplay/react-native-esoftplay-notification

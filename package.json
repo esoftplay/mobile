@@ -24,5 +24,17 @@
     "esoftplay": "./bin/cli.js"
   },
   "homepage": "https://github.com/esoftplay/mobile#readme",
-  "bundleDependencies": ["react-navigation", "react-redux", "redux", "redux-thunk", "moment-timezone", "recyclerlistview", "@expo/vector-icons", "immutability-helper"]
+  "bundleDependencies": [
+    "react-navigation",
+    "react-native-modal",
+    "react-redux",
+    "redux",
+    "redux-thunk",
+    "moment",
+    "moment-timezone",
+    "recyclerlistview",
+    "@expo/vector-icons",
+    "immutability-helper",
+    "native-base"
+  ]
 }
