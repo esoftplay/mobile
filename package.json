@@ -37,16 +37,28 @@
     "url": "https://github.com/esoftplay/mobile/issues"
   },
   "bundleDependencies": [
+    "buffer",
+    "immutability-helper",
+    "moment-timezone",
+    "native-base",
+    "react-native-modal",
     "react-navigation",
     "react-redux",
-    "redux",
-    "redux-thunk"
+    "recyclerlistview",
+    "redux-thunk",
+    "redux"
   ],
   "dependencies": {
+    "buffer": "*",
+    "immutability-helper": "*",
+    "moment-timezone": "*",
+    "native-base": "*",
+    "react-native-modal": "*",
     "react-navigation": "*",
     "react-redux": "*",
-    "redux": "*",
-    "redux-thunk": "*"
+    "recyclerlistview": "*",
+    "redux-thunk": "*",
+    "redux": "*"
   },
   "description": "embedding data from esoftplay framework (web based) into mobile app",
   "homepage": "https://github.com/esoftplay/mobile#readme",
