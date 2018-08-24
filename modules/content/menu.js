@@ -1,8 +1,8 @@
 import * as React from '../../../react'
 import { View, AsyncStorage, ScrollView, Image, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { configConsole } from '../../config';
+// import { configConsole } from '../../config';
 import { BlurView } from '../../../expo';
-import esp from '../../index';
+import esp from 'esoftplay';
 const Curl = esp.mod('lib/curl')
 const NestedMenu = esp.mod('lib/nestedmenu');
 
@@ -56,7 +56,7 @@ class ContentMenu extends React.Component {
         }
       },
       (msg) => {
-        configConsole(msg)
+        // configConsole(msg)
       }
     )
   }
@@ -68,7 +68,7 @@ class ContentMenu extends React.Component {
       <BGView tint={'light'} intensity={90} style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.9)' }, this.props.style]}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={{ backgroundColor: 'transparent', height: 100, padding: 20 }}>
-            <Image source={require('../../images/logo.png')} style={{ height: 60, width: '100%', resizeMode: 'contain' }} />
+            <Image source={esp.assets('logo.png')} style={{ height: 60, width: '100%', resizeMode: 'contain' }} />
           </View>
           <NestedMenu
             onItemSelected={(e) => {

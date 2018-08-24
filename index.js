@@ -1,4 +1,4 @@
-import * as React from '../react';
+import React, { Component } from '../react';
 import { AsyncStorage, View } from '../react-native';
 import { createStackNavigator } from '../react-navigation';
 import assets from './cache/assets';
@@ -7,12 +7,25 @@ import reducers from './cache/reducers';
 import routers from './cache/routers';
 import app from '../../app.json'
 
-class Container extends React.Component {
+
+class Container extends Component {
   state = {
     loading: true
   }
 
   Router = undefined
+
+  isClassComponent(component) {
+    return (typeof component === 'function' && !!component.prototype.isReactComponent) ? true : false
+  }
+
+  isFunctionComponent(component) {
+    return (typeof component === 'function' && String(component).includes('return React.createElement')) ? true : false;
+  }
+
+  isReactComponent(component) {
+    return (this.isClassComponent(component) || this.isFunctionComponent(component)) ? true : false;
+  }
 
   onNavigationStateChange = (prevState, currentState) => {
     AsyncStorage.setItem('nav', JSON.stringify(currentState));
@@ -23,6 +36,9 @@ class Container extends React.Component {
     for (let i = 0; i < navs.length; i++) {
       const nav = navs[i];
       navigations[nav] = esp.mod(nav);
+      if (!this.isReactComponent(navigations[nav])) {
+        delete navigations[nav]
+      }
     }
     var config = {
       initialRouteName: esp.config("isLogin") ? esp.config("home", "member") : esp.config("home", "public"),
@@ -46,7 +62,7 @@ class Container extends React.Component {
 
 class esp {
 
-  static asset(path) {
+  static assets(path) {
     return assets(path)
   }
 
