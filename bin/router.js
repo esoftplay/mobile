@@ -13,7 +13,7 @@ if (!fs.existsSync(tmpDir)) {
 /* FETCH ALL SCRIPTS */
 var Modules = {}; // Object semua module/task yang bisa dipanggil
 var Reducers = {}; // Object semua reducer yang akan dikumpulkan
-var Jsshift = new RegExp("\.js$");
+var isJS = new RegExp("\.js$");
 var checkReducer = new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g);
 var checkClass = new RegExp(/\n\s{0,}export\s+default\s+connect\\([^\\)]+\\)\\(\s{0,}(.*?)\s{0,}\\)/g);
 var Extender = {};
@@ -27,9 +27,9 @@ checks.forEach(modules => {
       if (typeof Modules[module] == "undefined") {
         Modules[module] = {};
       }
-      if (fs.readdirSync(modules + module)) {
+      if (fs.statSync(modules + module).isDirectory()) {
         fs.readdirSync(modules + module).forEach(file => {
-          if (Jsshift.test(file)) {
+          if (isJS.test(file)) {
             var name = file.replace(replacer, '');
             var path = modules + module + "/" + name;
             Modules[module][name] = path;

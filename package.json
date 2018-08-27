@@ -1,81 +1,42 @@
 {
-  "_args": [
-    [
-      "esoftplay@0.0.22",
-      "/var/www/html/ilk"
-    ]
-  ],
-  "_from": "esoftplay@0.0.22",
-  "_id": "esoftplay@0.0.22",
-  "_inBundle": false,
-  "_integrity": "sha512-ARYBv6g1Dxb+LtabZ0VPxBhDGnoZwi7E2EQoGJdu+pYGlC6Jtwv5Fxeg/6bkwsIWSozdWGterpXCl8GOZ6r5aA==",
-  "_location": "/esoftplay",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "esoftplay@0.0.22",
-    "name": "esoftplay",
-    "escapedName": "esoftplay",
-    "rawSpec": "0.0.22",
-    "saveSpec": null,
-    "fetchSpec": "0.0.22"
+  "name": "esoftplay",
+  "version": "0.0.23",
+  "description": "embedding data from esoftplay framework (web based) into mobile app",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node ./bin/build.js install",
+    "postuninstall": "node ./bin/build.js uninstall",
+    "test": "node ./bin/build.js install"
   },
-  "_requiredBy": [
-    "/"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esoftplay/mobile.git"
+  },
+  "keywords": [
+    "esoftplay-mobile-app"
   ],
-  "_resolved": "https://registry.npmjs.org/esoftplay/-/esoftplay-0.0.22.tgz",
-  "_spec": "0.0.22",
-  "_where": "/var/www/html/ilk",
-  "author": {
-    "name": "Danang Widiantoro"
+  "author": "Esoftplay Inc.",
+  "contributors": ["Danang Widiantoro", "Munawar Kholil"],
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/esoftplay/mobile/issues"
   },
   "bin": {
     "esoftplay": "./bin/cli.js"
   },
-  "bugs": {
-    "url": "https://github.com/esoftplay/mobile/issues"
-  },
+  "homepage": "https://github.com/esoftplay/mobile#readme",
   "bundleDependencies": [
+    "@expo/vector-icons",
     "buffer",
     "immutability-helper",
+    "moment",
     "moment-timezone",
     "native-base",
     "react-native-modal",
     "react-navigation",
     "react-redux",
     "recyclerlistview",
-    "redux-thunk",
-    "redux"
-  ],
-  "dependencies": {
-    "buffer": "*",
-    "immutability-helper": "*",
-    "moment-timezone": "*",
-    "native-base": "*",
-    "react-native-modal": "*",
-    "react-navigation": "*",
-    "react-redux": "*",
-    "recyclerlistview": "*",
-    "redux-thunk": "*",
-    "redux": "*"
-  },
-  "description": "embedding data from esoftplay framework (web based) into mobile app",
-  "homepage": "https://github.com/esoftplay/mobile#readme",
-  "keywords": [
-    "esoftplay-mobile-app"
-  ],
-  "license": "GPL-3.0",
-  "main": "index.js",
-  "name": "esoftplay",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/esoftplay/mobile.git"
-  },
-  "scripts": {
-    "postinstall": "node ./bin/build.js install",
-    "postuninstall": "node ./bin/build.js uninstall",
-    "test": "node ./bin/build.js install"
-  },
-  "version": "0.0.22"
+    "redux",
+    "redux-thunk"
+  ]
 }
