@@ -208,7 +208,25 @@ EXAMPLE\n\
 		}
 		if (!action) {
 			if (mods.length > 0) {
-				console.log("Available Modules :\n- "+mods.join("\n- "))
+				var rmods = [];
+				var maxlength = 0;
+				for (var i = 0; i < mods.length; i++) {
+					if (mods[i].length > maxlength) {
+						maxlength = mods[i].length;
+					}
+				}
+				for (var i = 0; i < mods.length; i++) {
+					mod = mods[i];
+					var r1 = new RegExp("/modules/"+mod+".js");
+					var r2 = new RegExp("/"+mod+".js");
+					file = getFile(mod)
+						.replace(/node_modules\//, '')
+						.replace(r1, '')
+						.replace(r2, '');
+					var j = maxlength-mod.length + 1;
+					rmods.push(mod+" ".repeat(j)+" - "+file);
+				}
+				console.log("Available Modules :\n- "+rmods.join("\n- "))
 			}else{
 				console.log('the available modules is not rendered yet. please try `esp start` before executing your last command!')
 			}
@@ -238,12 +256,28 @@ EXAMPLE\n\
 				case 'l':
 				case 'list':
 					var out = [];
+					var listmods = [];
+					var maxlength = 0;
 					for (var i = 0; i < mods.length; i++) {
 						mod = mods[i];
 						var r = new RegExp("^"+modules[0]);
 						if (mod.match(r)) {
-							out.push(mod);
+							listmods.push(mod);
+							if (mod.length > maxlength) {
+								maxlength = mod.length;
+							}
 						}
+					}
+					for (var i = 0; i < listmods.length; i++) {
+						mod = listmods[i];
+						var r1 = new RegExp("/modules/"+mod+".js");
+						var r2 = new RegExp("/"+mod+".js");
+						file = getFile(mod)
+							.replace(/node_modules\//, '')
+							.replace(r1, '')
+							.replace(r2, '');
+						var j = maxlength-mod.length + 1;
+						out.push(mod+" ".repeat(j)+" - "+file);
 					}
 					output = "The following modules are available in '"+modules[0]+"':\n- "+out.join("\n- ");
 					break;
