@@ -1,10 +1,11 @@
 {
   "name": "esoftplay",
-  "version": "0.0.25",
+  "version": "0.0.31",
   "description": "embedding data from esoftplay framework (web based) into mobile app",
   "main": "index.js",
   "scripts": {
     "postinstall": "node ./bin/build.js install",
+    "preuninstall": "cd ../../ && node ./node_modules/.bin/esoftplay stop",
     "postuninstall": "node ./bin/build.js uninstall",
     "test": "node ./bin/build.js install"
   },
@@ -16,7 +17,13 @@
     "esoftplay-mobile-app"
   ],
   "author": "Esoftplay Inc.",
-  "contributors": ["Danang Widiantoro", "Munawar Kholil"],
+  "contributors": [{
+    "name": "Danang Widiantoro",
+    "email": "danang@fisip.net"
+  },{
+    "name": "Munawar Kholil",
+    "email": "kholil@fisip.net"
+  }],
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/esoftplay/mobile/issues"

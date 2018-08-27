@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const { spawn } = require('child_process');
 const fs = require('fs');
 
 // Add scripts.prestart anda scripts.poststop
@@ -9,30 +10,6 @@ if (fs.existsSync(path))
 	var $package = JSON.parse(fs.readFileSync(path, 'utf8'));
 	var $script = fs.readFileSync(pathScript, 'utf8');
 	var args = process.argv.slice(2);
-
-	/* Update package.json
-	if (args[0] == "install")
-	{
-		// $package.scripts.prestart = "node ./node_modules/esoftplay/bin/cli.js start";
-		// $package.scripts.poststop = "node ./node_modules/esoftplay/bin/cli.js stop";
-		$package.scripts.prestart = "esoftplay start";
-		$package.scripts.poststop = "esoftplay stop";
-	}else{
-		if ($package.scripts.prestart)
-		{
-			delete $package.scripts.prestart;
-		}
-		if ($package.scripts.poststop)
-		{
-			delete $package.scripts.poststop;
-		}
-	}
-	fs.writeFile(path, JSON.stringify($package, null, 2), (err) => {
-	  if (err) throw err;
-	  console.log('package.json has been updated');
-	});
-	*/
-
 
 	/* Update react-native-scripts */
 	var code1    = "// the command is valid"
@@ -62,6 +39,24 @@ if (fs.existsSync(path))
 		fs.writeFile(pathScript, $script2, (err) => {
 		  if (err) throw err;
 		  console.log('react-native-scripts has been updated!!');
+		});
+	}
+
+	/* Create ESP command line */
+	var espcli = "/usr/local/bin/esp";
+	if (args[0] == "install")
+	{
+		var scriptCode = "#!/usr/bin/env bash\n\
+\n\
+if [ ! -f ./node_modules/esoftplay/bin/cli.js ]; then\n\
+	echo \"Perintah 'esp' hanya bisa digunakan dalam project react-native dengan package 'esoftplay'\"\n\
+else\n\
+	node ./node_modules/esoftplay/bin/cli.js $@\n\
+fi\n";
+		fs.writeFile(espcli, scriptCode, {mode: 0755}, (err) => {
+		  if (err) throw err;
+		  // fs.chmod(espcli, 0755);
+		  console.log('new command "esp" has been installed')
 		});
 	}
 

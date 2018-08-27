@@ -9,3 +9,8 @@ rm -rf $DST/index.js
 ln -s $SRC/index.js $DST/index.js
 rm -rf $DST/watch.js
 ln -s $SRC/watch.js $DST/watch.js
+
+# create-react-native-app MyProject
+# npm install esoftplay
+# sh ./test.sh
+# npm start
