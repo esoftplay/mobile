@@ -24,6 +24,8 @@ After installing esoftplay package, now you can edit `app.json` based on your ne
 
 Type `esp new modulename/taskname` in terminal inside your project if you want to use redux, or `esp create modulename/taskname` to create a new script without redux
 
+Once new module is created, now you can use your new module in other other modules by using `esp.mod('modulename/taskname')` or jump to that module by `esp.navigate('modulename/taskname')`
+
 ## Module styling
 
 All modules in your new project are replacable, so you can create new module in one project and reuse the script in other projects without making any changes in your old module. So when you need to improve your script only for one particular project, you just simply extend the module using command-line `esp create modulename/taskname`
