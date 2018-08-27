@@ -1,6 +1,7 @@
 import * as React from '../../../react'
 import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import esp from '../../index';
+import { connect } from '../../../react-redux';
 
 /*
 USAGE
@@ -22,35 +23,47 @@ resizeMode = string = only support for contain/cover mode
 
 class Eimage extends React.PureComponent {
 
+  static initState = {
+    images: {}
+  }
+
+  static reducer = (state = Eimage.initState, action) => {
+    switch (action.type) {
+      case 'lib_image_add':
+        return {
+          images: Object.assign({}, state.images, { [action.payload.key]: action.payload.image })
+        }
+        break;
+      default:
+        return state
+    }
+  }
+
+  static mapStateToProps = (state) => {
+    return {
+      images: state.lib_image.images
+    }
+  }
+
   state = {
     image: null,
   }
 
   componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.source.hasOwnProperty('uri') && prevProps.source.uri !== this.props.source.uri) {
-      esp.log('1st')
       this.setState({ image: null })
       this.processImage(this.props.source)
     } else if (!prevProps.source.hasOwnProperty('uri') && prevProps.source !== this.props.source) {
-      esp.log('2st')
       this.setState({ image: null })
       this.processImage(this.props.source)
     }
   };
 
-  compress(uri, w, h, callback) {
+  compress(uri, w, h, destWidth, destHeight, callback) {
     if (uri && w && h && callback) {
       var quality = this.props.quality || 1
-      var { width, height, resizeMode } = StyleSheet.flatten(this.props.style)
-      var destHeight = height
-      var destWidth = width
+      var { resizeMode } = StyleSheet.flatten(this.props.style)
       var destResizeMode = resizeMode
-      if (!width) {
-        destWidth = this.props.width
-      }
-      if (!height) {
-        destHeight = this.props.height
-      }
       if (!resizeMode) {
         destResizeMode = this.props.resizeMode
       }
@@ -75,16 +88,36 @@ class Eimage extends React.PureComponent {
           resizeMode: 'contain',
         },
         (uri) => callback({ uri: uri }),
-        (msg) => esp.log(msg)
+      
       )
     }
   }
 
+  nameKey(uri, w, h) {
+    return uri + '|' + w + '|' + h
+  }
+
   processImage(source) {
+    var { width, height } = StyleSheet.flatten(this.props.style)
+    var destHeight = height
+    var destWidth = width
+    if (!width) { destWidth = this.props.width }
+    if (!height) { destHeight = this.props.height }
     if (source.hasOwnProperty('uri')) {
+      if (this.props.images.hasOwnProperty(this.nameKey(source.uri, destWidth, destHeight))) {
+        this.setState({ image: this.props.images[this.nameKey(source.uri, destWidth, destHeight)] })
+        return
+      }
       Image.getSize(source.uri, (w, h) => {
-        this.compress(source.uri, w, h, (res) => {
+        this.compress(source.uri, w, h, destWidth, destHeight, (res) => {
           this.setState({ image: res })
+          this.props.dispatch({
+            type: 'lib_image_add',
+            payload: {
+              key: this.nameKey(source.uri, destWidth, destHeight),
+              image: res
+            }
+          })
         })
       }, (error) => {
 
@@ -92,8 +125,19 @@ class Eimage extends React.PureComponent {
     } else {
       var image = Image.resolveAssetSource(source)
       if (image) {
-        this.compress(image.uri, image.width, image.height, (res) => {
+        if (this.props.images.hasOwnProperty(this.nameKey(image.uri, destWidth, destHeight))) {
+          this.setState({ image: this.props.images[this.nameKey(image.uri, destWidth, destHeight)] })
+          return
+        }
+        this.compress(image.uri, image.width, image.height, destWidth, destHeight, (res) => {
           this.setState({ image: res })
+          this.props.dispatch({
+            type: 'lib_image_add',
+            payload: {
+              key: this.nameKey(image.uri, destWidth, destHeight),
+              image: res
+            }
+          })
         })
       }
     }
@@ -114,4 +158,5 @@ class Eimage extends React.PureComponent {
   }
 }
 
-module.exports = Eimage;
+
+module.exports = connect(Eimage.mapStateToProps)(Eimage);
