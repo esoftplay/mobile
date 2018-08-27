@@ -210,7 +210,7 @@ EXAMPLE\n\
 			if (mods.length > 0) {
 				console.log("Available Modules :\n- "+mods.join("\n- "))
 			}else{
-				console.log('the available modules is not render yet. please try `npm start` before execute this command!')
+				console.log('the available modules is not rendered yet. please try `esp start` before executing your last command!')
 			}
 		}else{
 			if (action.length == 1 || ['create', 'edit', 'list', 'new', 'info', 'view'].indexOf(action) > -1) {
