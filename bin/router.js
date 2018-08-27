@@ -89,6 +89,9 @@ function listDir(path) {
     }
   });
 }
+if (!fs.existsSync(pathAsset)) {
+  fs.mkdirSync(pathAsset);
+}
 listDir(pathAsset);
 var Assets = "";
 var pLength = pathAsset.length - 1;
