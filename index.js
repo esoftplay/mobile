@@ -1,12 +1,12 @@
 import React, { Component } from '../react';
-import { AsyncStorage, View } from '../react-native';
+import { AsyncStorage, View } from '../react-native/Libraries/react-native/react-native-implementation.js';
 import { createStackNavigator } from '../react-navigation';
 import assets from './cache/assets';
 import navs from './cache/navigations';
 import reducers from './cache/reducers';
 import routers from './cache/routers';
 import app from '../../app.json'
-
+var routes = {}
 
 class Container extends Component {
   state = {
@@ -28,7 +28,7 @@ class Container extends Component {
   }
 
   onNavigationStateChange = (prevState, currentState) => {
-    AsyncStorage.setItem('nav', JSON.stringify(currentState));
+    routes = currentState
   }
 
   componentDidMount = async () => {
@@ -166,6 +166,9 @@ class esp {
       console.log(JSON.stringify(arguments, null, 2));
     }
   }
+  static routes() {
+    return routes
+  }
 }
 module.exports = esp
 
@@ -174,4 +177,5 @@ module.exports = esp
 // var c = esp.mod("module/task")      // mengeksekusi module/task
 // var d = esp.reducers()              // mengambil semua reducer
 // var e = esp.home()                  // mengkesekusi module/task untuk halaman pertama
-// var f = esp.log("pesan")            // log yang tampil jika di app.json -> isLogin == 1
+// var f = esp.log("pesan")            // log yang tampil jika di app.json -> isDebug == 1
+// var g = esp.routes()                // mengambil history status navigasi yang sedang berjalan

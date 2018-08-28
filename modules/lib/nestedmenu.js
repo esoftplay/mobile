@@ -22,7 +22,7 @@ class NestedMenu extends React.Component {
       <FlatList
         style={style}
         data={data}
-        keyExtractor={item => item.id}
+        keyExtractor={item => (item.id).toString()}
         renderItem={({ item }) => <NestedMenuItem {...item} selectedId={this.props.selectedId} data={this.props.data} parent={parent} onClick={(item) => this.onItemSelected(item)} />}
       />
     )

@@ -7,7 +7,7 @@ import esp from 'esoftplay';
   CONTOH
   var curl = esp.mod("lib/curl")
   Method GET =>
-  curl('goal',null,
+  new Curl('goal',null,
     (res,msg){
       onDone
     },
@@ -21,7 +21,7 @@ import esp from 'esoftplay';
     key1: 'value1',
     key2: 2
   }
-  curl('goal',post,
+  new Curl('goal',post,
     (res,msg){
       onDone
     },
@@ -211,4 +211,4 @@ class Ecurl {
   }
 }
 
-module.exports = new Ecurl();
+module.exports = Ecurl;

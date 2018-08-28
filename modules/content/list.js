@@ -1,15 +1,18 @@
 import * as React from '../../../react';
 import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, Image, Linking, BackHandler, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { Container, Button, Text, Icon, Thumbnail, Drawer } from 'native-base';
+import { Container, Button, Text, Icon, Thumbnail } from 'native-base';
+import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 import esp from '../../index';
-const { defaultStyle, colorPrimary, colorAccent, width } = esp.mod('lib/style');
+import { StatusBar, AsyncStorage } from 'react-native';
+const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
 const config = esp.config();
 const utils = esp.mod('lib/utils');
-const Curl = esp.mod('mod/curl');
+const Curl = esp.mod('lib/curl');
 const ContentMenu = esp.mod('content/menu');
 const Esearch = esp.mod('content/search');
+const Eimage = esp.mod('lib/image');
 
 const ViewTypes = {
   HEADER: 0,
@@ -49,7 +52,7 @@ class Elist extends React.Component {
     );
     this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
-      url: props.url ? props.url : utils.getArgs(props, 'url', config.Elist),
+      url: props.url ? props.url : utils.getArgs(props, 'url', config.content),
       urlori: props.url ? props.url : utils.getArgs(props, 'url', config.content),
       title: props.title ? props.title : utils.getArgs(props, 'title', 'Home'),
       titleori: props.title ? props.title : utils.getArgs(props, 'title', 'Home'),
@@ -64,10 +67,7 @@ class Elist extends React.Component {
     this.loadMore = this.loadMore.bind(this)
     this.openDrawer = this.openDrawer.bind(this)
     this.closeDrawer = this.closeDrawer.bind(this)
-  }
-
-  componentWillMount = () => {
-    this.loadData()
+    this.onBackPress = this.onBackPress.bind(this)
   }
 
   loadData() {
@@ -79,7 +79,7 @@ class Elist extends React.Component {
   }
 
   doFetch(page = 0) {
-    Curl(this.state.url + '?page=' + page, null,
+    new Curl(this.state.url + '?page=' + page, null,
       (result, msg) => {
         this.setState({
           data: [...this.state.data, ...result.list],
@@ -88,7 +88,7 @@ class Elist extends React.Component {
           isRefreshing: false
         })
       },
-      (msg) => { }
+      (msg) => { }, 1
     )
   }
 
@@ -100,47 +100,40 @@ class Elist extends React.Component {
     }, () => this.doFetch())
   }
 
-  closeDrawer() { this.drawer._root.close() }
+  closeDrawer() { this.drawer.close() }
 
-  openDrawer() { this.drawer._root.open() }
+  openDrawer() { this.drawer.open() }
 
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
+    this.loadData();
     setTimeout(() => {
-      this.routeIndex = routeIndex
-      if (this.routeIndex == 0)
-        BackHandler.addEventListener('hardwareBackPress', this.onBackPress)
+      BackHandler.addEventListener('hardwareBackPress', this.onBackPress)
     }, 500);
   }
 
   componentWillUnmount() {
     setTimeout(() => {
-      this.routeIndex = routeIndex
-      if (this.routeIndex == 0)
-        BackHandler.removeEventListener("hardwareBackPress", this.onBackPress);
+      BackHandler.removeEventListener("hardwareBackPress", this.onBackPress);
     }, 500);
   }
 
   onBackPress = () => {
-    configConsole('sini ', routeIndex)
+    var routers = esp.routes()
     if (!this.state.isDrawerOpen) {
       if (Platform.OS == 'ios') {
-        configConsole('ios ', routeIndex)
         return false;
-      } else if (routeIndex == 0 && !this.state.searchView) {
-        configConsole('terahir gan', routeIndex)
+      } else if (!this.state.searchView && routers.index == 0) {
         BackHandler.exitApp()
       } else if (this.state.searchView) {
         this.setState({ searchView: false })
-        configConsole('search ', routeIndex)
         return true
       } else {
-        configConsole('goback ', routeIndex)
-        this.props.navigation.goBack()
-        return false
+        // if (this.state.url != thi)
+        this.props.navigation.goBack(null);
+        return true
       }
     }
-    configConsole('drawer ', routeIndex)
     this.closeDrawer()
     return true;
   };
@@ -160,25 +153,42 @@ class Elist extends React.Component {
 
   render() {
     const { goBack, navigate } = this.props.navigation
+    var indexRoutes = esp.routes().index
+    var isRoot = indexRoutes == 0 || !indexRoutes
     return (
       <Drawer
         ref={(ref) => { this.drawer = ref; }}
         openDrawerOffset={0.2}
-        disabled={routeIndex > 0}
         onOpen={() => this.setState({ isDrawerOpen: true })}
         onClose={() => this.setState({ isDrawerOpen: false })}
+        tapToClose={true}
+        disabled={!isRoot}
+        type={'overlay'}
+        tweenHandler={ratio => ({
+          main: {
+            opacity: 1,
+          },
+          mainOverlay: {
+            opacity: ratio / 2,
+            backgroundColor: 'black',
+          },
+        })}
         content={
           <ContentMenu
-            style={{ opacity: routeIndex > 0 ? 0 : 1 }}
             url={this.state.url + 'menu'}
             closeDrawer={() => this.closeDrawer()}
             onItemSelected={(e) => { this.setState({ url: e.url, title: e.title }) }}
             navigation={this.props.navigation}
             dispatch={this.props.dispatch}
-            nav={this.props.nav} />
+            nav={esp.routes()} />
         }>
         <Container
           style={styles.container} >
+          <View
+            style={styles.statusBar}>
+            <StatusBar translucent
+              barStyle='light-content' />
+          </View>
           <View style={{
             backgroundColor: colorPrimary,
             height: 50,
@@ -191,9 +201,9 @@ class Elist extends React.Component {
                 height: 50,
                 width: 50,
               }}
-              onPress={() => routeIndex == 0 ? this.openDrawer() : goBack()}>
+              onPress={() => isRoot ? this.openDrawer() : goBack()}>
               <Icon
-                name={routeIndex == 0 ? 'md-menu' : 'arrow-back'}
+                name={isRoot ? 'md-menu' : 'md-arrow-back'}
                 style={{
                   fontSize: 24,
                   color: colorAccent
@@ -210,9 +220,7 @@ class Elist extends React.Component {
             </Text>
             <Button
               transparent={true}
-              disabled={routeIndex > 0}
               style={{
-                opacity: routeIndex == 0 ? 1 : 0,
                 height: 50,
                 width: 50,
               }}
@@ -231,6 +239,7 @@ class Elist extends React.Component {
                 style={{ flex: 1 }}
                 layoutProvider={this._layoutProvider}
                 onEndReached={() => this.loadMore()}
+                keyExtractor={(_, i) => i.toString()}
                 renderFooter={() => {
                   return this.state.isStop ? null :
                     <ActivityIndicator
@@ -248,12 +257,12 @@ class Elist extends React.Component {
           }
           {
             this.state.searchView ?
-              <View style={{ position: 'absolute', top: 0, left: 0, right: 0 }} >
+              <View style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, right: 0 }} >
                 <Esearch
                   close={() => this.closeSearch()}
                   defaultValue={this.searchQuery}
                   onSubmit={(e) => {
-                    this.props.navigation.navigate('content', { url: this.state.urlori + 'search.htm?id=' + e, title: decodeURI(e) })
+                    this.props.navigation.push('content/list', { url: this.state.urlori + 'search.htm?id=' + e, title: decodeURI(e) })
                     this.searchQuery = decodeURI(e)
                   }}
                 />
@@ -301,7 +310,7 @@ class Item extends React.Component {
   }
 
   goToDetail() {
-    this.props.navigation.navigate('content/detail', { url: this.props.url, image: this.props.image, id: this.props.id })
+    this.props.navigation.push('content/detail', { url: this.props.url, image: this.props.image, id: this.props.id })
   }
 
   render = () => {
@@ -319,8 +328,7 @@ class Item extends React.Component {
             onPress={() => goToSponsor(url)}>
             <View
               style={styles.containerRow}>
-              <Thumbnail
-                square
+              <Eimage
                 style={{ width: width, height: 110 }}
                 style={[styles.image, { width: width }]}
                 source={{ uri: image }} />
@@ -371,7 +379,7 @@ class Item extends React.Component {
                 <Text
                   style={styles.text11} note>{created}</Text>
               </View>
-              <Thumbnail
+              <Eimage
                 square
                 style={styles.image}
                 source={{ uri: image }} />
@@ -399,10 +407,10 @@ class Item extends React.Component {
                     </View>
                   </View>
                   :
-                  <Image
+                  <Eimage
                     style={{ height: width * 9 / 16, width: width }}
                     source={{ uri: image }}>
-                  </Image>
+                  </Eimage>
               }
             </View>
             <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: 'rgba(3,3,3,0.4)', }} >
@@ -462,7 +470,7 @@ class Item extends React.Component {
               style={styles.text11} note>{moment(created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
           </View>
           <View>
-            <Thumbnail
+            <Eimage
               square
               style={styles.image}
               source={{ uri: image }} />
@@ -502,4 +510,4 @@ const styles = StyleSheet.create({
 });
 
 module.exports = Elist;
-exports.Item = Item;
+module.exports.Item = Item;

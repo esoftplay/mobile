@@ -40,8 +40,8 @@ class Esearch extends React.Component {
             defaultValue={this.inputSearch}
             returnKeyType="search"
             onSubmitEditing={() => {
-              this.props.close()
               this.props.onSubmit(encodeURI(this.inputSearch))
+              this.props.close()
             }}
             onChangeText={(e) => this.inputSearch = e}
             placeholder={'Temukan Berita ...'} />
@@ -52,8 +52,8 @@ class Esearch extends React.Component {
               width: 50,
             }}
             onPress={() => {
-              this.props.close()
               this.props.onSubmit(encodeURI(this.inputSearch))
+              this.props.close()
             }}>
             <Icon
               name='search'

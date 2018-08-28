@@ -1,6 +1,6 @@
 import * as React from '../../../react'
 import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import esp from '../../index';
+import esp from 'esoftplay';
 import { connect } from '../../../react-redux';
 
 /*
@@ -59,11 +59,13 @@ class Eimage extends React.PureComponent {
     }
   };
 
-  compress(uri, w, h, destWidth, destHeight, callback) {
+  compress(uri, w, h, dw, dh, callback) {
     if (uri && w && h && callback) {
       var quality = this.props.quality || 1
       var { resizeMode } = StyleSheet.flatten(this.props.style)
       var destResizeMode = resizeMode
+      var destHeight = dh
+      var destWidth = dw
       if (!resizeMode) {
         destResizeMode = this.props.resizeMode
       }
@@ -87,8 +89,10 @@ class Eimage extends React.PureComponent {
           },
           resizeMode: 'contain',
         },
-        (uri) => callback({ uri: uri }),
-      
+        (uri) => callback({ uri: uri }), (error) => {
+          console.log(error)
+        }
+
       )
     }
   }
@@ -120,7 +124,6 @@ class Eimage extends React.PureComponent {
           })
         })
       }, (error) => {
-
       })
     } else {
       var image = Image.resolveAssetSource(source)

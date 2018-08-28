@@ -59,7 +59,7 @@ class Ecomment extends React.Component {
         <Container
           style={styles.container}>
           <View
-            style={{ flexDirection: 'row', height: 50, paddingHorizontal: 5, alignItems: 'center', backgroundColor: colorPrimary }}>
+            style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
             <Button transparent
               style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
               onPress={() => goBack()}>
@@ -131,7 +131,7 @@ class CommentList extends React.Component {
       if (this.state.comment != '') {
         this.setState({ isSend: true })
         var post = { ...this.state.user, content: this.state.comment }
-        Curl(this.state.url_post, post,
+        new Curl(this.state.url_post, post,
           (res, msg) => {
             this.setState({
               page: 0,
@@ -163,7 +163,7 @@ class CommentList extends React.Component {
 
   loadData = () => {
     this.setState({ isLoading: true })
-    Curl(this.state.url + ((/\?/g).test(this.state.url) ? '&page=' : '?page=') + this.state.page, null,
+    new Curl(this.state.url + ((/\?/g).test(this.state.url) ? '&page=' : '?page=') + this.state.page, null,
       (res, msg) => {
         this.setState({
           total: res.total,
