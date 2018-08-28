@@ -53,10 +53,16 @@ if [ ! -f ./node_modules/esoftplay/bin/cli.js ]; then\n\
 else\n\
 	node ./node_modules/esoftplay/bin/cli.js $@\n\
 fi\n";
-		fs.writeFile(espcli, scriptCode, {mode: 0755}, (err) => {
-		  if (err) throw err;
-		  // fs.chmod(espcli, 0755);
-		  console.log('new command "esp" has been installed')
+		fs.access('/usr/local/bin', fs.constants.W_OK, function(err) {
+		  if(!err){
+				fs.writeFile(espcli, scriptCode, {mode: 0777}, (err) => {
+				  if (err){
+				  	console.log(err);
+				  }else{
+					  console.log('new command "esp" has been installed')
+				  }
+				});
+		  }
 		});
 	}
 
