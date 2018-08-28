@@ -125,9 +125,8 @@ export default class App extends React.Component {\n\
 \n\
   componentDidMount = async () => {\n\
     await Font.loadAsync({\n\
-      // 'font-name1': esp.asset('fonts/FontName1.otf'),\n\
-      // 'font-name2': esp.asset('fonts/FontName2.otf'),\n\
-      // 'font-name3': esp.asset('fonts/FontName3.otf'),\n\
+      'Roboto': require('native-base/Fonts/Roboto.ttf'),\n\
+      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),\n\
     })\n\
     this.setState({ loading: false })\n\
   }\n\
