@@ -16,14 +16,11 @@
   "keywords": [
     "esoftplay-mobile-app"
   ],
-  "author": "Esoftplay Inc.",
-  "contributors": [{
-    "name": "Danang Widiantoro",
-    "email": "danang@fisip.net"
-  },{
-    "name": "Munawar Kholil",
-    "email": "kholil@fisip.net"
-  }],
+  "author": "Esoftplay Inc. <info@esoftplay.com>",
+  "contributors": [
+    "Danang Widiantoro <danang@fisip.net>",
+    "Munawar Kholil <kholil@fisip.net>"
+  ],
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/esoftplay/mobile/issues"
