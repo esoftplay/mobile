@@ -1,6 +1,6 @@
 {
   "name": "esoftplay",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "description": "embedding data from esoftplay framework (web based) into mobile app",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,12 @@
     "url": "git+https://github.com/esoftplay/mobile.git"
   },
   "keywords": [
-    "esoftplay-mobile-app"
+    "esoftplay-mobile-app",
+    "esoftplay-react-native",
+    "esoftplay-framework",
+    "easy-file-routing",
+    "oodd-react-native",
+    "object-oriented-design-development"
   ],
   "author": "Esoftplay Inc. <info@esoftplay.com>",
   "contributors": [

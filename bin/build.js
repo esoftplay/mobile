@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const { spawn } = require('child_process');
 const fs = require('fs');
 
@@ -43,29 +44,16 @@ if (fs.existsSync(path))
 	}
 
 	/* Create ESP command line */
-	var espcli = "/usr/local/bin/esp";
 	if (args[0] == "install")
 	{
-		var scriptCode = "#!/usr/bin/env bash\n\
-\n\
-if [ ! -f ./node_modules/esoftplay/bin/cli.js ]; then\n\
-	echo \"Perintah 'esp' hanya bisa digunakan dalam project react-native dengan package 'esoftplay'\"\n\
-else\n\
-	node ./node_modules/esoftplay/bin/cli.js $@\n\
-fi\n";
-		fs.access('/usr/local/bin', fs.constants.W_OK, function(err) {
-		  if(!err){
-				fs.writeFile(espcli, scriptCode, {mode: 0777}, (err) => {
-				  if (err){
-				  	console.log(err);
-				  }else{
-					  console.log('new command "esp" has been installed')
-				  }
-				});
-		  }
+		var ret = spawn('npm', ['-g', 'install', 'esoftplay-cli'])
+		ret.stdout.on('data', function (data) {
+		  console.log('new command "esp" has been installed')
+		});
+		ret.stderr.on('data', function (data) {
+		  console.log('please install `npm -g install esoftplay-cli` manually');
 		});
 	}
-
 
 	/* Update app.json */
 	if (args[0] == "install")
