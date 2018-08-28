@@ -1,7 +1,7 @@
 //import liraries
 import * as React from '../../../react';
 import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { Left, Button, Icon, Text, ListItem } from 'native-base';
+import { Left, Button, Icon, Text, ListItem } from '../../../native-base';
 import { LinearGradient } from '../../../expo';
 import moment from 'moment/min/moment-with-locales'
 
@@ -10,13 +10,14 @@ const { colorPrimary, width, colorPrimaryDark } = esp.mod('lib/style');
 const { Item } = esp.mod('content/list');
 const utils = esp.mod('lib/utils');
 const config = esp.config();
+const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
 const Curl = esp.mod('lib/curl');
 const Eaudio = esp.mod('content/audio');
 const EwebView = esp.mod('lib/webview');
 const Evideo = esp.mod('content/video');
 
-var HEADER_MAX_HEIGHT = width * 8 / 10;
-var HEADER_MIN_HEIGHT = 50;
+var HEADER_MAX_HEIGHT = (width * 8 / 10) + STATUSBAR_HEIGHT;
+var HEADER_MIN_HEIGHT = 50 + STATUSBAR_HEIGHT;
 var HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const download = (result) => {
@@ -42,7 +43,7 @@ class Detail extends React.Component {
 
   componentDidMount = () => {
     var url = this.props.url ? this.props.url : utils.getArgs(this.props, 'url', config.content)
-    Curl(url, null,
+    new Curl(url, null,
       (result, msg) => {
         setTimeout(() => {
           this.setState({ result: result })
@@ -76,7 +77,7 @@ class Detail extends React.Component {
               left: 0,
               right: 0,
               width: width,
-              height: width * 4 / 5
+              height: (width * 4 / 5 )+ STATUSBAR_HEIGHT
             }}
             source={{ uri: utils.getArgs(this.props, 'image', '') }}
           />
@@ -184,7 +185,7 @@ class Detail extends React.Component {
                             <Button
                               key={cat + i}
                               style={{ margin: 5 }} success small bordered
-                              onPress={() => this.props.navigation.navigate('content', { url: cat.url, title: cat.title })} >
+                              onPress={() => this.props.navigation.push('content/list', { url: cat.url, title: cat.title })} >
                               <Text style={{ color: 'lightgreen' }} >{cat.title}</Text>
                             </Button>
                           )
@@ -263,7 +264,7 @@ class Detail extends React.Component {
         <Animated.View
           style={[
             styles.bar,
-            { height: this.state.toolbarHeight, opacity: isVideo ? 0 : titleOpacity, },
+            { height: this.state.toolbarHeight - STATUSBAR_HEIGHT, opacity: isVideo ? 0 : titleOpacity, },
           ]}>
           <Left>
             <Text
@@ -321,11 +322,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 0,
+    top: STATUSBAR_HEIGHT,
     left: 0,
     alignSelf: 'center',
     justifyContent: 'center',
-    height: HEADER_MIN_HEIGHT
+    height: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT
   },
   header: {
     position: 'absolute',
@@ -373,10 +374,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     flexDirection: 'row',
-    top: 0,
+    top: STATUSBAR_HEIGHT,
     padding: 10,
-    paddingRight: HEADER_MIN_HEIGHT + 10,
-    marginLeft: HEADER_MIN_HEIGHT,
+    paddingRight: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT + 10,
+    marginLeft: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT,
     left: 0,
     right: 0,
   },

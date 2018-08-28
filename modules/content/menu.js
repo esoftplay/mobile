@@ -40,7 +40,7 @@ class ContentMenu extends React.Component {
   }
 
   newData() {
-    Curl(this.props.url, null,
+    new Curl(this.props.url, null,
       (res, msg) => {
         var trimMenu = []
         if (res.home) {
