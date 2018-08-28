@@ -16,7 +16,7 @@ const Eaudio = esp.mod('content/audio');
 const EwebView = esp.mod('lib/webview');
 const Evideo = esp.mod('content/video');
 
-var HEADER_MAX_HEIGHT = (width * 8 / 10) + STATUSBAR_HEIGHT;
+var HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT;
 var HEADER_MIN_HEIGHT = 50 + STATUSBAR_HEIGHT;
 var HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
