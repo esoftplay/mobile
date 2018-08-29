@@ -49,7 +49,7 @@ class ContentMenu extends React.Component {
           home['par_id'] = 0
           trimMenu.push(home)
         }
-        if (res.list) {
+        if (res.list && res && res.list && res.list[0]) {
           trimMenu.push(...res.list[0])
           this.setState({ menu: trimMenu })
           this.saveMenu(trimMenu)

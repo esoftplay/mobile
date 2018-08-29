@@ -3,8 +3,8 @@ import * as React from '../../../react';
 import { View, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Button, Icon, Input } from 'native-base';
 import esp from 'esoftplay';
-const { elevation } = esp.mod('lib/style');
-
+const { elevation, colorPrimary } = esp.mod('lib/style');
+const utils = esp.mod('lib/utils');
 // create a component
 class Esearch extends React.Component {
   componentWillMount = () => {
@@ -35,8 +35,9 @@ class Esearch extends React.Component {
               }} />
           </Button>
           <Input
-            style={{ height: 50, width: '100%', fontSize: 15, color: '#353535' }}
+            style={{ height: 50, width: '100%', fontSize: 17, color: '#555' }}
             placeholderTextColor={'#999'}
+            selectionColor={utils.colorAdjust(colorPrimary, 3)}
             defaultValue={this.inputSearch}
             returnKeyType="search"
             onSubmitEditing={() => {
