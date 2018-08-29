@@ -82,9 +82,9 @@ class Ecurl {
       let fd = new FormData();
       Object.keys(post).map(function (key) {
         if (key !== undefined) {
-          if (post[key] !== '') {
-            fd.append(key, post[key])
-          }
+          // if (post[key] !== '') {
+          fd.append(key, post[key])
+          // }
         }
       });
       this.post = fd
@@ -173,7 +173,10 @@ class Ecurl {
   }
 
   async setHeader(header) {
-
+    if ((/:\/\/data.*?\/(.*)/g).test(this.url)) {
+      const crypt = esp.mod('lib/crypt');
+      header['masterkey'] = crypt.encode(this.url)
+    }
   }
 
   getTimeByTimeZone(timeZone) {
