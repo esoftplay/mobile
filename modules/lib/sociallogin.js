@@ -8,7 +8,7 @@ class EsocialLogin extends React.Component {
 
 
   setUser(params) {
-    AsyncStorage.setItem(config.domain + '_user', JSON.stringify(params))
+    AsyncStorage.setItem(config.domain + '_user', params)
   }
 
   static async getUser(callback) {
@@ -18,6 +18,9 @@ class EsocialLogin extends React.Component {
     } else {
       callback(null)
     }
+  }
+  static delUser() {
+    AsyncStorage.removeItem(config.domain + '_user')
   }
 
   render() {
@@ -39,7 +42,7 @@ class EsocialLogin extends React.Component {
           onMessage={(e) => {
             var data = e.nativeEvent.data
             this.setUser(data)
-            if (onResult) onResult(data)
+            if (onResult) onResult(JSON.parse(data))
           }}
         />
       </View>

@@ -1,6 +1,6 @@
 //import liraries
 import * as React from '../../../react'
-import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Text, Button, Container, Icon, Item, Input, Thumbnail } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
 const { colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
@@ -43,7 +43,7 @@ class Ecomment extends React.Component {
     this.state = {
       url: props.hasOwnProperty('url') ? props.url : config.content + 'user/commentlist/' + props.id,
       url_post: props.hasOwnProperty('url_post') ? props.url_post : config.content + 'user/commentpost/' + props.id,
-      user: props.user
+      user: props.user || 1
     }
   }
 
@@ -120,24 +120,29 @@ class CommentList extends React.Component {
         }
       }
     )
+    this.loadData = this.loadData.bind(this)
     this.contextProvider = new ContextHelper('parent')
     this.dataProvider = new DataProvider((a, b) => a !== b)
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      user: nextProps.user,
-      url_post: nextProps.url_post,
-      url: nextProps.url
-    })
+  componentDidUpdate(prevState, prevProps) {
+    if (prevProps.user != this.props.user) {
+      this.setState({
+        user: this.props.user,
+        url_post: this.props.url_post,
+        url: this.props.url
+      })
+    }
   }
 
-
   postComment = () => {
+    esp.log(this.state.user)
     if (this.state.user !== 1) {
       if (this.state.comment != '') {
+        var user = this.state.user
+        delete user.ok
         this.setState({ isSend: true })
-        var post = { ...this.state.user, content: this.state.comment }
+        var post = { ...user, content: this.state.comment }
         new Curl(this.state.url_post, post,
           (res, msg) => {
             this.setState({
@@ -162,7 +167,7 @@ class CommentList extends React.Component {
               if (this.input1) this.input1._root.setNativeProps({ text: '' })
               if (this.input2) this.input2._root.setNativeProps({ text: '' })
             })
-          }
+          }, 1
         )
       }
     }
@@ -203,7 +208,8 @@ class CommentList extends React.Component {
             <View style={{ justifyContent: 'center' }} >
               <Button primary transparent small
                 style={{ alignSelf: 'flex-end' }}
-                onPress={() => this.setState({ showLogin: false })} >
+                onPress={() => {
+                  this.setState({ showLogin: false, user:this.props.user })}} >
                 <Text style={{ color: colorPrimary }} >BATAL</Text>
               </Button>
             </View>
@@ -257,7 +263,39 @@ class CommentList extends React.Component {
               flex: 1,
               alignItems: 'center'
             }}>
-            <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+            <View style={{ alignItems: 'center' }} >
+              {
+                this.state.user !== 1 && comment_login == 1
+                  ?
+                  <TouchableOpacity onPress={() => {
+                    Alert.alert(
+                      'Hi, '+this.state.user.name,
+                      null,
+                      [
+                        {
+                          text: 'Logout', onPress: () => {
+                            EsocialLogin.delUser()
+                            this.setState({ user: 1 })
+                            this.props.setUser(1)
+                          }
+                        },
+                        {
+                          text: 'Ubah Akun', onPress: () => {
+                            this.setState({ user: 1, showLogin:true })
+                          }
+                        },
+                      ],
+                      { cancelable: true }
+                    )
+                  }} >
+                    <Thumbnail small
+                      source={this.state.user.image != '' ? { uri: this.state.user.image } : null}
+                      style={{ margin: 5, height: 30, width: 30, borderRadius: 15 }} />
+                  </TouchableOpacity>
+                  :
+                  <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+              }
+            </View>
             <View style={{ borderRadius: 5, backgroundColor: '#f5f5f5', flex: 1, height: 40, marginVertical: 5, marginLeft: 5 }} >
               <Input
                 ref={(e) => this.input2 = e}
@@ -287,6 +325,7 @@ class CommentList extends React.Component {
             }
           </Button>
         </View>
+
       </View>
     )
   }
