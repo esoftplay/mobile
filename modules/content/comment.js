@@ -9,6 +9,7 @@ import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 
 import esp from '../../index';
 const config = esp.config();
 const Curl = esp.mod('lib/curl');
+const EsocialLogin = esp.mod('lib/sociallogin');
 
 class ContextHelper extends ContextProvider {
   constructor(uniqueKey) {
@@ -39,14 +40,18 @@ class Ecomment extends React.Component {
     super(props)
     props = props.hasOwnProperty('id') || props.hasOwnProperty('url') ? props : props.navigation.state.params
     moment.locale('id')
-    this.state = { url: props.hasOwnProperty('url') ? props.url : config.content + 'user/commentlist/' + props.id, url_post: props.hasOwnProperty('url_post') ? props.url_post : config.content + 'user/commentpost/' + props.id, user: props.user }
+    this.state = {
+      url: props.hasOwnProperty('url') ? props.url : config.content + 'user/commentlist/' + props.id,
+      url_post: props.hasOwnProperty('url_post') ? props.url_post : config.content + 'user/commentpost/' + props.id,
+      user: props.user
+    }
   }
 
-  componentWillMount = async () => {
-    if (!this.state.user) {
-      var gsUser = { name: 'Munawar Kholil', email: 'pusakabangsa@mail.com', website: 'http://tm.me/mas_mun', image: 'https://lh3.googleusercontent.com/-0L93XMKTuJk/AAAAAAAAAAI/AAAAAAAAADc/KcgYPzATlTc/photo.jpg' }
-      this.setState({ user: gsUser })
-    }
+  componentDidMount = async () => {
+    EsocialLogin.getUser((res) => {
+      if (res)
+        this.setState({ user: res })
+    })
   }
 
   render() {
@@ -80,6 +85,7 @@ class Ecomment extends React.Component {
           </View>
           <CommentList
             style={{ flex: 1 }}
+            setUser={(user) => this.setState({ user: user })}
             url={this.state.url} url_post={this.state.url_post}
             user={this.state.user} par_id={0} />
         </Container>
@@ -92,6 +98,7 @@ class CommentList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      showLogin: false,
       total: 0,
       isLoading: true,
       page: 0,
@@ -99,7 +106,7 @@ class CommentList extends React.Component {
       isSend: false,
       url: props.url,
       url_post: props.url_post,
-      user: props.user || 0,
+      user: props.user || 1,
       data: [],
       comment: ''
     };
@@ -127,7 +134,7 @@ class CommentList extends React.Component {
 
 
   postComment = () => {
-    if (this.state.user !== 0) {
+    if (this.state.user !== 1) {
       if (this.state.comment != '') {
         this.setState({ isSend: true })
         var post = { ...this.state.user, content: this.state.comment }
@@ -187,6 +194,30 @@ class CommentList extends React.Component {
       replyText = ' Balasan'
       replySend = 'Balas'
     }
+    const comment_login = esp.config('comment_login');
+    if (comment_login == 1 && this.state.user == 1 && this.state.showLogin) {
+      return (
+        <View style={{ flex: 1, backgroundColor: 'white' }} >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} >
+            <Text note style={{ flex: 1, padding: 10 }} >Silakan login dengan salah satu akun sosial media berikut untuk dapat mengirimkan komentar</Text>
+            <View style={{ justifyContent: 'center' }} >
+              <Button primary transparent small
+                style={{ alignSelf: 'flex-end' }}
+                onPress={() => this.setState({ showLogin: false })} >
+                <Text style={{ color: colorPrimary }} >BATAL</Text>
+              </Button>
+            </View>
+          </View>
+          <EsocialLogin
+            url={config.content + 'user/commentlogin'}
+            onResult={(user) => {
+              this.setState({ user: user });
+              this.props.setUser(user)
+            }}
+          />
+        </View>
+      )
+    }
     return (
       <View
         style={{ flex: 1, backgroundColor: 'white' }} >
@@ -206,6 +237,7 @@ class CommentList extends React.Component {
               rowRenderer={(type, item) => {
                 return <CommentItem {...item}
                   user={this.state.user}
+                  setUser={this.props.setUser}
                   url={this.state.url} url_post={this.state.url_post} />
               }}
             />
@@ -231,6 +263,7 @@ class CommentList extends React.Component {
                 ref={(e) => this.input2 = e}
                 onSubmitEditing={() => this.postComment()}
                 style={{ flex: 1 }}
+                onFocus={() => this.setState({ showLogin: true })}
                 placeholder='Tulis komentar'
                 returnKeyType={'send'}
                 placeholderTextColor={'#999'}
@@ -328,6 +361,7 @@ class CommentItem extends React.Component {
                   url={url}
                   url_post={url_post}
                   user={user}
+                  setUser={this.props.setUser}
                   par_id={id} />
               </View>
             </Modal>

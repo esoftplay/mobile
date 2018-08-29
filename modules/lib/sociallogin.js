@@ -1,11 +1,23 @@
 import * as React from '../../../react'
 import { View, WebView, AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import utils from './utils'
+import esp from 'esoftplay';
+const config = esp.config()
 
 class EsocialLogin extends React.Component {
 
+
   setUser(params) {
-    AsyncStorage.setItem(config.domain + '_user', params)
+    AsyncStorage.setItem(config.domain + '_user', JSON.stringify(params))
+  }
+
+  static async getUser(callback) {
+    var user = await AsyncStorage.getItem(config.domain + '_user')
+    if (user) {
+      callback(JSON.parse(user))
+    } else {
+      callback(null)
+    }
   }
 
   render() {
