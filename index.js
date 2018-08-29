@@ -127,6 +127,12 @@ class esp {
       config.home.member = "content/member"
       config.home.public = "content"
     }
+    if (!config.hasOwnProperty('api') || config.api.length == 0) {
+      config.api = "api"
+    }
+    if (!config.hasOwnProperty('comment_login')) {
+      config.comment_login = 1;
+    }
     if (!config.hasOwnProperty('content')) {
       config.isLogin = 0;
     } else {
