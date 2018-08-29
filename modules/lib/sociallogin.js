@@ -1,8 +1,9 @@
 import * as React from '../../../react'
-import { View, WebView, AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { View, WebView, AsyncStorage, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import utils from './utils'
 import esp from 'esoftplay';
 const config = esp.config()
+const { colorPrimary } = esp.mod('lib/style')
 
 class EsocialLogin extends React.Component {
 
@@ -33,6 +34,7 @@ class EsocialLogin extends React.Component {
         <WebView
           style={{ flex: 1 }}
           startInLoadingState={true}
+          renderLoading={() => <View style={{flex:1, alignItems:'center', justifyContent:'center'}} ><ActivityIndicator color={colorPrimary} /></View>}
           thirdPartyCookiesEnabled={false}
           scalesPageToFit={true}
           startInLoadingState

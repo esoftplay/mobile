@@ -1,12 +1,12 @@
 //import liraries
 import * as React from '../../../react';
-import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Left, Button, Icon, Text, ListItem } from '../../../native-base';
 import { LinearGradient } from '../../../expo';
 import moment from 'moment/min/moment-with-locales'
 
 import esp from '../../index';
-const { colorPrimary, width, colorPrimaryDark } = esp.mod('lib/style');
+const { colorPrimary, width, colorAccent, colorPrimaryDark } = esp.mod('lib/style');
 const { Item } = esp.mod('content/list');
 const utils = esp.mod('lib/utils');
 const config = esp.config();
@@ -77,7 +77,7 @@ class Detail extends React.Component {
               left: 0,
               right: 0,
               width: width,
-              height: (width * 4 / 5 )+ STATUSBAR_HEIGHT
+              height: (width * 4 / 5) + STATUSBAR_HEIGHT
             }}
             source={{ uri: utils.getArgs(this.props, 'image', '') }}
           />
@@ -160,6 +160,7 @@ class Detail extends React.Component {
                 source={{ html: config.webviewOpen + result.content + config.webviewClose }}
                 style={{ flex: 1, marginVertical: 20 }}
                 width={width}
+                renderLoading={() => <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={colorPrimary} /></View>}
                 onFinishLoad={() => { this.setState({ isPageReady: true }) }}
               />
               {
@@ -184,9 +185,9 @@ class Detail extends React.Component {
                           return (
                             <Button
                               key={cat + i}
-                              style={{ margin: 5 }} success small bordered
+                              style={{ margin: 5, borderColor: colorPrimary }} success small bordered
                               onPress={() => this.props.navigation.push('content/list', { url: cat.url, title: cat.title })} >
-                              <Text style={{ color: 'lightgreen' }} >{cat.title}</Text>
+                              <Text style={{ color: colorPrimary }} >{cat.title}</Text>
                             </Button>
                           )
                         })
@@ -292,7 +293,7 @@ class Detail extends React.Component {
                 onPress={isAudio ? () => this.audioPlayer._onPlayPausePressed() : () => download(result)}>
                 <Icon
                   name={isAudio ? (this.state.isPlayingAudio ? 'md-pause' : 'md-play') : 'md-download'}
-                  style={{ color: 'white', fontSize: 25 }} />
+                  style={{ color: colorAccent, fontSize: 25 }} />
               </TouchableWithoutFeedback>
             </Animated.View>
             : null
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
     width: 50,
     top: HEADER_MAX_HEIGHT - 30 + 2,
     right: 12,
-    backgroundColor: '#4cd964',
+    backgroundColor: colorPrimary,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center'
@@ -434,7 +435,7 @@ const styles = StyleSheet.create({
   },
   absIndicator: {
     position: 'absolute',
-    top: 10,
+    top: 10 + STATUSBAR_HEIGHT,
     right: 10,
     color: 'white',
     backgroundColor: 'rgba(5, 5, 5, 0.6)',

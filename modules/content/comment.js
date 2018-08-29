@@ -8,6 +8,7 @@ import Modal from 'react-native-modal';
 import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 import esp from '../../index';
 const config = esp.config();
+const utils = esp.mod('lib/utils');
 const Curl = esp.mod('lib/curl');
 const EsocialLogin = esp.mod('lib/sociallogin');
 
@@ -136,7 +137,6 @@ class CommentList extends React.Component {
   }
 
   postComment = () => {
-    esp.log(this.state.user)
     if (this.state.user !== 1) {
       if (this.state.comment != '') {
         var user = this.state.user
@@ -170,6 +170,8 @@ class CommentList extends React.Component {
           }, 1
         )
       }
+    }else{
+      this.setState({ showLogin: true })
     }
   }
 
@@ -209,7 +211,8 @@ class CommentList extends React.Component {
               <Button primary transparent small
                 style={{ alignSelf: 'flex-end' }}
                 onPress={() => {
-                  this.setState({ showLogin: false, user:this.props.user })}} >
+                  this.setState({ showLogin: false, user: this.props.user })
+                }} >
                 <Text style={{ color: colorPrimary }} >BATAL</Text>
               </Button>
             </View>
@@ -269,19 +272,19 @@ class CommentList extends React.Component {
                   ?
                   <TouchableOpacity onPress={() => {
                     Alert.alert(
-                      'Hi, '+this.state.user.name,
+                      'Hi, ' + this.state.user.name,
                       null,
                       [
                         {
-                          text: 'Logout', onPress: () => {
+                          text: 'Logout Akun', onPress: () => {
                             EsocialLogin.delUser()
-                            this.setState({ user: 1 })
+                            this.setState({ user: 1, showLogin: false })
                             this.props.setUser(1)
                           }
                         },
                         {
                           text: 'Ubah Akun', onPress: () => {
-                            this.setState({ user: 1, showLogin:true })
+                            this.setState({ user: 1, showLogin: true })
                           }
                         },
                       ],
@@ -303,6 +306,7 @@ class CommentList extends React.Component {
                 style={{ flex: 1 }}
                 onFocus={() => this.setState({ showLogin: true })}
                 placeholder='Tulis komentar'
+                selectionColor={utils.colorAdjust(colorPrimary, 3)}
                 returnKeyType={'send'}
                 placeholderTextColor={'#999'}
                 style={{ color: '#444', fontSize: 15, lineHeight: 20 }}
