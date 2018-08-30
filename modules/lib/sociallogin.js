@@ -34,7 +34,7 @@ class EsocialLogin extends React.Component {
         <WebView
           style={{ flex: 1 }}
           startInLoadingState={true}
-          renderLoading={() => <View style={{flex:1, alignItems:'center', justifyContent:'center'}} ><ActivityIndicator color={colorPrimary} /></View>}
+          renderLoading={() => <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={colorPrimary} /></View>}
           thirdPartyCookiesEnabled={false}
           scalesPageToFit={true}
           startInLoadingState

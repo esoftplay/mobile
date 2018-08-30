@@ -5,7 +5,7 @@ import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 import esp from '../../index';
-import { StatusBar, AsyncStorage } from 'react-native';
+import { StatusBar, AsyncStorage, Animated } from 'react-native';
 const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
 const config = esp.config();
 const utils = esp.mod('lib/utils');
@@ -13,6 +13,10 @@ const Curl = esp.mod('lib/curl');
 const ContentMenu = esp.mod('content/menu');
 const Esearch = esp.mod('content/search');
 const Eimage = esp.mod('lib/image');
+
+var menu;
+
+const AnimEsearch = Animated.createAnimatedComponent(Esearch)
 
 const ViewTypes = {
   HEADER: 0,
@@ -52,6 +56,7 @@ class Elist extends React.Component {
     );
     this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
+      animSearch: new Animated.Value(0),
       url: props.url ? props.url : utils.getArgs(props, 'url', config.content),
       urlori: props.url ? props.url : utils.getArgs(props, 'url', config.content),
       title: props.title ? props.title : utils.getArgs(props, 'title', 'Home'),
@@ -109,6 +114,9 @@ class Elist extends React.Component {
     this.loadData();
     setTimeout(() => {
       BackHandler.addEventListener('hardwareBackPress', this.onBackPress)
+      this.ContentMenu.loadMenu((m) => {
+        menu = m
+      })
     }, 500);
   }
 
@@ -123,13 +131,23 @@ class Elist extends React.Component {
     if (!this.state.isDrawerOpen) {
       if (Platform.OS == 'ios') {
         return false;
-      } else if (!this.state.searchView && routers.index == 0) {
-        BackHandler.exitApp()
+      } else if (!this.state.searchView && !routers.index || routers.index == 0) {
+        esp.log('url', this.state.url, this.state.urlori);
+        try {
+          if (this.state.url != this.state.urlori) {
+            this.setState({ url: this.state.urlori, title: menu[0].title })
+            this.ContentMenu.setSelectedId(menu[0].id)
+            return true
+          } else {
+            BackHandler.exitApp()
+          }
+        } catch (e) {
+          BackHandler.exitApp()
+        }
       } else if (this.state.searchView) {
         this.setState({ searchView: false })
         return true
       } else {
-        // if (this.state.url != thi)
         this.props.navigation.goBack(null);
         return true
       }
@@ -145,16 +163,32 @@ class Elist extends React.Component {
   }
 
   openSearch() {
-    this.setState({ searchView: true })
+    this.setState({ searchView: true }, () => {
+      Animated.timing(this.state.animSearch, {
+        toValue: 1,
+        duration: 300
+      }).start()
+    })
   }
+
   closeSearch() {
-    this.setState({ searchView: false })
+    Animated.timing(this.state.animSearch, {
+      toValue: 0,
+      duration: 300
+    }).start(() => {
+      this.setState({ searchView: false })
+    })
   }
 
   render() {
     const { goBack, navigate } = this.props.navigation
     var indexRoutes = esp.routes().index
     var isRoot = indexRoutes == 0 || !indexRoutes
+    var searchOpacity = this.state.animSearch.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+      extrapolate: 'clamp'
+    })
     return (
       <Drawer
         ref={(ref) => { this.drawer = ref; }}
@@ -175,6 +209,7 @@ class Elist extends React.Component {
         })}
         content={
           <ContentMenu
+            ref={(e) => this.ContentMenu = e}
             url={this.state.url + 'menu'}
             closeDrawer={() => this.closeDrawer()}
             onItemSelected={(e) => { this.setState({ url: e.url, title: e.title }) }}
@@ -257,8 +292,8 @@ class Elist extends React.Component {
           }
           {
             this.state.searchView ?
-              <View style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, right: 0 }} >
-                <Esearch
+              <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, right: 0, opacity: searchOpacity }} >
+                <AnimEsearch
                   close={() => this.closeSearch()}
                   defaultValue={this.searchQuery}
                   onSubmit={(e) => {
@@ -266,7 +301,7 @@ class Elist extends React.Component {
                     this.searchQuery = decodeURI(e)
                   }}
                 />
-              </View>
+              </Animated.View>
               : null
           }
         </Container>
@@ -310,7 +345,14 @@ class Item extends React.Component {
   }
 
   goToDetail() {
-    this.props.navigation.push('content/detail', { url: this.props.url, image: this.props.image, id: this.props.id })
+    this.props.navigation.push(
+      'content/detail', {
+        id: this.props.id,
+        title: this.props.title,
+        url: this.props.url,
+        created: this.props.created,
+        image: this.props.image,
+      })
   }
 
   render = () => {

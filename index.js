@@ -5,8 +5,11 @@ import assets from './cache/assets';
 import navs from './cache/navigations';
 import reducers from './cache/reducers';
 import routers from './cache/routers';
+import Enotification from './modules/lib/notification';
 import app from '../../app.json'
 var routes = {}
+var notif = undefined
+var token = undefined
 
 class Container extends Component {
   state = {
@@ -32,6 +35,14 @@ class Container extends Component {
   }
 
   componentDidMount = async () => {
+    if (esp.config('notification') == 1) {
+      Enotification.listen((notifObj) => {
+        notif = notifObj;
+      })
+      Enotification.requestPermission((tkn) => {
+        AsyncStorage.setItem('token', tkn)
+      })
+    }
     var navigations = {}
     for (let i = 0; i < navs.length; i++) {
       const nav = navs[i];
@@ -133,6 +144,9 @@ class esp {
     if (!config.hasOwnProperty('comment_login')) {
       config.comment_login = 1;
     }
+    if (!config.hasOwnProperty('notification')) {
+      config.notification = 0;
+    }
     if (!config.hasOwnProperty('content')) {
       config.isLogin = 0;
     } else {
@@ -172,10 +186,28 @@ class esp {
       console.log(JSON.stringify(arguments, null, 2));
     }
   }
+
   static routes() {
     return routes
   }
+
+  static getTokenAsync(callback) {
+    if (esp.config('notification') == 1) {
+      if (token) {
+        callback(token)
+      } else {
+        AsyncStorage.getItem('token').then((token) => callback(token))
+      }
+    } else {
+      return null
+    }
+  }
+
+  static notif() {
+    return notif
+  }
 }
+
 module.exports = esp
 
 // var a = esp.assets("bacground")     // mengambil file dari folder images

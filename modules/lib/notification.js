@@ -1,5 +1,5 @@
-import * as Permissions  from '../../../expo/src/Permissions.js';
-import Notifications from '../../../expo/src/Notifications.js';
+import * as Permissions from '../../../expo/src/Permissions.js';
+import { Notifications } from '../../../expo';
 import { AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import esp from 'esoftplay';
 /*
@@ -51,7 +51,7 @@ const Enotification = {
       finalStatus = status;
     }
     if (finalStatus !== 'granted') return
-    esp.log(finalStatus)
+    // esp.log(finalStatus)
     token(await Notifications.getExpoPushTokenAsync())
   }
 }
