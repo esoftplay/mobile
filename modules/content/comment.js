@@ -170,7 +170,7 @@ class CommentList extends React.Component {
           }, 1
         )
       }
-    }else{
+    } else {
       this.setState({ showLogin: true })
     }
   }
@@ -272,15 +272,15 @@ class CommentList extends React.Component {
                   ?
                   <TouchableOpacity onPress={() => {
                     Alert.alert(
-                      'Hi, ' + this.state.user.name,
                       null,
+                      'Hi ' + this.state.user.name,
                       [
                         {
                           text: 'Logout Akun', onPress: () => {
                             EsocialLogin.delUser()
                             this.setState({ user: 1, showLogin: false })
                             this.props.setUser(1)
-                          }
+                          }, style: 'cancel'
                         },
                         {
                           text: 'Ubah Akun', onPress: () => {
@@ -296,7 +296,13 @@ class CommentList extends React.Component {
                       style={{ margin: 5, height: 30, width: 30, borderRadius: 15 }} />
                   </TouchableOpacity>
                   :
-                  <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+                  comment_login == 1 ?
+                    <TouchableOpacity onPress={() => { this.setState({ showLogin: true }) }}>
+                      <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+                    </TouchableOpacity>
+                    :
+                    <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+
               }
             </View>
             <View style={{ borderRadius: 5, backgroundColor: '#f5f5f5', flex: 1, height: 40, marginVertical: 5, marginLeft: 5 }} >
@@ -348,13 +354,13 @@ class CommentItem extends React.Component {
 
     return (
       <View
-        style={[styles.bgComment, { paddingHorizontal: 17 }]}>
+        style={[styles.bgComment, { paddingHorizontal: 17, width: width }]}>
         <View
           style={{ flexDirection: 'row' }} >
           <Thumbnail small
             source={image != '' ? { uri: image } : null}
             style={{ marginRight: 10, marginTop: 5 }} />
-          <View>
+          <View style={{ flex: 1 }} >
             <Text style={{ fontSize: 14 }} >{name}</Text>
             <Text style={{ fontSize: 11 }} note>{moment(date).format('LLLL')}</Text>
             <Text style={{ fontSize: 13, color: '#444' }} note

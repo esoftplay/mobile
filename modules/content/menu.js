@@ -1,9 +1,9 @@
 import * as React from '../../../react'
 import { View, AsyncStorage, ScrollView, Image, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-// import { configConsole } from '../../config';
 import { BlurView } from '../../../expo';
 import esp from 'esoftplay';
 const Curl = esp.mod('lib/curl')
+const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
 const NestedMenu = esp.mod('lib/nestedmenu');
 
 class ContentMenu extends React.Component {
@@ -24,6 +24,10 @@ class ContentMenu extends React.Component {
     AsyncStorage.getItem('master_menu').then((res) => {
       if (res) { callback(JSON.parse(res)) } else { callback(null) }
     })
+  }
+
+  setSelectedId(id) {
+    this.setState({ selectedId: id })
   }
 
   loadData() {
@@ -66,7 +70,7 @@ class ContentMenu extends React.Component {
     const BGView = Platform.OS == 'ios' ? BlurView : View
     return (
       <BGView tint={'light'} intensity={90} style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.9)' }, this.props.style]}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: STATUSBAR_HEIGHT }}>
           <View style={{ backgroundColor: 'transparent', height: 100, padding: 20 }}>
             <Image source={esp.assets('logo.png')} style={{ height: 60, width: '100%', resizeMode: 'contain' }} />
           </View>

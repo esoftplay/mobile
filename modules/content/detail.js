@@ -4,7 +4,6 @@ import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback
 import { Left, Button, Icon, Text, ListItem } from '../../../native-base';
 import { LinearGradient } from '../../../expo';
 import moment from 'moment/min/moment-with-locales'
-
 import esp from '../../index';
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = esp.mod('lib/style');
 const { Item } = esp.mod('content/list');
@@ -53,7 +52,6 @@ class Detail extends React.Component {
     )
   }
 
-
   onScrollEnd(e) {
     let contentOffset = e.nativeEvent.contentOffset;
     let viewSize = e.nativeEvent.layoutMeasurement;
@@ -61,15 +59,20 @@ class Detail extends React.Component {
   }
 
   render() {
-    var result = this.state.result
-    var id = utils.getArgs(this.props, 'id', 0)
+    var result = {}
+    result.id = utils.getArgs(this.props, 'id', 0)
+    result.url = utils.getArgs(this.props, 'url', '')
+    result.title = utils.getArgs(this.props, 'title', '')
+    result.image = utils.getArgs(this.props, 'image', '')
+    result.created = utils.getArgs(this.props, 'created', '')
+    // esp.log('msg', this.props.navigation.state.params.title, result['title']);
     if (result.image == '') {
       HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
     }
 
-    if (result.length == 0) {
+    if (!this.state.result.content) {
       return <View style={{ flex: 1, backgroundColor: 'white' }} >
-        <View style={{ width: width, height: width * 0.8 }} >
+        <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT }} >
           <Animated.Image
             style={{
               position: 'absolute',
@@ -81,9 +84,17 @@ class Detail extends React.Component {
             }}
             source={{ uri: utils.getArgs(this.props, 'image', '') }}
           />
+          <LinearGradient
+            style={{ height: width / 4, position: 'absolute', bottom: 0, left: 0, right: 0 }}
+            locations={[0.01, 0.99]}
+            colors={['rgba(255,255,255,0.0)', 'rgba(255,255,255,1)']} />
         </View>
+        {/* <View style={{ marginTop: 30 }} /> */}
+        <Text style={[styles.title]} >{result.title}</Text>
+        <Text note style={styles.created}>{moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
       </View>
     }
+    result = this.state.result
 
     var isDownload = result.link != '' && result.type === 'download'
     var isAudio = result.code != '' && result.type === 'audio'
