@@ -46,12 +46,18 @@ if (fs.existsSync(path))
 	/* Create ESP command line */
 	if (args[0] == "install")
 	{
-		var ret = spawn('npm', ['-g', 'install', 'esoftplay-cli'])
-		ret.stdout.on('data', function (data) {
-		  console.log('new command "esp" has been installed')
-		});
-		ret.stderr.on('data', function (data) {
-		  console.log('please install `npm -g install esoftplay-cli` manually');
+		var check = spawn('npm', ['ls', '-g', '--depth', '0'])
+		check.stdout.on('data', function (data) {
+			var text = data.toString();
+			if (!/esoftplay\-cli/.test(text)) {
+				var ret = spawn('npm', ['-g', 'install', 'esoftplay-cli'])
+				ret.stdout.on('data', function (data) {
+				  console.log('new command "esp" has been installed')
+				});
+				ret.stderr.on('data', function (data) {
+				  console.log('please install `npm -g install esoftplay-cli` manually');
+				});
+			}
 		});
 	}
 
