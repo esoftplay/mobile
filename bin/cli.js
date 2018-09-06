@@ -209,12 +209,6 @@ EXAMPLE\n\
 		if (!action) {
 			if (mods.length > 0) {
 				var rmods = [];
-				var maxlength = 0;
-				for (var i = 0; i < mods.length; i++) {
-					if (mods[i].length > maxlength) {
-						maxlength = mods[i].length;
-					}
-				}
 				for (var i = 0; i < mods.length; i++) {
 					mod = mods[i];
 					var r1 = new RegExp("/modules/"+mod+".js");
@@ -223,10 +217,9 @@ EXAMPLE\n\
 						.replace(/node_modules\//, '')
 						.replace(r1, '')
 						.replace(r2, '');
-					var j = maxlength-mod.length + 1;
-					rmods.push(mod+" ".repeat(j)+" - "+file);
+					rmods.push(file.substr(0, 1) + ': ' +  mod);
 				}
-				console.log("Available Modules :\n- "+rmods.join("\n- "))
+				console.log("Available Modules :\n  "+rmods.join("\n  "))
 			}else{
 				console.log('the available modules is not rendered yet. please try `esp start` before executing your last command!')
 			}
@@ -257,15 +250,11 @@ EXAMPLE\n\
 				case 'list':
 					var out = [];
 					var listmods = [];
-					var maxlength = 0;
 					for (var i = 0; i < mods.length; i++) {
 						mod = mods[i];
 						var r = new RegExp("^"+modules[0]);
 						if (mod.match(r)) {
 							listmods.push(mod);
-							if (mod.length > maxlength) {
-								maxlength = mod.length;
-							}
 						}
 					}
 					for (var i = 0; i < listmods.length; i++) {
@@ -276,10 +265,13 @@ EXAMPLE\n\
 							.replace(/node_modules\//, '')
 							.replace(r1, '')
 							.replace(r2, '');
-						var j = maxlength-mod.length + 1;
-						out.push(mod+" ".repeat(j)+" - "+file);
+						out.push(file.substr(0, 1) + ': ' +  mod);
 					}
-					output = "The following modules are available in '"+modules[0]+"':\n- "+out.join("\n- ");
+					if (out.length > 0) {
+						output = "The following modules are available in '"+modules[0]+"':\n  "+out.join("\n  ");
+					}else{
+						output = "SORRY, module '"+modules[0]+"' is not available";
+					}
 					break;
 				case 'c':
 				case 'create':
@@ -289,29 +281,30 @@ EXAMPLE\n\
 					var newFile = '';
 					var Cls = (modules[1]=='index') ? modules[0] : modules[1];
 
-					switch(files.length) {
-						case 3: // file sudah ada di template
-							spawn("code", [files[2]])
-							output = '"'+files[2]+'" is already exists, you can edit now'
-							break;
-						case 2: // file sudah ada di module tp belum ada di template
-							newFile = 'templates/'+module+'.js'
-							ClassName = 'T'+Cls;
-							ClassUpper = 'M'+Cls;
-							ClassImport = 'import '+ClassUpper+' from "../../modules/'+module+'";'+"\n";
-							break;
-						case 1: // file sudah ada di system tp belum ada di module
-							newFile = 'modules/'+module+'.js'
-							ClassName = 'M'+Cls;
-							ClassUpper = 'E'+Cls;
-							ClassImport = 'import '+ClassUpper+' from "esoftplay/modules/'+module+'";'+"\n";
-							break;
-						case 0: // file belum tersedia di manapun
-							newFile = 'modules/'+module+'.js'
-							ClassName = 'M'+Cls;
-							ClassUpper = 'Component';
-							ClassImport = 'import React, { Component } from \'react\';'+"\n";
-							break;
+					if (files.length > 0) {
+							switch(files[0].substr(0, 7)) {
+								case "templat":
+									spawn("code", [files[0]])
+									output = '"'+files[0]+'" is already exists, you can edit now'
+									break;
+								case "modules":
+									newFile = 'templates/'+module+'.js'
+									ClassName = 'T'+Cls;
+									ClassUpper = 'M'+Cls;
+									ClassImport = 'import '+ClassUpper+' from "../../modules/'+module+'";'+"\n";
+									break;
+								case "node_mo":
+									newFile = 'modules/'+module+'.js'
+									ClassName = 'M'+Cls;
+									ClassUpper = 'E'+Cls;
+									ClassImport = 'import '+ClassUpper+' from "esoftplay/modules/'+module+'";'+"\n";
+									break;
+							}
+					}else{
+						newFile = 'modules/'+module+'.js'
+						ClassName = 'M'+Cls;
+						ClassUpper = 'Component';
+						ClassImport = 'import React, { Component } from \'react\';'+"\n";
 					}
 					if (newFile) {
 						output = '"'+newFile+'" has been created, please make changes!'

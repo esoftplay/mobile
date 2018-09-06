@@ -1,7 +1,7 @@
 #!/bin/bash
 SRC="$( cd "$( dirname $(dirname "${BASH_SOURCE[0]}") )" >/dev/null && pwd )"
 DST="$( pwd )/node_modules/esoftplay"
-if [ -f $DST ]; then
+if [ -d $DST ]; then
 	rm -rf $DST/bin
 	ln -s $SRC/bin $DST/bin
 	rm -rf $DST/modules
