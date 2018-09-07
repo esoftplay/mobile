@@ -7,6 +7,7 @@ import { Text, Button, Icon } from 'native-base';
 const Member = esp.mod('content/member');
 import moment from '../../../moment/min/moment-with-locales'
 const utils = esp.mod('lib/utils');
+import update from 'immutability-helper'
 const crypt = esp.mod('lib/crypt');
 const EdbNotif = esp.mod('db/notification');
 const db = new EdbNotif();
@@ -46,6 +47,17 @@ class Enotification extends Component {
     })
   }
 
+  setRead(id) {
+    var data = this.state.data
+    var itemData = data.filter((item) => item.id == id)[0]
+    var query = {
+      [data.indexOf(itemData)]: {
+        status: { $set: 2 }
+      }
+    }
+    this.setState({ data: update(data, query) })
+  }
+
   componentDidMount() {
     moment.locale('id')
     var uri = 'user/push-notif'
@@ -73,6 +85,7 @@ class Enotification extends Component {
     }, (res, msg) => {
       esp.log(res)
       db.setRead(data.id)
+      this.setRead(data.id)
     }, (msg) => {
       esp.log(msg)
     }, 1)
