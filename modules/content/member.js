@@ -1,17 +1,18 @@
 import * as React from '../../../react'
-import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
-class Member extends React.Component {
-  state = {
-
+class Member {
+  static create(member) {
+    AsyncStorage.setItem('member', JSON.stringify(member))
+  }
+  static load(callback) {
+    AsyncStorage.getItem('member').then((member) => {      
+        callback(JSON.parse(member))
+    })
+  }
+  static delete() {
+    AsyncStorage.removeItem('member');
   }
 
-  render = () =>{
-    return (
-      <View style={{ flex: 1 }}>
-
-      </View>
-    );
-  }
 }
 module.exports = Member;

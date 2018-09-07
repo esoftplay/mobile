@@ -1,4 +1,6 @@
 import SQLite from '../../../expo/src/SQLite.js';
+import esp from 'esoftplay';
+const config = esp.config();
 
 /* EXAMPLE CREATE CLASS DB EXTENDS HELPER
 
@@ -123,7 +125,6 @@ class Ehelper {
 
   }
 
-
   isDebug = config.isDebug
 
   /* The version, description and size arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification. 
@@ -239,7 +240,9 @@ class Ehelper {
           delete values[item]
         }
       })
-      return values
+      var stringValues = JSON.stringify(values)
+      stringValues = stringValues.replace(/'/g, "''")
+      return JSON.parse(stringValues)
     } else {
       if (debug == 1)
         this.configConsole('values must be an object with key == fieldname')
