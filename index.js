@@ -1,110 +1,14 @@
 import React, { Component } from '../react';
-import { AsyncStorage, View } from '../react-native/Libraries/react-native/react-native-implementation.js';
-import { createStackNavigator } from '../react-navigation';
+import { AsyncStorage } from '../react-native/Libraries/react-native/react-native-implementation.js';
 import assets from './cache/assets';
-import navs from './cache/navigations';
 import reducers from './cache/reducers';
 import routers from './cache/routers';
-import Enotification from './modules/lib/notification';
 import app from '../../app.json'
-import moment from '../moment'
-var routes = {}
+import { store } from '../../App';
 var notif = undefined
 var token = undefined
-
-class Container extends Component {
-  state = {
-    loading: true
-  }
-
-  Router = undefined
-
-  isClassComponent(component) {
-    return (typeof component === 'function' && !!component.prototype.isReactComponent) ? true : false
-  }
-
-  isFunctionComponent(component) {
-    return (typeof component === 'function' && String(component).includes('return React.createElement')) ? true : false;
-  }
-
-  isReactComponent(component) {
-    return (this.isClassComponent(component) || this.isFunctionComponent(component)) ? true : false;
-  }
-
-  onNavigationStateChange = (prevState, currentState) => {
-    routes = currentState
-  }
-
-  componentDidMount = async () => {
-    if (esp.config('notification') == 1) {
-      Enotification.listen((notifObj) => {
-        notif = notifObj;
-      })
-      Enotification.requestPermission(async (tkn) => {
-        if (tkn) {
-          AsyncStorage.setItem('token', tkn)
-          const crypt = esp.mod('lib/crypt');
-          const config = esp.config();
-          var post = {
-            user_id: '',
-            username: '',
-            token: tkn,
-            old_id: '',
-            secretkey: crypt.encode(config.salt + "|" + moment().format('YYYY-MM-DD hh:mm:ss'))
-          }
-          const token_id = await AsyncStorage.getItem('token_id');
-          if (token_id) {
-            post.old_id = token_id
-          }
-          const memberClass = esp.mod('content/member');
-          await memberClass.load((member) => {
-            Object.keys(member).forEach((rw) => {
-              Object.keys(post).forEach((ps) => {
-                if (ps != 'token' || ps != 'secretkey' && ps == rw) {
-                  post[ps] = member[rw]
-                }
-              })
-            })
-          })
-          const Curl = esp.mod('lib/curl');
-          new Curl(config.protocol + "://" + config.domain + config.uri + 'user/push-token', post,
-            (res, msg) => {
-              AsyncStorage.setItem('token_id', String(res))
-            }, (msg) => {
-              esp.log('error', msg);
-            }, 1)
-        }
-      })
-    }
-    var navigations = {}
-    for (let i = 0; i < navs.length; i++) {
-      const nav = navs[i];
-      navigations[nav] = esp.mod(nav);
-      if (!this.isReactComponent(navigations[nav])) {
-        delete navigations[nav]
-      }
-    }
-    var config = {
-      initialRouteName: esp.config("isLogin") ? esp.config("home", "member") : esp.config("home", "public"),
-      navigationOptions: {
-        header: null
-      }
-    }
-    this.Router = await createStackNavigator(navigations, config)
-    this.setState({ loading: false })
-  }
-
-  render = () => {
-    if (this.state.loading) return null
-    return (
-      <View style={{ flex: 1 }}>
-        <this.Router onNavigationStateChange={this.onNavigationStateChange} />
-      </View>
-    );
-  }
-}
-
-class esp {
+ 
+export default class esp {
 
   static assets(path) {
     return assets(path)
@@ -211,7 +115,7 @@ class esp {
   }
 
   static home() {
-    return Container
+    return esp.mod('user/index');
   }
 
   static log() {
@@ -221,7 +125,7 @@ class esp {
   }
 
   static routes() {
-    return routes
+    return store.getState().user_index
   }
 
   static getTokenAsync(callback) {
@@ -243,8 +147,6 @@ class esp {
     return notif
   }
 }
-
-module.exports = esp
 
 // var a = esp.assets("bacground")     // mengambil file dari folder images
 // var b = esp.config("data", "name")  // mengambil value dari config (bisa ditentukan di app.json)

@@ -1,6 +1,6 @@
 //import liraries
 import * as React from '../../../react';
-import { View, StyleSheet, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { View, StyleSheet, StatusBar, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 import { Left, Button, Icon, Text, ListItem } from '../../../native-base';
 import { LinearGradient } from '../../../expo';
 import moment from 'moment/min/moment-with-locales'
@@ -65,37 +65,38 @@ class Detail extends React.Component {
     result.title = utils.getArgs(this.props, 'title', '')
     result.image = utils.getArgs(this.props, 'image', '')
     result.created = utils.getArgs(this.props, 'created', '')
-    // esp.log('msg', this.props.navigation.state.params.title, result['title']);
-    if (result.image == '') {
-      HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
-    }
 
     if (!this.state.result.content) {
       return <View style={{ flex: 1, backgroundColor: 'white' }} >
-        <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT }} >
-          <Animated.Image
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              width: width,
-              height: (width * 4 / 5) + STATUSBAR_HEIGHT
-            }}
-            source={{ uri: utils.getArgs(this.props, 'image', '') }}
-          />
-          <LinearGradient
-            style={{ height: width / 4, position: 'absolute', bottom: 0, left: 0, right: 0 }}
-            locations={[0.01, 0.99]}
-            colors={['rgba(255,255,255,0.0)', 'rgba(255,255,255,1)']} />
-        </View>
+        {
+          result.image != '' &&
+          <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT }} >
+            <Animated.Image
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                width: width,
+                height: (width * 4 / 5) + STATUSBAR_HEIGHT
+              }}
+              source={{ uri: utils.getArgs(this.props, 'image', '') }}
+            />
+            <LinearGradient
+              style={{ height: width / 4, position: 'absolute', bottom: 0, left: 0, right: 0 }}
+              locations={[0.01, 0.99]}
+              colors={['rgba(255,255,255,0.0)', 'rgba(255,255,255,1)']} />
+          </View>
+        }
         {/* <View style={{ marginTop: 30 }} /> */}
         <Text style={[styles.title]} >{result.title}</Text>
-        <Text note style={styles.created}>{moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
+        {result.created != '' && <Text note style={styles.created}>{moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}</Text>}
       </View>
     }
     result = this.state.result
-
+    // if (result.image == '') {
+    //   HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
+    // }
     var isDownload = result.link != '' && result.type === 'download'
     var isAudio = result.code != '' && result.type === 'audio'
     var isVideo = result.code != '' && result.type === 'video'
@@ -138,6 +139,7 @@ class Detail extends React.Component {
     return (
       <View
         style={styles.fill}>
+        <StatusBar barStyle={'light-content'} />
         {
           isAudio ?
             <Eaudio
