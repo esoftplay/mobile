@@ -37,7 +37,7 @@ class ENotification extends SQLiteHelper {
     })
   }
 
-  setRead(id,status=2) {
+  setRead(id, status = 2) {
     this.Update(id, { [ENotification.status]: status })
   }
 
