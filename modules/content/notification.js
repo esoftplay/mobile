@@ -183,7 +183,7 @@ class Enotification extends Component {
           keyExtractor={(e, i) => (e.id).toString()}
           renderItem={(item, index) => (
             <TouchableOpacity onPress={() => this.openNotif(item)} >
-              <View style={[{ padding: 16, flexDirection: 'row', width: widtsh, backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0 }, elevation(1.5)]} >
+              <View style={[{ padding: 16, flexDirection: 'row', width: width, backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0 }, elevation(1.5)]} >
                 <View style={{}} >
                   <Text style={{ color: item.status == 2 ? '#999' : colorPrimary, fontFamily: item.status == 2 ? 'Roboto' : 'Roboto_medium', marginBottom: 8 }} >{item.title}</Text>
                   <Text note ellipsizeMode="tail" numberOfLines={2} >{item.message}</Text>
