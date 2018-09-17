@@ -1,7 +1,7 @@
 import * as React from '../../../react'
 import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
-class Download extends React.Component {
+class Edownload extends React.Component {
   state = {
 
   }
@@ -14,4 +14,4 @@ class Download extends React.Component {
     );
   }
 }
-module.exports = Download;
+module.exports = Edownload;

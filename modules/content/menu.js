@@ -6,7 +6,7 @@ const Curl = esp.mod('lib/curl')
 const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
 const NestedMenu = esp.mod('lib/nestedmenu');
 
-class ContentMenu extends React.Component {
+class Emenu extends React.Component {
 
   constructor(props) {
     super(props)
@@ -90,4 +90,4 @@ class ContentMenu extends React.Component {
     )
   }
 }
-module.exports = ContentMenu;
+module.exports = Emenu;

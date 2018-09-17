@@ -5,6 +5,7 @@ import { AsyncStorage, View } from '../../../react-native/Libraries/react-native
 import { createStackNavigator } from '../../../react-navigation';
 import { store } from '../../../../App';
 import esp from 'esoftplay';
+import { Constants } from '../../../expo';
 
 class Econtainer extends Component {
   static initState = {}
@@ -57,7 +58,6 @@ class Econtainer extends Component {
       })
       Enotification.requestPermission(async (tkn) => {
         if (tkn) {
-          AsyncStorage.setItem('token', tkn)
           const crypt = esp.mod('lib/crypt');
           const config = esp.config();
           var post = {
@@ -65,16 +65,24 @@ class Econtainer extends Component {
             username: '',
             token: tkn,
             old_id: '',
+            push_id: '',
+            device: Constants.deviceName,
             secretkey: crypt.encode(config.salt + "|" + moment().format('YYYY-MM-DD hh:mm:ss'))
           }
           const token_id = await AsyncStorage.getItem('token_id');
+          const token = await AsyncStorage.getItem('token');
           if (token_id) {
-            post.old_id = token_id
+            if (token == tkn) {
+              post.push_id = token_id
+            } else {
+              post.old_id = token_id
+            }
           }
-          const memberClass = esp.mod('content/member');
-          await memberClass.load((member) => {
-            if (member) {
-              Object.keys(member).forEach((rw) => {
+          AsyncStorage.setItem('token', tkn)
+          const User = esp.mod('user/class');
+          await User.load((user) => {
+            if (user) {
+              Object.keys(user).forEach((rw) => {
                 Object.keys(post).forEach((ps) => {
                   if (ps != 'token' || ps != 'secretkey' && ps == rw) {
                     post[ps] = member[rw]

@@ -5,19 +5,19 @@ import { Badge, Text } from '../../../native-base'
 import esp from 'esoftplay';
 import { TouchableOpacity } from 'react-native';
 import { connect } from '../../../react-redux';
-const Enotification = esp.mod('content/notification');
+const Enotification = esp.mod('user/notification');
 
 
 class Ebadge extends Component {
 
   static mapStateToProps = (state) => {
     return {
-      data: state.content_notification.data
+      data: state.user_notification.data
     }
   }
 
   componentDidMount() {
-    Enotification.action.content_notification_loadData()
+    Enotification.action.user_notification_loadData()
   }
 
   render = () => {

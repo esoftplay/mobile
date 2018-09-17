@@ -5,7 +5,7 @@ import esp from '../../index';
 const { defaultStyle, colorPrimaryDark } = esp.mod('lib/style');
 const Elist = esp.mod('content/list');
 
-class Content extends React.Component {
+class Econtent extends React.Component {
   render() {
     return (
       <View
@@ -24,4 +24,4 @@ const styles = StyleSheet.create({
   }
 })
 
-module.exports = Content;
+module.exports = Econtent;

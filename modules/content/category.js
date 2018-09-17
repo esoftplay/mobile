@@ -1,7 +1,7 @@
 import * as React from '../../../react'
 import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
-class Category extends React.Component {
+class Ecategory extends React.Component {
   state = {
 
   }
@@ -14,4 +14,4 @@ class Category extends React.Component {
     );
   }
 }
-module.exports = Category;
+module.exports = Ecategory;
