@@ -1,7 +1,7 @@
 import * as React from '../../../react'
 import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
-class Gallery extends React.Component {
+class Egallery extends React.Component {
   state = {
 
   }
@@ -14,4 +14,4 @@ class Gallery extends React.Component {
     );
   }
 }
-module.exports = Gallery;
+module.exports = Egallery;

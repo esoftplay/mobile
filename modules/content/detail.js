@@ -23,7 +23,7 @@ const download = (result) => {
   Linking.openURL(result.link)
 }
 
-class Detail extends React.Component {
+class Edetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -459,4 +459,4 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-module.exports = Detail;
+module.exports = Edetail;
