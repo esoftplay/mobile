@@ -56,50 +56,10 @@ class Euser extends Component {
       Enotification.listen((notifObj) => {
         notif = notifObj;
       })
-      Enotification.requestPermission(async (tkn) => {
-        if (tkn) {
-          const crypt = esp.mod('lib/crypt');
-          const config = esp.config();
-          var post = {
-            user_id: '',
-            username: '',
-            token: tkn,
-            old_id: '',
-            push_id: '',
-            device: Constants.deviceName,
-            secretkey: crypt.encode(config.salt + "|" + moment().format('YYYY-MM-DD hh:mm:ss'))
-          }
-          const token_id = await AsyncStorage.getItem('token_id');
-          const token = await AsyncStorage.getItem('token');
-          if (token_id) {
-            if (token == tkn) {
-              post.push_id = token_id
-            } else {
-              post.old_id = token_id
-            }
-          }
-          AsyncStorage.setItem('token', tkn)
-          const User = esp.mod('user/class');
-          await User.load((user) => {
-            if (user) {
-              Object.keys(user).forEach((rw) => {
-                Object.keys(post).forEach((ps) => {
-                  if (ps != 'token' || ps != 'secretkey' && ps == rw) {
-                    post[ps] = member[rw]
-                  }
-                })
-              })
-            }
-            const Curl = esp.mod('lib/curl');
-            new Curl(config.protocol + "://" + config.domain + config.uri + 'user/push-token', post,
-              (res, msg) => {
-                AsyncStorage.setItem('token_id', String(res))
-              }, (msg) => {
-                esp.log('error', msg);
-              }, 1)
-          })
-        }
-      })
+    }
+    var token_id = await AsyncStorage.getItem('token_id');
+    if (!token_id) {
+      pushToken();
     }
     var navigations = {}
     for (let i = 0; i < navs.length; i++) {
@@ -117,6 +77,58 @@ class Euser extends Component {
     }
     this.Router = await createStackNavigator(navigations, config)
     this.setState({ loading: false })
+  }
+  pushToken() {
+    const notif = esp.mod('lib/notification');
+    notif.requestPermission(async (tkn) => {
+      if (tkn) {
+        const crypt = esp.mod('lib/crypt');
+        const config = esp.config();
+        const user_id = await AsyncStorage.getItem('user_id');
+        const username = await AsyncStorage.getItem('username');
+        if (!user_id) {
+          user_id = 0;
+        }
+        var post = {
+          user_id: user_id,
+          username: username,
+          token: tkn,
+          old_id: '',
+          push_id: '',
+          device: Constants.deviceName,
+          secretkey: crypt.encode(config.salt + "|" + moment().format('YYYY-MM-DD hh:mm:ss'))
+        }
+        const token_id = await AsyncStorage.getItem('token_id');
+        const token = await AsyncStorage.getItem('token');
+        if (token_id) {
+          if (token == tkn) {
+            post.push_id = token_id
+          } else {
+            post.old_id = token_id
+          }
+        }
+        AsyncStorage.setItem('token', tkn)
+        const User = esp.mod('user/class');
+        await User.load((user) => {
+          if (user) {
+            Object.keys(user).forEach((rw) => {
+              Object.keys(post).forEach((ps) => {
+                if (ps != 'token' || ps != 'secretkey' && ps == rw) {
+                  post[ps] = member[rw]
+                }
+              })
+            })
+          }
+          const Curl = esp.mod('lib/curl');
+          new Curl(config.protocol + "://" + config.domain + config.uri + 'user/push-token', post,
+            (res, msg) => {
+              AsyncStorage.setItem('token_id', String(res))
+            }, (msg) => {
+              esp.log('error', msg);
+            }, 1)
+        })
+      }
+    })
   }
 
   render = () => {
