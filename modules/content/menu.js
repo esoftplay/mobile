@@ -4,7 +4,7 @@ import { BlurView } from '../../../expo';
 import esp from 'esoftplay';
 const Curl = esp.mod('lib/curl')
 const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
-const NestedMenu = esp.mod('lib/nestedmenu');
+const Menu = esp.mod('lib/menu');
 
 class Emenu extends React.Component {
 
@@ -74,7 +74,7 @@ class Emenu extends React.Component {
           <View style={{ backgroundColor: 'transparent', height: 100, padding: 20 }}>
             <Image source={esp.assets('logo.png')} style={{ height: 60, width: '100%', resizeMode: 'contain' }} />
           </View>
-          <NestedMenu
+          <Menu
             onItemSelected={(e) => {
               this.setState({ selectedId: e.id })
               if (this.props.onItemSelected) {
