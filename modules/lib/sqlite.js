@@ -49,8 +49,8 @@ export default class Event extends Helper {
         example:
           var db = new Event()
 
-    2. Insert 
-        #values is data to insert 
+    2. Insert
+        #values is data to insert
         #insertId is the id auto incement from data we just inserted
         var values = {
           fieldname:'value',
@@ -66,7 +66,7 @@ export default class Event extends Helper {
           db.Insert(values, (insertId)=>{ })
 
     3. Update
-        #values is data to update 
+        #values is data to update
         #id is refrerence to use in WHERE id=
         #rowAffected return how many row is affected in this execution, 0 is mean no row affected or update is failed
         var values = {
@@ -82,14 +82,14 @@ export default class Event extends Helper {
         #rowAffected return how many row is affected in this execution, 0 is mean no row affected or delete is failed
         example:
           db.Delete(id,null,null, (rowAffected)=>{})
-    
+
     5. Delete (with WHERE field='value' single or many) (all will combine with separator AND  )
         #rowAffected return how many row is affected in this execution, 0 is mean no row affected or delete is failed
         #arrayFields = [Event.title,Event.intro, Event.blabla]
         #arrayArguments = ['this will match with title','this will match with intro','this will match with blabla']
         example:
           db.Delete(null, arrayFields, arrayArguments, (rowAffected)=>{})
-    
+
     6. getRow (with WHERE id='id')
         #id is refrerence to use in WHERE id=
         #queryResult result query in Array format
@@ -102,7 +102,7 @@ export default class Event extends Helper {
         #arrayArguments = ['this will match with title','this will match with intro','this will match with blabla']
         example:
           db.getRow(null, arrayFields, arrayArguments, (queryResult)=>{})
-    
+
     8. getAll (if all params is null  WHERE 1)
         #queryResult result query in Array format
         #arrayFields = [Event.title,Event.intro, Event.blabla]
@@ -111,7 +111,7 @@ export default class Event extends Helper {
         #groupBy = fieldname
         example:
           db.getAll(arrayFields, arrayArguments, orderBy, limit, offset, groupBy, (queryResult)=>{}) {
-    
+
     9. Custom query
         #result is in WEBSqliteResult format
         example:
@@ -119,7 +119,7 @@ export default class Event extends Helper {
 }
 */
 
-class Ehelper {
+class Esqlite {
 
   constructor() {
 
@@ -127,7 +127,7 @@ class Ehelper {
 
   isDebug = config.isDebug
 
-  /* The version, description and size arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification. 
+  /* The version, description and size arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification.
   https://docs.expo.io/versions/latest/sdk/sqlite.html
   */
   init(dbname = null, createStatement = null, version = 1, description = null, size = null) {
@@ -616,4 +616,4 @@ class Ehelper {
   }
 }
 
-module.exports = Ehelper;
+module.exports = Esqlite;

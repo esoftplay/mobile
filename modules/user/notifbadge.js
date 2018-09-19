@@ -8,7 +8,7 @@ import { connect } from '../../../react-redux';
 const Enotification = esp.mod('user/notification');
 
 
-class Ebadge extends Component {
+class Enotifbadge extends Component {
 
   static mapStateToProps = (state) => {
     return {
@@ -35,4 +35,4 @@ class Ebadge extends Component {
     );
   }
 }
-module.exports = connect(Ebadge.mapStateToProps)(Ebadge);
+module.exports = connect(Enotifbadge.mapStateToProps)(Enotifbadge);

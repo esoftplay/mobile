@@ -7,10 +7,10 @@ import { store } from '../../../../App';
 import esp from 'esoftplay';
 import { Constants } from '../../../expo';
 
-class Econtainer extends Component {
+class Euser extends Component {
   static initState = {}
 
-  static reducer = (state = Econtainer.initState, action) => {
+  static reducer = (state = Euser.initState, action) => {
     switch (action.type) {
       case 'user_nav_change':
         return action.payload
@@ -47,7 +47,7 @@ class Econtainer extends Component {
   }
 
   onNavigationStateChange = (prevState, currentState) => {
-    Econtainer.action.user_nav_change(currentState)
+    Euser.action.user_nav_change(currentState)
   }
 
   componentDidMount = async () => {
@@ -128,4 +128,4 @@ class Econtainer extends Component {
     );
   }
 }
-module.exports = Econtainer
+module.exports = Euser

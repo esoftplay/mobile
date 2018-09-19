@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 
-class Firebase extends Component {
+class Efirebase extends Component {
   state = {
 
   }
@@ -14,4 +14,4 @@ class Firebase extends Component {
     );
   }
 }
-module.exports = Firebase;
+module.exports = Efirebase;

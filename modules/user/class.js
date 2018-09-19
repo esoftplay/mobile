@@ -1,12 +1,12 @@
 import * as React from '../../../react'
 import { AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
-class Euser {
+class Eclass {
   static create(user) {
     AsyncStorage.setItem('user', JSON.stringify(user))
   }
   static load(callback) {
-    AsyncStorage.getItem('user').then((user) => {      
+    AsyncStorage.getItem('user').then((user) => {
         callback(JSON.parse(user))
     })
   }
@@ -15,4 +15,4 @@ class Euser {
   }
 
 }
-module.exports = Euser;
+module.exports = Eclass;

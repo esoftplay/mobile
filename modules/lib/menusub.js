@@ -3,33 +3,9 @@ import { Text, View, FlatList, TouchableOpacity } from '../../../react-native/Li
 import { Icon } from 'native-base';
 import esp from 'esoftplay';
 const { colorPrimary } = esp.mod('lib/style');
+const Emenu = esp.mod('lib/menu');
 
-class NestedMenu extends React.Component {
-  onItemSelected(item) {
-    if (this.props.onItemSelected) {
-      delete item.data
-      this.props.onItemSelected(item)
-    }
-  }
-  render() {
-    var parent = this.props.parent ? this.props.parent : 0
-    var style = this.props.style ? this.props.style : {}
-    var data = this.props.data
-    if (parent == 0) {
-      data = this.props.data.filter((item) => item.par_id == parent).map((item) => item)
-    }
-    return (
-      <FlatList
-        style={style}
-        data={data}
-        keyExtractor={item => (item.id).toString()}
-        renderItem={({ item }) => <NestedMenuItem {...item} selectedId={this.props.selectedId} data={this.props.data} parent={parent} onClick={(item) => this.onItemSelected(item)} />}
-      />
-    )
-  }
-}
-
-class NestedMenuItem extends React.Component {
+class Emenusub extends React.Component {
   state = {
     expanded: false
   }
@@ -55,9 +31,9 @@ class NestedMenuItem extends React.Component {
               : null
           }
         </View>
-        {this.state.expanded ? <NestedMenu style={{ paddingLeft: 15 }} selectedId={this.props.selectedId} onItemSelected={(item) => { this.props.onClick(item) }} parent={this.props.id} data={data} /> : null}
+        {this.state.expanded ? <Emenu style={{ paddingLeft: 15 }} selectedId={this.props.selectedId} onItemSelected={(item) => { this.props.onClick(item) }} parent={this.props.id} data={data} /> : null}
       </View>
     )
   }
 }
-module.exports = NestedMenu;
+module.exports = Emenusub;

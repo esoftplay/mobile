@@ -1,6 +1,6 @@
 {
   "name": "esoftplay",
-  "version": "0.0.39",
+  "version": "0.0.41",
   "description": "embedding data from esoftplay framework (web based) into mobile app",
   "main": "index.js",
   "scripts": {
