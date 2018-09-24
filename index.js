@@ -7,7 +7,7 @@ import app from '../../app.json'
 import { store } from '../../App';
 var notif = undefined
 var token = undefined
- 
+
 export default class esp {
 
   static assets(path) {
@@ -84,11 +84,20 @@ export default class esp {
     if (!config.hasOwnProperty('notification')) {
       config.notification = 0;
     }
-    if (!config.hasOwnProperty('content')) {
-      config.isLogin = 0;
-    } else {
-      config.isLogin = config.isLogin ? 1 : 0;
-    }
+    config.isLogin = 0;
+    const User = esp.mod('user/class');
+    User.load((user) => {
+      if (user) {
+        if (user.hasOwnProperty("user_id")) {
+          config.isLogin = 1;
+        }
+      }
+    })
+    // if (!config.hasOwnProperty('content')) {
+    //   config.isLogin = 0;
+    // } else {
+    //   config.isLogin = config.isLogin ? 1 : 0;
+    // }
     if (!config.hasOwnProperty("isDebug")) {
       config.isDebug = (process.env.NODE_ENV === 'development') ? 1 : 0;
     }
