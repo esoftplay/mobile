@@ -101,7 +101,7 @@ class Euser extends Component {
                 if (userfield=="id") {
                   userfield = "user_id"
                 }
-                if (postfield != 'token' || postfield != 'secretkey' && postfield == userfield) {
+                if ((postfield != 'token' || postfield != 'secretkey' || postfield != device) && postfield == userfield) {
                   post[postfield] = user[userfield]
                 }
               })

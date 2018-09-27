@@ -14,12 +14,14 @@ var FastImage = esp.mod("lib/image")
   quality={1}
   resizeMode={'contain'|'cover'}
   />
+
 PROPS
 
 source = same as image source props
 quality = float = 0.1 - 1 ( 1 mean one pixel image === 1 pixel display )
 resizeMode = string = only support for contain/cover mode
 */
+import esp from 'esoftplay';
 
 class Eimage extends React.PureComponent {
 
@@ -120,7 +122,8 @@ class Eimage extends React.PureComponent {
   }
 
   nameKey(uri, w, h) {
-    return uri + '|' + w + '|' + h
+    var extentions = uri.split('.').pop();
+    return shorthash.unique(uri + '|' + w + '|' + h) + '.' + extentions
   }
 
   async processImage(source) {

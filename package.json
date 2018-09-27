@@ -46,6 +46,7 @@
     "react-redux",
     "recyclerlistview",
     "redux",
-    "redux-thunk"
+    "redux-thunk",
+    "shorthash"
   ]
 }
