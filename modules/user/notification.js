@@ -164,49 +164,49 @@ class Enotification extends Component {
     }
 
 
-  render = () => {
-    const {colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
-        const Elist = esp.mod('lib/list');
-    const {goBack} = this.props.navigation
-        return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <StatusBar barStyle={'light-content'} />
-          <View
-            style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
-            <Button transparent
-              style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
-              onPress={() => goBack()}>
-              <Icon
-                style={{ color: colorAccent }}
-                name='arrow-back' />
-            </Button>
-            <Text
-              style={{
-                marginHorizontal: 10,
-                fontSize: 18,
-                textAlign: 'left',
-                flex: 1,
-                color: colorAccent
-              }}>Notifikasi</Text>
-          </View>
-          <Elist
-            data={this.props.data}
-            keyExtractor={(e, i) => (e.id).toString()}
-            renderItem={(item, index) => (
-              <TouchableOpacity onPress={() => this.openNotif(item)} >
-                <View style={[{ padding: 16, flexDirection: 'row', backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
-                  <View style={{}} >
-                    <Text style={{ color: item.status == 2 ? '#999' : colorPrimary, fontFamily: item.status == 2 ? 'Roboto' : 'Roboto_medium', marginBottom: 8 }} >{item.title}</Text>
-                    <Text note ellipsizeMode="tail" numberOfLines={2} >{item.message}</Text>
-                    <Text note style={{ fontSize: 9, marginTop: 5 }} >{moment(item.updated).fromNow()}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-        );
-      }
-    }
-    module.exports = connect(Enotification.mapStateToProps)(Enotification);
 
+  render = () => {
+    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+    const Elist = esp.mod('lib/list');
+    const { goBack } = this.props.navigation
+    return (
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <StatusBar barStyle={'light-content'} />
+        <View
+          style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
+          <Button transparent
+            style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
+            onPress={() => goBack()}>
+            <Icon
+              style={{ color: colorAccent }}
+              name='arrow-back' />
+          </Button>
+          <Text
+            style={{
+              marginHorizontal: 10,
+              fontSize: 18,
+              textAlign: 'left',
+              flex: 1,
+              color: colorAccent
+            }}>Notifikasi</Text>
+        </View>
+        <Elist
+          data={this.props.data}
+          keyExtractor={(e, i) => (e.id).toString()}
+          renderItem={(item, index) => (
+            <TouchableOpacity onPress={() => this.openNotif(item)} >
+              <View style={[{ padding: 16, flexDirection: 'row', backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
+                <View style={{}} >
+                  <Text style={{ color: item.status == 2 ? '#999' : colorPrimary, fontFamily: item.status == 2 ? 'Roboto' : 'Roboto_medium', marginBottom: 8 }} >{item.title}</Text>
+                  <Text note ellipsizeMode="tail" numberOfLines={2} >{item.message}</Text>
+                  <Text note style={{ fontSize: 9, marginTop: 5 }} >{moment(item.updated).fromNow()}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    );
+  }
+}
+module.exports = connect(Enotification.mapStateToProps)(Enotification);
