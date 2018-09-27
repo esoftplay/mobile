@@ -88,7 +88,7 @@ export default class esp {
     const User = esp.mod('user/class');
     User.load((user) => {
       if (user) {
-        if (user.hasOwnProperty("user_id")) {
+        if (user.hasOwnProperty("id")) {
           config.isLogin = 1;
         }
       }

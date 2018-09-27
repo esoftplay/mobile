@@ -53,7 +53,7 @@ class Enotification extends Component {
         }
         const User = esp.mod('user/class');
         User.load((user) => {
-          if (user) post['user_id'] = user.user_id
+          if (user) post['user_id'] = user.id
           Enotification.action.user_notification_fetchData(uri, post, db);
         })
       }, 1)
@@ -162,8 +162,8 @@ class Enotification extends Component {
       </View>
       )
     }
-  
-  
+
+
   render = () => {
     const {colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
         const Elist = esp.mod('lib/list');
@@ -209,4 +209,4 @@ class Enotification extends Component {
       }
     }
     module.exports = connect(Enotification.mapStateToProps)(Enotification);
-    
+

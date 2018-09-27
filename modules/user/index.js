@@ -98,6 +98,9 @@ class Euser extends Component {
           if (user) {
             Object.keys(user).forEach((userfield) => {
               Object.keys(post).forEach((postfield) => {
+                if (userfield=="id") {
+                  userfield = "user_id"
+                }
                 if (postfield != 'token' || postfield != 'secretkey' && postfield == userfield) {
                   post[postfield] = user[userfield]
                 }
