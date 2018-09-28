@@ -6,21 +6,18 @@ var pathAsset = "./assets";
 var tmpDir = "./node_modules/esoftplay/cache/";
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js)$/);
 var Text = "";
-/* CREATE DIRECTORY IF NOT EXISTS */
+/* CREATE DIRECTORY CACHE IF NOT EXISTS */
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
 }
 /* FETCH ALL SCRIPTS */
 var Modules = {}; // Object semua module/task yang bisa dipanggil
 var Reducers = {}; // Object semua reducer yang akan dikumpulkan
-var isJS = new RegExp("\.js$");
-var checkReducer = new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g);
-var checkClass = new RegExp(/\n\s{0,}export\s+default\s+connect\\([^\\)]+\\)\\(\s{0,}(.*?)\s{0,}\\)/g);
 var Extender = {};
 var grabClass = null;
 var delReducer = true;
-var countLoop = 0;
-var countRead = 0;
+var countLoop = 0; // jumlah file yang telah dihitung
+var countRead = 0; // jumlah file yang telah di baca
 checks.forEach(modules => {
   if (fs.existsSync(modules)) {
     fs.readdirSync(modules).forEach(module => {
@@ -29,7 +26,7 @@ checks.forEach(modules => {
       }
       if (fs.statSync(modules + module).isDirectory()) {
         fs.readdirSync(modules + module).forEach(file => {
-          if (isJS.test(file)) {
+          if ((new RegExp("\.js$")).test(file)) {
             var name = file.replace(replacer, '');
             var path = modules + module + "/" + name;
             Modules[module][name] = path;
@@ -39,10 +36,10 @@ checks.forEach(modules => {
                 return console.log(err)
               } else {
                 var key = module + "_" + name;
-                if (checkReducer.test(data)) { // is contains 'reducer'
+                if ((new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g)).test(data)) { // is contains 'reducer'
                   Reducers[key] = path;
                 } else { // not contained 'reducer'
-                  grabClass = data.match(checkClass);
+                  grabClass = data.match(new RegExp(/\n\s{0,}export\s+default\s+connect\\([^\\)]+\\)\\(\s{0,}(.*?)\s{0,}\\)/g));
                   delReducer = true;
                   if (grabClass) { // find MainClass
                     Extender = data.match(new RegExp(/\n\s{0,}class\s+" + grabClass[1] + "\s+extends\s+([^\s]+)/g));
@@ -119,7 +116,6 @@ function createReducer() {
   if (countRead >= countLoop) {
     var CodeImporter = "";
     var CodeReducer = "";
-
     for (const key in Reducers) {
       CodeImporter += "\nimport " + key + " from '../../." + Reducers[key] + "';";
       CodeReducer += "\n\t" + key + ": " + key + ".reducer,";
@@ -144,7 +140,6 @@ function createReducer() {
     })
   } else {
     setTimeout(() => {
-      lastReducers = Reducers
       createReducer()
     }, 100);
   }
