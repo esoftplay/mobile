@@ -25,7 +25,7 @@ class Enotification extends Component {
             status: { $set: 2 }
           }
         }
-        esp.log(itemData, data.indexOf(itemData), query);
+        // esp.log(itemData, data.indexOf(itemData), query);
         return {
           data: update(data, query)
         }
@@ -44,7 +44,7 @@ class Enotification extends Component {
         if (res.rows.length > 0) {
           uri += '?last_id=' + res.rows._array[0].notif_id
         }
-        esp.log(res);
+        // esp.log(res);
         const crypt = esp.mod('lib/crypt');
         const salt = esp.config('salt');
         var post = {
@@ -56,7 +56,7 @@ class Enotification extends Component {
           if (user) post['user_id'] = user.id
           Enotification.action.user_notification_fetchData(uri, post, db);
         })
-      }, 1)
+      })
     },
     user_notification_fetchData(uri, post, db) {
       const Curl = esp.mod('lib/curl');
@@ -72,10 +72,10 @@ class Enotification extends Component {
           if (list.length > 0) {
             try { Enotification.action.user_notification_parseData() } catch (error) { }
           }
-          esp.log(res)
+          // esp.log(res)
         }, (msg) => {
-          esp.log(msg)
-        }, 1
+          // esp.log(msg)
+        }
       )
     },
     user_notification_parseData() {
@@ -118,13 +118,13 @@ class Enotification extends Component {
       notif_id: data.notif_id,
       secretkey: crypt.encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
     }, (res, msg) => {
-      esp.log(res)
+      // esp.log(res)
       const EdbNotif = esp.mod('db/notification');
       const db = new EdbNotif();
       db.setRead(data.id)
       Enotification.action.user_notification_setRead(data.id)
     }, (msg) => {
-      esp.log(msg)
+      // esp.log(msg)
     }, 1)
     var param = JSON.parse(data.params)
     switch (param.action) {

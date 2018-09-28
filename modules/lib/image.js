@@ -3,6 +3,8 @@ import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../react
 import { connect } from '../../../react-redux';
 import { store } from '../../../../App';
 import { FileSystem } from '../../../expo';
+import esp from 'esoftplay';
+import shorthash from 'shorthash'
 /*
 USAGE
 
@@ -21,7 +23,6 @@ source = same as image source props
 quality = float = 0.1 - 1 ( 1 mean one pixel image === 1 pixel display )
 resizeMode = string = only support for contain/cover mode
 */
-import esp from 'esoftplay';
 
 class Eimage extends React.PureComponent {
 
@@ -123,6 +124,9 @@ class Eimage extends React.PureComponent {
 
   nameKey(uri, w, h) {
     var extentions = uri.split('.').pop();
+    if (extentions.includes('?')) {
+      extentions = extentions.split('?')[0]
+    }
     return shorthash.unique(uri + '|' + w + '|' + h) + '.' + extentions
   }
 
@@ -150,7 +154,7 @@ class Eimage extends React.PureComponent {
             Image.getSize(image.uri, (w, h) => {
               this.compress(image.uri, w, h, destWidth, destHeight, (res) => {
                 this.setState({ image: res })
-                Eimage.action.lib_image_add(this.nameKey(source.uri, destWidth, destHeight), res)
+                Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), res)
               })
             }, (error) => {
             })
@@ -160,42 +164,53 @@ class Eimage extends React.PureComponent {
           FileSystem.downloadAsync(source.uri, FileSystem.documentDirectory + this.nameKey(source.uri, destWidth, destHeight));
         }
       }
-      // new image
-      Image.getSize(source.uri, (w, h) => {
-        this.compress(source.uri, w, h, destWidth, destHeight, (res) => {
-          this.setState({ image: res })
-          Eimage.action.lib_image_add(this.nameKey(source.uri, destWidth, destHeight), res)
+      if (this.props.original) {
+        this.setState({ image: { uri: source.uri } })
+        Eimage.action.lib_image_add(this.nameKey(source.uri, destWidth, destHeight), { uri: source.uri })
+      } else {
+        Image.getSize(source.uri, (w, h) => {
+          this.compress(source.uri, w, h, destWidth, destHeight, (res) => {
+            this.setState({ image: res })
+            Eimage.action.lib_image_add(this.nameKey(source.uri, destWidth, destHeight), res)
+          })
+        }, (error) => {
         })
-      }, (error) => {
-      })
+      }
+
     } else {
       var image = Image.resolveAssetSource(source)
+      esp.log('1');
       if (image) {
         if (this.props.images.hasOwnProperty(this.nameKey(image.uri, destWidth, destHeight))) {
           this.setState({ image: this.props.images[this.nameKey(image.uri, destWidth, destHeight)] })
           return
         } else {
-          const path = FileSystem.documentDirectory + this.nameKey(source.uri, destWidth, destHeight);
-          const image = await FileSystem.getInfoAsync(path);
-          if (image.exists) {
+          const path = FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight);
+          const limage = await FileSystem.getInfoAsync(path);
+          if (limage.exists) {
             if (this.props.original) {
-              this.setState({ image: { uri: image.uri } })
-              Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), { uri: image.uri })
+              this.setState({ image: { uri: limage.uri } })
+              Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), { uri: limage.uri })
             } else {
-              this.compress(image.uri, image.width, image.height, destWidth, destHeight, (res) => {
+              this.compress(limage.uri, limage.width, limage.height, destWidth, destHeight, (res) => {
                 this.setState({ image: res })
-                Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), res)
+                Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), res)
               })
             }
             return;
           } else {
-            FileSystem.copyAsync({ from: image.uri, to: FileSystem.documentDirectory + this.nameKey(source.uri, destWidth, destHeight) });
+            FileSystem.downloadAsync(image.uri, FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight));
           }
         }
-        this.compress(image.uri, image.width, image.height, destWidth, destHeight, (res) => {
-          this.setState({ image: res })
-          Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), res)
-        })
+        if (this.props.original) {
+          this.setState({ image: { uri: image.uri } })
+          Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), { uri: image.uri })
+        } else {
+          this.compress(image.uri, image.width, image.height, destWidth, destHeight, (res) => {
+            this.setState({ image: res })
+            Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), res)
+          })
+        }
       }
     }
   }
