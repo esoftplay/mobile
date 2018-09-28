@@ -59,7 +59,7 @@ class Euser extends Component {
     }
     var push_id = await AsyncStorage.getItem('push_id');
     if (!push_id) {
-      pushToken();
+      Euser.pushToken();
     }
     var navigations = {}
     for (let i = 0; i < navs.length; i++) {
@@ -78,7 +78,8 @@ class Euser extends Component {
     this.Router = await createStackNavigator(navigations, config)
     this.setState({ loading: false })
   }
-  pushToken() {
+  
+  static pushToken() {
     const notif = esp.mod('lib/notification');
     notif.requestPermission(async (token) => {
       if (token) {
@@ -98,7 +99,7 @@ class Euser extends Component {
           if (user) {
             Object.keys(user).forEach((userfield) => {
               Object.keys(post).forEach((postfield) => {
-                if (userfield=="id") {
+                if (userfield == "id") {
                   userfield = "user_id"
                 }
                 if ((postfield != 'token' || postfield != 'secretkey' || postfield != device) && postfield == userfield) {
