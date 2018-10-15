@@ -1,5 +1,5 @@
 import * as React from '../../../react'
-import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
+import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 import { Dimensions } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 const { width } = Dimensions.get('window')
 
@@ -66,6 +66,7 @@ class EList extends React.Component {
         ref={(e) => this.fastList = e}
         layoutProvider={this.layoutProvider}
         dataProvider={this.state.data}
+        itemAnimator={new BaseItemAnimator()}
         forceNonDeterministicRendering={this.props.staticHeight == null}
         contextProvider={this.contextProvider}
         rowRenderer={this.rowRenderer}

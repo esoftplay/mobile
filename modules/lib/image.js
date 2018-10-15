@@ -112,7 +112,7 @@ class Eimage extends React.PureComponent {
             width: PixelRatio.getPixelSizeForLayoutSize(destWidth * quality),
             height: PixelRatio.getPixelSizeForLayoutSize(destHeight * quality)
           },
-          resizeMode: 'contain',
+          resizeMode: destResizeMode || 'cover',
         },
         (uri) => callback({ uri: uri }), (error) => {
           console.log(error)
@@ -159,10 +159,8 @@ class Eimage extends React.PureComponent {
             }, (error) => {
             })
           }
-          return;
-        } else {
-          FileSystem.downloadAsync(source.uri, FileSystem.documentDirectory + this.nameKey(source.uri, destWidth, destHeight));
         }
+        FileSystem.downloadAsync(source.uri, FileSystem.documentDirectory + this.nameKey(source.uri, destWidth, destHeight));
       }
       if (this.props.original) {
         this.setState({ image: { uri: source.uri } })
@@ -179,7 +177,6 @@ class Eimage extends React.PureComponent {
 
     } else {
       var image = Image.resolveAssetSource(source)
-      esp.log('1');
       if (image) {
         if (this.props.images.hasOwnProperty(this.nameKey(image.uri, destWidth, destHeight))) {
           this.setState({ image: this.props.images[this.nameKey(image.uri, destWidth, destHeight)] })
@@ -192,15 +189,14 @@ class Eimage extends React.PureComponent {
               this.setState({ image: { uri: limage.uri } })
               Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), { uri: limage.uri })
             } else {
-              this.compress(limage.uri, limage.width, limage.height, destWidth, destHeight, (res) => {
+              this.compress(limage.uri, image.width, image.height, destWidth, destHeight, (res) => {
                 this.setState({ image: res })
                 Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), res)
               })
             }
             return;
-          } else {
-            FileSystem.downloadAsync(image.uri, FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight));
           }
+          FileSystem.downloadAsync(image.uri, FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight));
         }
         if (this.props.original) {
           this.setState({ image: { uri: image.uri } })

@@ -1,5 +1,5 @@
 import * as React from '../../../react'
-import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
+import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 import { Dimensions, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
 
 /*
@@ -83,6 +83,7 @@ class Escroll extends React.Component {
       <View onLayout={e => this.state.width = e.nativeEvent.layout.width} style={[{ flex: 1, },]} >
         <RecyclerListView
           layoutProvider={this.layoutProvider}
+          itemAnimator={new BaseItemAnimator()}
           dataProvider={this.state.data}
           forceNonDeterministicRendering={true}
           contextProvider={this.contextProvider}

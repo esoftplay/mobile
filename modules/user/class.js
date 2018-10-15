@@ -7,9 +7,18 @@ class Eclass {
   }
   static load(callback) {
     AsyncStorage.getItem('user').then((user) => {
+      if (user)
         callback(JSON.parse(user))
+      else
+        callback(null)
     })
   }
+  static isLogin(callback) {
+    Eclass.load((user) => {
+      return callback(user != null)
+    })
+  }
+
   static delete() {
     AsyncStorage.removeItem('user');
   }
