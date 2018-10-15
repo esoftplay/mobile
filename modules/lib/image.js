@@ -194,7 +194,6 @@ class Eimage extends React.PureComponent {
                 Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), res)
               })
             }
-            return;
           }
           FileSystem.downloadAsync(image.uri, FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight));
         }
