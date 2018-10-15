@@ -69,16 +69,19 @@ class Euser extends Component {
         delete navigations[nav]
       }
     }
-    var config = {
-      initialRouteName: esp.config("isLogin") ? esp.config("home", "member") : esp.config("home", "public"),
-      navigationOptions: {
-        header: null
+    const Eclass = esp.mod('user/class');
+    Eclass.isLogin(async (isLogin) => {
+      var config = {
+        initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public"),
+        navigationOptions: {
+          header: null
+        }
       }
-    }
-    this.Router = await createStackNavigator(navigations, config)
-    this.setState({ loading: false })
+      this.Router = await createStackNavigator(navigations, config)
+      this.setState({ loading: false })
+    })
   }
-  
+
   static pushToken() {
     const notif = esp.mod('lib/notification');
     notif.requestPermission(async (token) => {
