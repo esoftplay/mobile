@@ -82,7 +82,7 @@ class Euser extends Component {
     })
   }
 
-  static pushToken() {
+  static pushToken = () => new Promise((resolve, reject) => {
     const notif = esp.mod('lib/notification');
     notif.requestPermission(async (token) => {
       if (token) {
@@ -96,33 +96,35 @@ class Euser extends Component {
           device: Constants.deviceName,
           secretkey: crypt.encode(config.salt + "|" + moment().format('YYYY-MM-DD hh:mm:ss'))
         }
-        post['push_id'] = await AsyncStorage.getItem('push_id');
         const User = esp.mod('user/class');
-        await User.load((user) => {
+        await User.load(async (user) => {
           if (user) {
+            user['user_id'] = user.id
             Object.keys(user).forEach((userfield) => {
               Object.keys(post).forEach((postfield) => {
-                if (userfield == "id") {
-                  userfield = "user_id"
-                }
-                if ((postfield != 'token' || postfield != 'secretkey' || postfield != device) && postfield == userfield) {
+                if ((postfield != 'token' || postfield != 'secretkey' || postfield != 'push_id' || postfield != 'device') && postfield == userfield) {
                   post[postfield] = user[userfield]
                 }
               })
             })
           }
           const Curl = esp.mod('lib/curl');
+          var push_id = await AsyncStorage.getItem('push_id');
+          post['push_id'] = push_id
           new Curl(config.protocol + "://" + config.domain + config.uri + 'user/push-token', post,
             (res, msg) => {
-              AsyncStorage.setItem('push_id', String(res))
-              AsyncStorage.setItem('token', token)
+              AsyncStorage.setItem('push_id', String(Number.isInteger(parseInt(res)) ? res : push_id));
+              AsyncStorage.setItem('token', String(token))
+              resolve(res)
             }, (msg) => {
-              esp.log('error', msg);
-            }, 1)
+              reject(msg)
+
+            })
         })
       }
     })
-  }
+  })
+
 
   render = () => {
     if (this.state.loading) return null

@@ -76,10 +76,10 @@ class Eimage extends React.PureComponent {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.source.hasOwnProperty('uri') && prevProps.source.uri !== this.props.source.uri) {
-      this.setState({ image: null })
+      if (this.mounted) this.setState({ image: null })
       this.processImage(this.props.source)
     } else if (!prevProps.source.hasOwnProperty('uri') && prevProps.source !== this.props.source) {
-      this.setState({ image: null })
+      if (this.mounted) this.setState({ image: null })
       this.processImage(this.props.source)
     }
   };
@@ -140,7 +140,7 @@ class Eimage extends React.PureComponent {
     if (source.hasOwnProperty('uri')) {
       // load from reducer
       if (this.props.images.hasOwnProperty(this.nameKey(source.uri, destWidth, destHeight))) {
-        this.setState({ image: this.props.images[this.nameKey(source.uri, destWidth, destHeight)] })
+        if (this.mounted) this.setState({ image: this.props.images[this.nameKey(source.uri, destWidth, destHeight)] })
         return
       } else {
         // load from disk
@@ -148,12 +148,12 @@ class Eimage extends React.PureComponent {
         const image = await FileSystem.getInfoAsync(path);
         if (image.exists) {
           if (this.props.original) {
-            this.setState({ image: { uri: image.uri } })
+            if (this.mounted) this.setState({ image: { uri: image.uri } })
             Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), { uri: image.uri })
           } else {
             Image.getSize(image.uri, (w, h) => {
               this.compress(image.uri, w, h, destWidth, destHeight, (res) => {
-                this.setState({ image: res })
+                if (this.mounted) this.setState({ image: res })
                 Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), res)
               })
             }, (error) => {
@@ -163,12 +163,12 @@ class Eimage extends React.PureComponent {
         FileSystem.downloadAsync(source.uri, FileSystem.documentDirectory + this.nameKey(source.uri, destWidth, destHeight));
       }
       if (this.props.original) {
-        this.setState({ image: { uri: source.uri } })
+        if (this.mounted) this.setState({ image: { uri: source.uri } })
         Eimage.action.lib_image_add(this.nameKey(source.uri, destWidth, destHeight), { uri: source.uri })
       } else {
         Image.getSize(source.uri, (w, h) => {
           this.compress(source.uri, w, h, destWidth, destHeight, (res) => {
-            this.setState({ image: res })
+            if (this.mounted) this.setState({ image: res })
             Eimage.action.lib_image_add(this.nameKey(source.uri, destWidth, destHeight), res)
           })
         }, (error) => {
@@ -179,18 +179,18 @@ class Eimage extends React.PureComponent {
       var image = Image.resolveAssetSource(source)
       if (image) {
         if (this.props.images.hasOwnProperty(this.nameKey(image.uri, destWidth, destHeight))) {
-          this.setState({ image: this.props.images[this.nameKey(image.uri, destWidth, destHeight)] })
+          if (this.mounted) this.setState({ image: this.props.images[this.nameKey(image.uri, destWidth, destHeight)] })
           return
         } else {
           const path = FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight);
           const limage = await FileSystem.getInfoAsync(path);
           if (limage.exists) {
             if (this.props.original) {
-              this.setState({ image: { uri: limage.uri } })
+              if (this.mounted) this.setState({ image: { uri: limage.uri } })
               Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), { uri: limage.uri })
             } else {
               this.compress(limage.uri, image.width, image.height, destWidth, destHeight, (res) => {
-                this.setState({ image: res })
+                if (this.mounted) this.setState({ image: res })
                 Eimage.action.lib_image_add(this.nameKey(limage.uri, destWidth, destHeight), res)
               })
             }
@@ -198,11 +198,11 @@ class Eimage extends React.PureComponent {
           FileSystem.downloadAsync(image.uri, FileSystem.documentDirectory + this.nameKey(image.uri, destWidth, destHeight));
         }
         if (this.props.original) {
-          this.setState({ image: { uri: image.uri } })
+          if (this.mounted) this.setState({ image: { uri: image.uri } })
           Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), { uri: image.uri })
         } else {
           this.compress(image.uri, image.width, image.height, destWidth, destHeight, (res) => {
-            this.setState({ image: res })
+            if (this.mounted) this.setState({ image: res })
             Eimage.action.lib_image_add(this.nameKey(image.uri, destWidth, destHeight), res)
           })
         }
@@ -210,9 +210,16 @@ class Eimage extends React.PureComponent {
     }
   }
 
+  mounted = false
   componentDidMount = () => {
+    this.mounted = true
     this.processImage(this.props.source)
   };
+
+  componentWillUnmount() {
+    this.mounted = false
+  }
+
 
   render() {
     var style = StyleSheet.flatten(this.props.style)
