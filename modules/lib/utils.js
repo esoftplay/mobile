@@ -23,7 +23,7 @@ class Eutils {
     return out;
   }
   static navReplace(store, navigation, routeName, params) {
-    (store.getState().nav.routes).some((item) => item.routeName == routeName) && navigation.goBack(utils.getKeyBackOf(routeName, store))
+    (store.getState().user_index.routes).some((item) => item.routeName == routeName) && navigation.goBack(utils.getKeyBackOf(routeName, store))
     navigation.navigate(routeName, params)
   }
   static getKeyBackOf(routeName, store) {
@@ -91,6 +91,7 @@ class Eutils {
     return String(moment(new Date()).format(format))
   }
   static getDateAsFormat(input, format = 'dddd, DD MMMM YYYY') {
+    moment.locale('id')
     return moment(input).format(format)
   }
   static telTo(number = '') {
