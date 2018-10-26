@@ -148,21 +148,22 @@ SYNOPSIS\n\
 \n\
 DESCRIPTION\n\
   The following options are available:\n\
-    - test     = rebuild all routers\n\
-    - start    = start execution (execute automatically when starting the program)\n\
-    - watch    = detect when you've made code changes and then automatically build router\n\
-    - stop     = stop watching code changes\n\
-    - help     = display help\n\
-    - c/create = create new module\n\
-    - e/edit   = edit module\n\
-    - l/list   = display all possible routing\n\
-    - n/new    = create new module along with 'reducer'\n\
-    - i/info   = display file priority from the module\n\
-    - v/view   = concatenate and print file from any module\n\
+    - test              = rebuild all routers\n\
+    - start             = start execution (execute automatically when starting the program)\n\
+    - watch             = detect when you've made code changes and then automatically build router\n\
+    - stop              = stop watching code changes\n\
+    - help              = display help\n\
+    - c/create $modtask = create new module\n\
+    - e/edit   $modtask = edit module\n\
+    - l/list   $module  = display all possible routing\n\
+    - n/new    $modtask = create new module along with 'reducer'\n\
+    - i/info   $modtask = display file priority from the module\n\
+    - v/view   $modtask = concatenate and print file from any module\n\
 \n\
 EXAMPLE\n\
-  - esp create modulename/taskname [OR] esp c modulename/taskname\n\
-  - esp list modulename [OR] esp l modulename\n\
+  - esp\n\
+  - esp create modulename/taskname [OR] esp c content/taskname\n\
+  - esp list modulename [OR] esp l content\n\
   - esp modulename/taskname\n\
   PS: Do not use any option, if you want to display all routing list\n\
 ";
