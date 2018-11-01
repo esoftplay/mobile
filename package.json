@@ -1,6 +1,6 @@
 {
   "name": "esoftplay",
-  "version": "0.0.48",
+  "version": "0.0.50",
   "description": "embedding data from esoftplay framework (web based) into mobile app",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,8 @@
   "bundleDependencies": [
     "@expo/vector-icons",
     "buffer",
+    "child_process",
+    "fs",
     "immutability-helper",
     "moment",
     "moment-timezone",
