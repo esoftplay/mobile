@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { View } from 'react-native';
 
 class Ecategory extends React.Component {
   state = {
@@ -14,4 +14,5 @@ class Ecategory extends React.Component {
     );
   }
 }
-module.exports = Ecategory;
+module.exports = Ecategory 
+ export default  Ecategory;

@@ -2,7 +2,7 @@ import {
   Linking,
   Platform,
   Clipboard
-} from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+} from 'react-native';
 import moment from 'moment/min/moment-with-locales'
 import esp from 'esoftplay';
 
@@ -135,4 +135,5 @@ class Eutils {
   }
 
 }
-module.exports = Eutils
+module.exports = Eutils 
+ export default  Eutils;

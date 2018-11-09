@@ -4,12 +4,35 @@ const fs = require('fs');
 var checks = ['./node_modules/esoftplay/modules/', './modules/', './templates/'];
 var pathAsset = "./assets";
 var tmpDir = "./node_modules/esoftplay/cache/";
+var tmpDirModules = "./node_modules/esoftplay/cache/modules/";
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js)$/);
 var Text = "";
 /* CREATE DIRECTORY CACHE IF NOT EXISTS */
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
 }
+/* === */
+
+var deleteFolderRecursive = function (path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function (file, index) {
+      var curPath = path + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+
+/* CLEAR ENTIRE FOLDER CACHE/MODULES */
+deleteFolderRecursive(tmpDirModules);
+if (!fs.existsSync(tmpDirModules)) {
+  fs.mkdirSync(tmpDirModules);
+}
+
 /* FETCH ALL SCRIPTS */
 var Modules = {}; // Object semua module/task yang bisa dipanggil
 var Reducers = {}; // Object semua reducer yang akan dikumpulkan
@@ -146,6 +169,10 @@ function createReducer() {
 }
 createReducer()
 
+/* === */
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 /* CREATE ROUTER LIST */
 var Task = "";
 var nav = "";
@@ -157,6 +184,13 @@ for (const module in Modules) {
     Task += "\t\t" + 'case "' + nav + '":' + "\n\t\t\t" +
       'Out = require("../../.' + Modules[module][task] + '")' + "\n\t\t\t" +
       'break;' + "\n";
+    /* ADD ROUTER EACH FILE FOR STATIC IMPORT */
+    var staticImport = 'import ' + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + ' from ' + '"../../../.' + Modules[module][task] + '";\n' + 'export default ' + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + ';';
+    fs.writeFile(tmpDirModules + module + '_' + task + '.js', staticImport, { flag: 'w' }, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+    });
   }
 }
 Text = 'function routers(modtask) {' + "\n\t" +

@@ -1,9 +1,9 @@
-import React, { Component } from '../../../react';
-import { TouchableOpacity, View, Alert, Linking, StatusBar } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import esp from '../../../esoftplay';
+import React, { Component } from 'react';
+import { TouchableOpacity, View, Alert, Linking, StatusBar } from 'react-native';
+import esp from 'esoftplay';
 import { store } from '../../../../App';
-import { connect } from '../../../react-redux'
-import moment from '../../../moment/min/moment-with-locales'
+import { connect } from 'react-redux'
+import moment from 'moment/min/moment-with-locales'
 import update from 'immutability-helper'
 import { Text, Button, Icon } from 'native-base';
 
@@ -208,4 +208,5 @@ class Enotification extends Component {
     );
   }
 }
-module.exports = connect(Enotification.mapStateToProps)(Enotification);
+module.exports = connect(Enotification.mapStateToProps)(Enotification) 
+ export default  connect(Enotification.mapStateToProps)(Enotification);

@@ -1,6 +1,6 @@
-import * as React from '../../../react'
+import * as React from 'react'
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
-import { Dimensions } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { Dimensions } from 'react-native';
 const { width } = Dimensions.get('window')
 
 class ContextHelper extends ContextProvider {
@@ -77,4 +77,5 @@ class EList extends React.Component {
     )
   }
 }
-module.exports = EList
+module.exports = EList 
+ export default  EList;

@@ -37,8 +37,6 @@
   "bundleDependencies": [
     "@expo/vector-icons",
     "buffer",
-    "child_process",
-    "fs",
     "immutability-helper",
     "moment",
     "moment-timezone",

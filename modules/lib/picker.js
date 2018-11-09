@@ -1,6 +1,6 @@
-import React from '../../../react';
-import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import * as Permissions from '../../../expo/src/Permissions.js';
+import React from 'react';
+import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from 'react-native';
+import { Permissions } from 'expo';
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 import update from 'immutability-helper';
 import { Ionicons } from '@expo/vector-icons';
@@ -137,4 +137,5 @@ class Epicker extends React.Component {
   }
 }
 
-module.exports = Epicker;
+module.exports = Epicker
+export default Epicker;

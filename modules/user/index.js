@@ -1,11 +1,11 @@
-import React, { Component } from '../../../react';
-import moment from '../../../moment'
+import React, { Component } from 'react';
+import moment from 'moment'
 import navs from '../../cache/navigations';
-import { AsyncStorage, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { createStackNavigator } from '../../../react-navigation';
+import { AsyncStorage, View } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 import { store } from '../../../../App';
 import esp from 'esoftplay';
-import { Constants } from '../../../expo';
+import { Constants } from 'expo';
 
 class Euser extends Component {
   static initState = {}
@@ -135,4 +135,5 @@ class Euser extends Component {
     );
   }
 }
-module.exports = Euser
+module.exports = Euser 
+ export default  Euser;

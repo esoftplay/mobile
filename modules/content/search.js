@@ -1,6 +1,6 @@
 //import liraries
-import * as React from '../../../react';
-import { View, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Button, Icon, Input } from 'native-base';
 import esp from 'esoftplay';
 const { elevation, colorPrimary } = esp.mod('lib/style');
@@ -80,4 +80,5 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-module.exports = Esearch;
+module.exports = Esearch 
+ export default  Esearch;

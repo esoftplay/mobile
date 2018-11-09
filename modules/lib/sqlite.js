@@ -1,4 +1,4 @@
-import SQLite from '../../../expo/src/SQLite.js';
+import { SQLite } from 'expo';
 import esp from 'esoftplay';
 const config = esp.config();
 
@@ -616,4 +616,5 @@ class Esqlite {
   }
 }
 
-module.exports = Esqlite;
+module.exports = Esqlite
+export default Esqlite;

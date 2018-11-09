@@ -1,8 +1,8 @@
-import * as React from '../../../react'
-import { Image, PixelRatio, ImageEditor, StyleSheet, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js'
-import { connect } from '../../../react-redux';
+import * as React from 'react'
+import { Image, PixelRatio, ImageEditor, StyleSheet, View } from 'react-native'
+import { connect } from 'react-redux';
 import { store } from '../../../../App';
-import { FileSystem } from '../../../expo';
+import { FileSystem } from 'expo';
 import esp from 'esoftplay';
 import shorthash from 'shorthash'
 /*
@@ -233,4 +233,5 @@ class Eimage extends React.PureComponent {
 }
 
 
-module.exports = connect(Eimage.mapStateToProps)(Eimage);
+module.exports = connect(Eimage.mapStateToProps)(Eimage) 
+ export default  connect(Eimage.mapStateToProps)(Eimage);

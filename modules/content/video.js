@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { WebView, StyleSheet, View, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { WebView, StyleSheet, View, ActivityIndicator } from 'react-native';
 import esp from 'esoftplay';
 const { colorPrimary } = esp.mod('lib/style');
 class Evideo extends React.Component {
@@ -21,4 +21,5 @@ class Evideo extends React.Component {
   }
 }
 
-module.exports = Evideo;
+module.exports = Evideo 
+ export default  Evideo;

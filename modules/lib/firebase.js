@@ -14,4 +14,5 @@ class Efirebase extends Component {
     );
   }
 }
-module.exports = Efirebase;
+module.exports = Efirebase 
+ export default  Efirebase;

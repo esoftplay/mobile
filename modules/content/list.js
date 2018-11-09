@@ -1,5 +1,5 @@
-import * as React from '../../../react';
-import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, Image, Linking, BackHandler, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react';
+import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, Image, Linking, BackHandler, Platform } from 'react-native';
 import { Container, Button, Text, Icon, Thumbnail } from 'native-base';
 import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
@@ -337,7 +337,7 @@ class Elist extends React.Component {
 
 
 
-class Item extends React.Component {
+export class Item extends React.Component {
 
   constructor(props) {
     super(props);
@@ -372,7 +372,7 @@ class Item extends React.Component {
               style={styles.containerRow}>
               <Eimage
                 style={{ width: width, height: 110 }}
-                style={[styles.image, { width: width }]}
+                style={[styles.image, { width: width, resizeMode: 'contain' }]}
                 source={{ uri: image }} />
             </View>
           </TouchableWithoutFeedback>
@@ -551,5 +551,6 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = Elist;
+module.exports = Elist
+export default Elist;
 module.exports.Item = Item;

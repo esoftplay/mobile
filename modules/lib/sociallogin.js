@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { View, WebView, AsyncStorage, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { View, WebView, AsyncStorage, ActivityIndicator } from 'react-native';
 import utils from './utils'
 import esp from 'esoftplay';
 const config = esp.config()
@@ -52,4 +52,5 @@ class EsocialLogin extends React.Component {
   }
 }
 
-module.exports = EsocialLogin;
+module.exports = EsocialLogin 
+ export default  EsocialLogin;

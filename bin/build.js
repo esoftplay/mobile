@@ -148,8 +148,8 @@ if (fs.existsSync(packjson))
 				"domain": $name+".com",
 				"salt": "CHANGE_INTO_YOUR_OWN_SALT",
 				"home": {
-					"public": "content",
-					"member": "content/member"
+					"public": "content/index",
+					"member": "content/index"
 				}
 			}
 		}

@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { View } from 'react-native';
 
 class Edownload extends React.Component {
   state = {
@@ -14,4 +14,5 @@ class Edownload extends React.Component {
     );
   }
 }
-module.exports = Edownload;
+module.exports = Edownload 
+ export default  Edownload;

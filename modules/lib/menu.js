@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { Text, View, FlatList, TouchableOpacity } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
 import esp from 'esoftplay';
 const { colorPrimary } = esp.mod('lib/style');
@@ -30,4 +30,5 @@ class Emenu extends React.Component {
   }
 }
 
-module.exports = Emenu;
+module.exports = Emenu 
+ export default  Emenu;

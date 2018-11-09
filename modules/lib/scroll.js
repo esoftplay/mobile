@@ -1,6 +1,6 @@
-import * as React from '../../../react'
+import * as React from 'react'
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
-import { Dimensions, View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { Dimensions, View } from 'react-native';
 
 /*
 Using ScrollView
@@ -94,4 +94,5 @@ class Escroll extends React.Component {
     )
   }
 }
-module.exports = Escroll;
+module.exports = Escroll 
+ export default  Escroll;

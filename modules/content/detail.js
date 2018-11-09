@@ -1,8 +1,8 @@
 //import liraries
-import * as React from '../../../react';
-import { View, StyleSheet, StatusBar, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking, ActivityIndicator } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { Left, Button, Icon, Text, ListItem } from '../../../native-base';
-import { LinearGradient } from '../../../expo';
+import * as React from 'react';
+import { View, StyleSheet, StatusBar, Animated, ScrollView, Image, TouchableWithoutFeedback, Linking, ActivityIndicator } from 'react-native';
+import { Left, Button, Icon, Text, ListItem } from 'native-base';
+import { LinearGradient } from 'expo';
 import moment from 'moment/min/moment-with-locales'
 import esp from '../../index';
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = esp.mod('lib/style');
@@ -459,4 +459,5 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-module.exports = Edetail;
+module.exports = Edetail 
+ export default  Edetail;
