@@ -1,11 +1,11 @@
 //import liraries
-import * as React from '../../../react';
+import * as React from 'react';
 import {
   View,
   StyleSheet,
   Image,
   FlatList
-} from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+} from 'react-native';
 const { width } = esp.mod('lib/style');
 import utils from '../lib/utils';
 import esp from 'esoftplay';
@@ -62,4 +62,5 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-module.exports = Ezoom;
+module.exports = Ezoom 
+ export default  Ezoom;

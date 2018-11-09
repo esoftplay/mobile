@@ -1,10 +1,10 @@
-import React, { Component } from '../../../react';
-import { View, TextInput, ScrollView, Share, TouchableOpacity, StatusBar, Image, KeyboardAvoidingView } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { Text, Button } from '../../../native-base';
+import React, { Component } from 'react';
+import { View, TextInput, ScrollView, Share, TouchableOpacity, StatusBar, Image, KeyboardAvoidingView } from 'react-native';
+import { Text, Button } from 'native-base';
 import esp from 'esoftplay';
 import Expo from 'expo'
-import { Ionicons } from '../../../@expo/vector-icons'
-import Modal from '../../../react-native-modal';
+import { Ionicons } from '@expo/vector-icons'
+import Modal from 'react-native-modal';
 import { CameraRoll } from 'react-native';
 const EsocialLogin = esp.mod('lib/sociallogin');
 const { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } = esp.mod('lib/style');
@@ -154,4 +154,5 @@ class EuserLogin extends Component {
     );
   }
 }
-module.exports = EuserLogin;
+module.exports = EuserLogin 
+ export default  EuserLogin;

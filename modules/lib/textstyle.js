@@ -1,5 +1,5 @@
-import * as React from '../../../react';
-import { Text, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react';
+import { Text, StyleSheet } from 'react-native';
 
 class EtextStyle extends React.Component {
   static largeTitle = 'largeTitle'
@@ -95,4 +95,5 @@ class EtextStyle extends React.Component {
   
 }
 
-module.exports = EtextStyle;
+module.exports = EtextStyle 
+ export default  EtextStyle;

@@ -1,6 +1,6 @@
 //import liraries
-import * as React from '../../../react'
-import { Audio } from '../../../expo';
+import * as React from 'react'
+import { Audio } from 'expo';
 
 // create a component
 class Eaudio extends React.Component {
@@ -50,7 +50,7 @@ class Eaudio extends React.Component {
       volume: this.state.volume,
       isMuted: this.state.muted,
     };
-    const { sound, status  } = await Audio.Sound.create(
+    const { sound, status } = await Audio.Sound.create(
       source,
       initialStatus,
       this._onPlaybackStatusUpdate
@@ -71,7 +71,7 @@ class Eaudio extends React.Component {
       }, () => this.props.onStatusChange(this.state.isPlaying));
     } else {
       if (status.error) {
-        
+
       }
     }
   };
@@ -92,4 +92,5 @@ class Eaudio extends React.Component {
 }
 
 //make this component available to the app
-module.exports = Eaudio;
+module.exports = Eaudio
+export default Eaudio;

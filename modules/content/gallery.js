@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { View } from 'react-native';
 
 class Egallery extends React.Component {
   state = {
@@ -14,4 +14,5 @@ class Egallery extends React.Component {
     );
   }
 }
-module.exports = Egallery;
+module.exports = Egallery 
+ export default  Egallery;

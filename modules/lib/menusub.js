@@ -1,15 +1,15 @@
-import * as React from '../../../react'
-import { Text, View, FlatList, TouchableOpacity } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
 import esp from 'esoftplay';
 const { colorPrimary } = esp.mod('lib/style');
-const Emenu = esp.mod('lib/menu');
 
 class Emenusub extends React.Component {
   state = {
     expanded: false
   }
   render() {
+    const Emenu = esp.mod('lib/menu');
     var data = this.props.data.filter((item) => item.par_id == this.props.id).map((item) => item)
     return (
       <View>
@@ -25,7 +25,7 @@ class Emenusub extends React.Component {
             data.length > 0 ?
               <TouchableOpacity onPress={() => this.setState({ expanded: !this.state.expanded })} >
                 <View style={{ paddingLeft: 10, flexDirection: 'column' }}>
-                  <Icon name={!this.state.expanded ? "ios-arrow-down-outline" : "ios-arrow-up-outline"} style={{ color: colorPrimary, fontSize: 20, paddingRight: 16 }} />
+                  <Icon name={!this.state.expanded ? "md-arrow-dropdown" : "md-arrow-dropup"} style={{ color: colorPrimary, fontSize: 20, paddingRight: 16 }} />
                 </View>
               </TouchableOpacity>
               : null
@@ -36,4 +36,5 @@ class Emenusub extends React.Component {
     )
   }
 }
-module.exports = Emenusub;
+module.exports = Emenusub 
+ export default  Emenusub;

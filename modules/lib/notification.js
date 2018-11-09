@@ -55,4 +55,5 @@ class Enotification {
   }
 }
 
-module.exports = Enotification
+module.exports = Enotification 
+ export default  Enotification;

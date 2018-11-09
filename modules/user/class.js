@@ -1,5 +1,5 @@
-import * as React from '../../../react'
-import { AsyncStorage } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { AsyncStorage } from 'react-native';
 
 class Eclass {
   static create(user) {
@@ -24,4 +24,5 @@ class Eclass {
   }
 
 }
-module.exports = Eclass;
+module.exports = Eclass 
+ export default  Eclass;

@@ -58,4 +58,5 @@ class ENotification extends SQLiteHelper {
   }
 }
 
-module.exports = ENotification
+module.exports = ENotification 
+ export default  ENotification;

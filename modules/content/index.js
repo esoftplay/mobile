@@ -1,6 +1,6 @@
-import React from '../../../react';
+import React from 'react';
 import { SafeAreaView } from 'react-navigation';
-import { StatusBar, View, StyleSheet } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import { StatusBar, View, StyleSheet } from 'react-native';
 import esp from '../../index';
 const { defaultStyle, colorPrimaryDark } = esp.mod('lib/style');
 const Elist = esp.mod('content/list');
@@ -24,4 +24,5 @@ const styles = StyleSheet.create({
   }
 })
 
-module.exports = Econtent;
+module.exports = Econtent 
+ export default  Econtent;

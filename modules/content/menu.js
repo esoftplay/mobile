@@ -1,6 +1,6 @@
-import * as React from '../../../react'
-import { View, AsyncStorage, ScrollView, Image, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { BlurView } from '../../../expo';
+import * as React from 'react'
+import { View, AsyncStorage, ScrollView, Image, Platform } from 'react-native';
+import { BlurView } from 'expo';
 import esp from 'esoftplay';
 const Curl = esp.mod('lib/curl')
 const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
@@ -90,4 +90,5 @@ class Emenu extends React.Component {
     )
   }
 }
-module.exports = Emenu;
+module.exports = Emenu 
+ export default  Emenu;

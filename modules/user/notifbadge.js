@@ -1,10 +1,10 @@
 
-import React, { Component } from '../../../react';
-import { View } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
-import { Badge, Text } from '../../../native-base'
+import React, { Component } from 'react';
+import { View } from 'react-native';
+import { Badge, Text } from 'native-base'
 import esp from 'esoftplay';
 import { TouchableOpacity } from 'react-native';
-import { connect } from '../../../react-redux';
+import { connect } from 'react-redux';
 const Enotification = esp.mod('user/notification');
 
 
@@ -35,4 +35,5 @@ class Enotifbadge extends Component {
     );
   }
 }
-module.exports = connect(Enotifbadge.mapStateToProps)(Enotifbadge);
+module.exports = connect(Enotifbadge.mapStateToProps)(Enotifbadge) 
+ export default  connect(Enotifbadge.mapStateToProps)(Enotifbadge);

@@ -1,5 +1,5 @@
-import * as React from '../../../react';
-import { Dimensions, WebView, } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react';
+import { Dimensions, WebView, } from 'react-native';
 
 const injectedScript = function () {
   function waitForBridge() {
@@ -69,4 +69,5 @@ class EwebView extends React.Component {
   }
 }
 
-module.exports = EwebView;
+module.exports = EwebView 
+ export default  EwebView;

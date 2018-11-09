@@ -1,6 +1,6 @@
 //import liraries
-import * as React from '../../../react'
-import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from '../../../react-native/Libraries/react-native/react-native-implementation.js';
+import * as React from 'react'
+import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, Button, Container, Icon, Item, Input, Thumbnail } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
 const { colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
@@ -453,4 +453,5 @@ const styles = StyleSheet.create({
 })
 
 //make this component available to the app
-module.exports = Ecomment;
+module.exports = Ecomment
+export default Ecomment;
