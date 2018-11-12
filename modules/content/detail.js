@@ -170,7 +170,7 @@ class Edetail extends React.Component {
                 {moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}
               </Text>
               <EwebView
-                source={{ html: config.webviewOpen + result.content + config.webviewClose }}
+                source={{ html: result.content }}
                 style={{ flex: 1, marginVertical: 20 }}
                 width={width}
                 renderLoading={() => <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={colorPrimary} /></View>}
