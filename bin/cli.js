@@ -87,7 +87,7 @@ class {$ClassName$} extends {$ClassUpper$} {\n\
     );\n\
   }\n\
 }\n\
-modules.exports = {$ClassName$}"
+export default {$ClassName$}"
 	return Template.replace(/\{\$ClassName\$\}/g, ClassName).replace(/\{\$ClassUpper\$\}/g, ClassUpper).replace(/\{\$ClassImport\$\}/g, ClassImport)
 }
 function codeReducer(ClassName, ClassUpper, ClassImport) {
@@ -132,13 +132,13 @@ class {$ClassName$} extends {$ClassUpper$} {\n\
     );\n\
   }\n\
 }\n\
-modules.exports = connect({$ClassName$}.mapStateToProps)({$ClassName$});"
+export default connect({$ClassName$}.mapStateToProps)({$ClassName$});"
 	return Template.replace(/\{\$ClassName\$\}/g, ClassName).replace(/\{\$ClassUpper\$\}/g, ClassUpper).replace(/\{\$ClassImport\$\}/g, ClassImport)
 }
 switch(action) {
 	// esoftplay help
 	case 'help':
-		var Help = "ESP(1)                    BSD General Commands Manual                    ESP(1)\n\
+		var Help = "esp(1)                    BSD General Commands Manual                    esp(1)\n\
 \n\
 NAME\n\
   esp -- esoftplay framework command-cli\n\

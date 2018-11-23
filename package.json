@@ -1,8 +1,8 @@
 {
   "name": "esoftplay",
-  "version": "0.0.50",
+  "version": "0.0.51",
   "description": "embedding data from esoftplay framework (web based) into mobile app",
-  "main": "index.js",
+  "main": "cache/index.js",
   "scripts": {
     "postinstall": "node ./bin/build.js install",
     "preuninstall": "cd ../../ && node ./node_modules/.bin/esoftplay stop",

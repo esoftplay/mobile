@@ -4,33 +4,12 @@ const fs = require('fs');
 var checks = ['./node_modules/esoftplay/modules/', './modules/', './templates/'];
 var pathAsset = "./assets";
 var tmpDir = "./node_modules/esoftplay/cache/";
-var tmpDirModules = "./node_modules/esoftplay/cache/modules/";
-var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js)$/);
+var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js|ts|tsx)$/);
 var Text = "";
+
 /* CREATE DIRECTORY CACHE IF NOT EXISTS */
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
-}
-/* === */
-
-var deleteFolderRecursive = function (path) {
-  if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(function (file, index) {
-      var curPath = path + "/" + file;
-      if (fs.lstatSync(curPath).isDirectory()) { // recurse
-        deleteFolderRecursive(curPath);
-      } else { // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(path);
-  }
-};
-
-/* CLEAR ENTIRE FOLDER CACHE/MODULES */
-deleteFolderRecursive(tmpDirModules);
-if (!fs.existsSync(tmpDirModules)) {
-  fs.mkdirSync(tmpDirModules);
 }
 
 /* FETCH ALL SCRIPTS */
@@ -49,7 +28,7 @@ checks.forEach(modules => {
       }
       if (fs.statSync(modules + module).isDirectory()) {
         fs.readdirSync(modules + module).forEach(file => {
-          if ((new RegExp("\.js$")).test(file)) {
+          if ((new RegExp("\.ts|.tsx|.js$")).test(file)) {
             var name = file.replace(replacer, '');
             var path = modules + module + "/" + name;
             Modules[module][name] = path;
@@ -176,23 +155,23 @@ function capitalizeFirstLetter(string) {
 /* CREATE ROUTER LIST */
 var Task = "";
 var nav = "";
+var staticImport = "export { default as esp } from '../../../node_modules/esoftplay/esp';\n"
 var Navigations = [];
 for (const module in Modules) {
   for (const task in Modules[module]) {
     nav = module + '/' + task;
     Navigations.push(nav);
     Task += "\t\t" + 'case "' + nav + '":' + "\n\t\t\t" +
-      'Out = require("../../.' + Modules[module][task] + '")' + "\n\t\t\t" +
+      'Out = require("../../.' + Modules[module][task] + '").default;' + "\n\t\t\t" +
       'break;' + "\n";
-    /* ADD ROUTER EACH FILE FOR STATIC IMPORT */
-    var staticImport = 'import ' + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + ' from ' + '"../../../.' + Modules[module][task] + '";\n' + 'export default ' + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + ';';
-    fs.writeFile(tmpDirModules + module + '_' + task + '.js', staticImport, { flag: 'w' }, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-    });
+    staticImport += "export { default as " + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + " } from '../../." + Modules[module][task] + "';\n";
   }
 }
+fs.writeFile(tmpDir + 'index.js', staticImport, { flag: 'w' }, function (err) {
+  if (err) {
+    return console.log(err);
+  }
+});
 Text = 'function routers(modtask) {' + "\n\t" +
   'var Out = {}' + "\n\t" +
   'switch (modtask) {' + "\n" +
