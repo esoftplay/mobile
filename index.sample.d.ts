@@ -1,5 +1,5 @@
 import { Component, ComponentClass, Ref, ComponentType } from 'react';
-export class espd {
+export class esp {
   static asset(path: string): any;
   static config(param?: string, ...params: string[]): any;
   static _config(): string | number | boolean;
