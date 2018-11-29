@@ -5,7 +5,7 @@ import { Component } from 'react'
 import moment from 'moment'
 import navs from '../../cache/navigations';
 import { AsyncStorage, View } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import { store } from '../../../../App';
 import { Constants } from 'expo';
 import { esp } from 'esoftplay';
@@ -69,12 +69,13 @@ export default class euser extends Component<UserIndexProps, UserIndexState> {
     }
     _class.isLogin(async (isLogin) => {
       var config = {
+        headerMode: 'none',
         initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public"),
         navigationOptions: {
           header: null
         }
       }
-      Router = await createStackNavigator(navigations, config)
+      Router = await createAppContainer(createStackNavigator(navigations, config))
       this.setState({ loading: false })
     })
   }
