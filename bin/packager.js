@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* EXECUTED IN BUILD.JS ON INSTALLING MODULES */
+
 const { spawn } = require('child_process');
 const fs = require('fs');
 

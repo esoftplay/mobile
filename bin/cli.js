@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* EXECUTED VIA COMMAND LINE `ESP` */
 const { spawn } = require('child_process');
 const fs = require('fs');
 var app = require('../watch')

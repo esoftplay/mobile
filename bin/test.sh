@@ -1,4 +1,5 @@
 #!/bin/bash
+# REPLACE CURRENT MODULE FILES IN NODE_MODULES TO LINK TO MASTER SOURCE
 SRC="$( cd "$( dirname $(dirname "${BASH_SOURCE[0]}") )" >/dev/null && pwd )"
 DST="$( pwd )/node_modules/esoftplay"
 if [ -d $DST ]; then

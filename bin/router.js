@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* EXECUTED ON `ESP START` TO BUILD FILE CACHES */
 const fs = require('fs');
 var checks = ['./node_modules/esoftplay/modules/', './modules/', './templates/'];
 var pathAsset = "./assets";

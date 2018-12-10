@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* EXECUTED ON INSTALL THIS ESOFTPLAY MODULE */
 const { spawn } = require('child_process');
 const fs = require('fs');
 
