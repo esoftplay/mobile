@@ -2,87 +2,49 @@
 import react from 'react';
 import momentTimeZone from 'moment-timezone'
 import moment from 'moment/min/moment-with-locales'
-import { esp } from 'esoftplay';
-import crypt from './crypt';
-/*
-  CONTOH
-  var curl = esp.mod("lib/curl")
-  Method GET =>
-  new Curl('goal',null,
-    (res,msg){
-      onDone
-    },
-    (msg){
-      onFailed
-    }
-  )
-
-  Method POST =>
-  var post={
-    key1: 'value1',
-    key2: 2
-  }
-  new Curl('goal',post,
-    (res,msg){
-      onDone
-    },
-    (msg){
-      onFailed
-    }
-  )
-
-  UPLOAD IMAGE/FILE =>
-  curl.upload('goal', 'image' ,fileUri, mimeType(def:'image/jpeg' if null),
-    (res,msg){
-      onDone
-    },
-    (msg){
-      onFailed
-    }
-  )
-*/
-
+import { esp, LibCrypt } from 'esoftplay';
 
 export default class ecurl {
   isDebug = esp.config('isDebug');
   post: any;
-  header: any = {};
+  header: any;
   url: any;
   uri: any;
 
-  constructor(uri?: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug: number = 0) {
+  constructor(uri?: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number) {
+    this.setUri = this.setUri.bind(this);
+    this.setUrl = this.setUrl.bind(this);
+    this.header = {}
+    this.setHeader = this.setHeader.bind(this);
     if (uri) {
       this.init(uri, post, onDone, onFailed, debug);
     }
-    this.setUri = this.setUri.bind(this);
-    this.setUrl = this.setUrl.bind(this);
-    this.setHeader = this.setHeader.bind(this);
   }
 
-  setUrl(url: string) {
+  setUrl(url: string): void {
     this.url = url
   }
 
-  setUri(uri: string) {
+  setUri(uri: string): void {
     this.uri = uri
   }
 
-  setHeader() {
+  setHeader(): void {
     if ((/:\/\/data.*?\/(.*)/g).test(this.url)) {
-      this.header['masterkey'] = new crypt().encode(this.url)
+      this.header['masterkey'] = new LibCrypt().encode(this.url)
     }
   }
 
 
-  onDone(result: any, msg?: string) {
+  onDone(result: any, msg?: string): void {
 
   }
 
-  onFailed(msg: string) {
+  onFailed(msg: string): void {
 
   }
 
-  upload(uri: string, postKey: string, fileUri: string, mimeType: string, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug: number = 0) {
+  upload(uri: string, postKey: string, fileUri: string, mimeType: string, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number): void {
     postKey = postKey || 'image';
     var uName = fileUri.substring(fileUri.lastIndexOf('/') + 1, fileUri.length);
     var uType = mimeType || 'image/jpeg'
@@ -90,7 +52,7 @@ export default class ecurl {
     this.init(uri, post, onDone, onFailed, debug)
   }
 
-  async custom(uri: string, post?: any, onDone?: (res: any) => void, debug: number = 0) {
+  async custom(uri: string, post?: any, onDone?: (res: any) => void, debug?: number): Promise<void> {
     if (post) {
       let fd = new FormData();
       Object.keys(post).map(function (key) {
@@ -129,8 +91,7 @@ export default class ecurl {
     }
   }
 
-
-  async init(uri: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug: number = 0) {
+  async init(uri: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number): Promise<void> {
     if (post) {
       let fd = new FormData();
       Object.keys(post).map(function (key) {
@@ -155,9 +116,8 @@ export default class ecurl {
       body: this.post
     }
     if (debug == 1) esp.log(this.url + this.uri, options)
-    console.log(this.url + uri, options)
-    var res
-    res = await fetch(this.url + this.uri, options)
+    // console.log(this.url + uri, options)
+    var res = await fetch(this.url + this.uri, options)
     var resText = await res.text()
     var resJson = (resText.startsWith('{') && resText.endsWith('}')) || (resText.startsWith('[') && resText.endsWith(']')) ? JSON.parse(resText) : resText
     if (typeof resJson == 'object') {
@@ -173,11 +133,11 @@ export default class ecurl {
     }
   }
 
-  onError(msg: string) {
+  onError(msg: string): void {
     esp.log(msg)
   }
 
-  getTimeByTimeZone(timeZone: string) {
+  getTimeByTimeZone(timeZone: string): number {
     var mytimes = [86400, 3600, 60, 1]
     var date1 = [], date2 = []
     var dateFormat = 'H-m-s'
@@ -201,7 +161,7 @@ export default class ecurl {
     return time;
   }
 
-  getDayOfYear(d: string) {
+  getDayOfYear(d: string): number {
     var date = new Date(d);
     var start = new Date(date.getFullYear(), 0, 0);
     var diff = date.getMilliseconds() - start.getMilliseconds();

@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Component } from 'react';
-import { Linking, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
+import { Image, Linking, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
 import { Text } from 'native-base';
 import moment from 'moment/min/moment-with-locales';
-import { LibImage, LibStyle, esp } from 'esoftplay';
+import { esp } from 'esoftplay';
 const { defaultStyle, width } = esp.mod('lib/style')
 
 export interface ContentItemProps {
@@ -36,17 +36,11 @@ export default class eitem extends Component<ContentItemProps, ContentItemState>
   }
 
   goToDetail() {
-    this.props.navigation.push(
-      'content/detail', {
-        id: this.props.id,
-        title: this.props.title,
-        url: this.props.url,
-        created: this.props.created,
-        image: this.props.image,
-      })
+    const { navigation, id, title, url, created, image } = this.props
+    navigation.push('content/detail', { id, title, url, created, image, })
   }
 
-  render = () => {
+  render() {
     const props = this.props
     const { id, title, intro, description, image, created, updated, url, publish } = props
     if (created == 'sponsor') {
@@ -62,7 +56,7 @@ export default class eitem extends Component<ContentItemProps, ContentItemState>
             onPress={() => goToSponsor(url)}>
             <View
               style={styles.containerRow}>
-              <LibImage
+              <Image
                 style={{ width: width, height: 110, resizeMode: 'contain' }}
                 source={{ uri: image }} />
             </View>
@@ -109,7 +103,7 @@ export default class eitem extends Component<ContentItemProps, ContentItemState>
                 <Text
                   style={styles.text11} note>{created}</Text>
               </View>
-              <LibImage style={{ width: 110, height: 110, resizeMode: 'cover' }} source={{ uri: image }} />
+              <Image style={{ width: 110, height: 110, resizeMode: 'cover' }} source={{ uri: image }} />
             </View>
           </TouchableWithoutFeedback>
         )
@@ -134,10 +128,10 @@ export default class eitem extends Component<ContentItemProps, ContentItemState>
                     </View>
                   </View>
                   :
-                  <LibImage
+                  <Image
                     style={{ height: width * 9 / 16, width: width }}
                     source={{ uri: image }}>
-                  </LibImage>
+                  </Image>
               }
             </View>
             <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: 'rgba(3,3,3,0.4)', }} >
@@ -195,7 +189,7 @@ export default class eitem extends Component<ContentItemProps, ContentItemState>
               style={styles.text11} note>{moment(created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
           </View>
           <View>
-            <LibImage style={{ width: 110, height: 110, resizeMode: 'cover' }} source={{ uri: image }} />
+            <Image style={{ width: 110, height: 110, resizeMode: 'cover' }} source={{ uri: image }} />
           </View>
         </View>
       </TouchableWithoutFeedback>

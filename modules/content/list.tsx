@@ -1,30 +1,23 @@
 // 
 import React from 'react';
 import { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, TouchableWithoutFeedback, Image, Linking, BackHandler, Platform } from 'react-native';
-import { Container, Button, Text, Icon, Thumbnail } from 'native-base';
+import { View, StyleSheet, ActivityIndicator, BackHandler, Platform } from 'react-native';
+import { Container, Button, Text, Icon } from 'native-base';
 import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
-import { esp, LibCurl } from 'esoftplay';
-import { StatusBar, AsyncStorage, Animated } from 'react-native';
+import { esp, LibCurl, LibUtils, ContentMenu, ContentSearch, ContentItem } from 'esoftplay';
+import { StatusBar, Animated } from 'react-native';
+import { connect } from 'react-redux';
 const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
 const config = esp.config();
-const utils = esp.mod('lib/utils');
-const ContentMenu = esp.mod('content/menu');
-const Esearch = esp.mod('content/search');
-const Eimage = esp.mod('lib/image');
-const Item = esp.mod('content/item');
 
 var menu: any;
-
-const AnimEsearch = Animated.createAnimatedComponent(Esearch)
 
 const ViewTypes = {
   HEADER: 0,
   ITEM: 1,
 };
-
 
 export interface ContentListProps {
   url?: string,
@@ -47,7 +40,7 @@ export interface ContentListState {
 }
 
 
-export default class elist extends Component<ContentListProps, ContentListState>{
+class elist extends Component<ContentListProps, ContentListState>{
   dataProvider: any;
   _layoutProvider: any;
   drawer: any;
@@ -55,6 +48,12 @@ export default class elist extends Component<ContentListProps, ContentListState>
   ContentMenu: any;
   state: any;
   props: any;
+
+  static mapStateToProps(state: any): any {
+    return {
+      routes: state.user_index
+    }
+  }
 
   constructor(props: ContentListProps) {
     super(props);
@@ -87,10 +86,10 @@ export default class elist extends Component<ContentListProps, ContentListState>
     this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
       animSearch: new Animated.Value(0),
-      url: props.url ? props.url : utils.getArgs(props, 'url', config.content),
-      urlori: props.url ? props.url : utils.getArgs(props, 'url', config.content),
-      title: props.title ? props.title : utils.getArgs(props, 'title', 'Home'),
-      titleori: props.title ? props.title : utils.getArgs(props, 'title', 'Home'),
+      url: props.url ? props.url : LibUtils.getArgs(props, 'url', config.content),
+      urlori: props.url ? props.url : LibUtils.getArgs(props, 'url', config.content),
+      title: props.title ? props.title : LibUtils.getArgs(props, 'title', 'Home'),
+      titleori: props.title ? props.title : LibUtils.getArgs(props, 'title', 'Home'),
       data: [],
       page: 0,
       searchView: false,
@@ -105,31 +104,33 @@ export default class elist extends Component<ContentListProps, ContentListState>
     this.onBackPress = this.onBackPress.bind(this)
   }
 
-  loadData() {
+  loadData(): void {
     this.doFetch()
   }
 
-  loadMore() {
+  loadMore(): void {
     this.doFetch(this.state.page + 1)
   }
 
-  doFetch(page: number = 0) {
+  doFetch(page: number = 0): void {
     new LibCurl(this.state.url + '?page=' + page, null,
       (result: any, msg: string) => {
-        this.setState({
-          data: [...this.state.data, ...result.list],
-          page: page,
-          isStop: result.list.length === 0,
-          isRefreshing: false
+        this.setState((state, props) => {
+          return {
+            data: state.data.length > 0 ?  [...state.data, ...result.list] : [...result.list],
+            page: page,
+            isStop: result.list.length === 0,
+            isRefreshing: false
+          }
         })
       },
       (msg: string) => {
-        console.log('sampe sini')
+        console.log('sampe sini', msg)
       }, 1
     )
   }
 
-  onRefresh() {
+  onRefresh(): void {
     this.setState({
       data: [],
       isStop: false,
@@ -142,7 +143,7 @@ export default class elist extends Component<ContentListProps, ContentListState>
   openDrawer() { this.drawer.open() }
 
 
-  componentDidMount = async () => {
+  componentDidMount(): void {
     this.loadData();
     setTimeout(() => {
       BackHandler.addEventListener('hardwareBackPress', this.onBackPress)
@@ -158,8 +159,8 @@ export default class elist extends Component<ContentListProps, ContentListState>
     }, 500);
   }
 
-  onBackPress = () => {
-    var routers = esp.routes()
+  onBackPress(): boolean {
+    var routers = this.props.routes
     if (!this.state.isDrawerOpen) {
       if (Platform.OS == 'ios') {
         return false;
@@ -214,7 +215,8 @@ export default class elist extends Component<ContentListProps, ContentListState>
 
   render() {
     const { goBack, navigate } = this.props.navigation
-    var indexRoutes = esp.routes().index
+    const { routes } = this.props
+    var indexRoutes = routes.index
     var isRoot = indexRoutes == 0 || !indexRoutes
     var searchOpacity = this.state.animSearch.interpolate({
       inputRange: [0, 1],
@@ -247,7 +249,7 @@ export default class elist extends Component<ContentListProps, ContentListState>
             onItemSelected={(e: any) => { this.setState({ url: e.url, title: e.title }) }}
             navigation={this.props.navigation}
             dispatch={this.props.dispatch}
-            nav={esp.routes()} />
+            nav={routes} />
         }>
         <Container>
           <View
@@ -292,7 +294,7 @@ export default class elist extends Component<ContentListProps, ContentListState>
               }}
               onPress={() => { this.openSearch() }}>
               <Icon
-                name='search'
+                name='ios-search'
                 style={{
                   fontSize: 24,
                   color: colorAccent
@@ -322,7 +324,7 @@ export default class elist extends Component<ContentListProps, ContentListState>
           {
             this.state.searchView ?
               <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, right: 0, opacity: searchOpacity }} >
-                <AnimEsearch
+                <ContentSearch
                   close={() => this.closeSearch()}
                   defaultValue={this.searchQuery}
                   onSubmit={(e: any) => {
@@ -342,14 +344,14 @@ export default class elist extends Component<ContentListProps, ContentListState>
     switch (type) {
       case ViewTypes.HEADER:
         return (
-          <Item
+          <ContentItem
             {...item}
             index={0}
             navigation={this.props.navigation} />
         );
       case ViewTypes.ITEM:
         return (
-          <Item
+          <ContentItem
             {...item}
             index={1}
             navigation={this.props.navigation} />
@@ -387,3 +389,5 @@ const styles = StyleSheet.create({
     margin: 10
   }
 });
+
+export default connect(elist.mapStateToProps)(elist);

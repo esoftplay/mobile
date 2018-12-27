@@ -2,14 +2,13 @@
 import React from 'react'
 import { Component } from 'react';
 import { View, WebView, AsyncStorage, ActivityIndicator } from 'react-native';
-import utils from './utils'
-import { esp } from 'esoftplay';
+import { esp, LibUtils } from 'esoftplay';
 const config = esp.config()
 const { colorPrimary } = esp.mod('lib/style')
 
 export interface LibSocialloginProps {
   url?: string,
-  onResult: (userData: any) => void
+  onResult(userData: any): void
 }
 export interface LibSocialloginState {
 
@@ -23,11 +22,11 @@ export default class esocialLogin extends Component<LibSocialloginProps, LibSoci
     this.props = props
   }
 
-  setUser(userData: any) {
+  static setUser(userData: any): void {
     AsyncStorage.setItem(config.domain + '_user', userData);
   }
 
-  static delUser() {
+  static delUser(): void {
     AsyncStorage.removeItem(config.domain + '_user')
   }
 
@@ -38,7 +37,7 @@ export default class esocialLogin extends Component<LibSocialloginProps, LibSoci
           if (callback) callback(JSON.parse(userData));
           r(JSON.parse(userData));
         } else {
-          j('User NotFound')
+          r(null)
         }
       })
     })
@@ -46,7 +45,7 @@ export default class esocialLogin extends Component<LibSocialloginProps, LibSoci
   render() {
     var { url, onResult } = this.props
     if (!url) {
-      url = utils.getArgs(this.props, 'url');
+      url = LibUtils.getArgs(this.props, 'url');
     }
     return (
       <View style={{ flex: 1 }} >
@@ -61,7 +60,7 @@ export default class esocialLogin extends Component<LibSocialloginProps, LibSoci
           onMessage={(e: any) => {
             var data = e.nativeEvent.data
             if (data) {
-              this.setUser(data)
+              esocialLogin.setUser(data)
               onResult(JSON.parse(data))
             }
           }}

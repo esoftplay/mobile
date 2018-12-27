@@ -3,15 +3,15 @@ import { Dimensions, StatusBar, Platform } from 'react-native';
 const { height, width } = Dimensions.get('window');
 const isIphoneX = Platform.OS === "ios" && height === 812 && width === 375;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? isIphoneX ? 44 : 20 : StatusBar.currentHeight;
-const colorPrimary = '#0396FF'
-const colorPrimaryDark = '#0396FF'
+const colorPrimary = '#3E50B4'
+const colorPrimaryDark = '#3E50B4'
 const colorAccent = '#FFF'
 const colorGrey = '#F1F1F3'
 const colorTextPrimary = "#353535"
 const colorTextBody = '#353535'
 const colorTextCaption = '#686868'
 const colorLightGrey = '#fbfbfb'
-const elevation = (value: any) => {
+function elevation(value: any) {
   if (Platform.OS === 'ios') {
     if (value == 0) return {}
     return { shadowColor: 'black', shadowOffset: { width: 0, height: value / 2 }, shadowRadius: value, shadowOpacity: 0.24 }

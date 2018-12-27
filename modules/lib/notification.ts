@@ -25,7 +25,7 @@ import { esp } from 'esoftplay';
 } */
 
 export default class enotification {
-  static listen = (callback?: (obj: any) => void): Promise<any> => {
+  static listen(callback?: (obj: any) => void): Promise<any> {
     return new Promise((r, j) => {
       Notifications.addListener(async (obj: any) => {
         if (obj) {
@@ -41,7 +41,7 @@ export default class enotification {
     })
   }
 
-  static get = (action?: (res: any) => void): Promise<any> => {
+  static get(action?: (res: any) => void): Promise<any> {
     return new Promise((r, j) => {
       setTimeout(() => {
         AsyncStorage.getItem('enotification').then((res: any) => {

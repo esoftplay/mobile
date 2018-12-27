@@ -14,7 +14,7 @@ export interface LibTextstyleState {
 
 }
 
-export default class etextstyle extends Component< LibTextstyleProps, LibTextstyleState>{
+export default class etextstyle extends Component<LibTextstyleProps, LibTextstyleState>{
   props: any
 
   constructor(props: LibTextstyleProps) {
@@ -24,7 +24,7 @@ export default class etextstyle extends Component< LibTextstyleProps, LibTextsty
 
   scale: number = 1
 
-  styles: any = {
+  styles = {
     largeTitle: {
       fontSize: this.scale * 34,
       fontWeight: "400",
