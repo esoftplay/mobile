@@ -7,15 +7,16 @@ import {
   Image,
   FlatList
 } from 'react-native';
-const { width } = esp.mod('lib/style');
-import utils from 'esoftplay/modules/lib/utils';
-import { esp } from 'esoftplay';
+import { Left, Button, Icon, Text, ListItem } from 'native-base';
+const { width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+import { esp, LibUtils } from 'esoftplay';
 
-interface ContentZoomProps {
 
+export interface ContentZoomProps {
+  navigation: any
 }
 
-interface ContentZoomState {
+export interface ContentZoomState {
   scroll: number
 }
 
@@ -24,6 +25,7 @@ export default class ezoom extends Component<ContentZoomProps, ContentZoomState>
 
   props: ContentZoomProps
   state: ContentZoomState
+
   constructor(props: ContentZoomProps) {
     super(props);
     this.state = { scroll: 0 };
@@ -31,8 +33,8 @@ export default class ezoom extends Component<ContentZoomProps, ContentZoomState>
   }
 
   render() {
-    const images = utils.getArgs(this.props, "images", [])
-    const image = utils.getArgs(this.props, "image", '')
+    const images = LibUtils.getArgs(this.props, "images", [])
+    const image = LibUtils.getArgs(this.props, "image")
     if (images.length == 0) {
       images.push({
         image: image,
@@ -61,6 +63,13 @@ export default class ezoom extends Component<ContentZoomProps, ContentZoomState>
             )
           }}
           showsHorizontalScrollIndicator={false} />
+        <Button transparent
+          style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
+          onPress={() => this.props.navigation.goBack(null)}>
+          <Icon
+            style={{ color: 'white' }}
+            name='md-close' />
+        </Button>
       </View>
     );
   }

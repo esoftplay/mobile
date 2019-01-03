@@ -1,14 +1,12 @@
 // 
 import React from 'react'
 import { Component } from 'react';
-import { Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { Icon } from 'native-base';
-import { esp } from 'esoftplay';
-const { colorPrimary } = esp.mod('lib/style');
-const Emenusub = esp.mod('lib/menusub');
+import { FlatList } from 'react-native';
+import { LibMenusub } from 'esoftplay';
+
 
 export interface LibMenuProps {
-  onItemSelected: (item: any) => void,
+  onItemSelected(item: any): void,
   parent?: number,
   style?: any,
   data: any,
@@ -27,7 +25,7 @@ export default class emenu extends Component<LibMenuProps, LibMenuState> {
     this.props = props
   }
 
-  onItemSelected(item: any) {
+  onItemSelected(item: any): void {
     if (this.props.onItemSelected) {
       delete item.data
       this.props.onItemSelected(item)
@@ -45,7 +43,7 @@ export default class emenu extends Component<LibMenuProps, LibMenuState> {
         style={style}
         data={data}
         keyExtractor={(item: any) => (item.id).toString()}
-        renderItem={({ item }: any) => <Emenusub {...item} selectedId={this.props.selectedId} data={this.props.data} parent={parent} onClick={(item: any) => this.onItemSelected(item)} />}
+        renderItem={({ item }: any) => <LibMenusub {...item} selectedId={this.props.selectedId} data={this.props.data} parent={parent} onClick={(item: any) => this.onItemSelected(item)} />}
       />
     )
   }

@@ -8,18 +8,6 @@ let { width, height } = Dimensions.get('window');
 const config = esp.config();
 
 //modify webview error:  https://github.com/facebook/react-native/issues/10865
-const patchPostMessageJsCode = `
-        (${String(function () {
-    var originalPostMessage = window.postMessage
-    var patchedPostMessage = function (message, targetOrigin, transfer) {
-      originalPostMessage(message, targetOrigin, transfer)
-    }
-    patchedPostMessage = function () {
-      return String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')
-    }
-    window.postMessage = patchedPostMessage
-  })})();
-`;
 
 export interface LibWebviewSourceProps {
   uri?: string,
@@ -39,7 +27,7 @@ export interface LibWebviewProps {
   scrollEnabled?: any,
   automaticallyAdjustContentInsets?: any,
   scalesPageToFit?: any,
-  onFinishLoad: () => void
+  onFinishLoad(): void
 }
 
 export interface LibWebviewState {
@@ -71,7 +59,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     this._animatedValue = new Animated.Value(1);
   }
 
-  componentDidUpdate(prevProps: LibWebviewProps, prevState: LibWebviewState) {
+  componentDidUpdate(prevProps: LibWebviewProps, prevState: LibWebviewState): void {
     if (this.props.source !== undefined && prevProps.source.html !== this.props.source.html) {
       this.setState({
         source: (this.props.source && this.props.source.hasOwnProperty('html'))
@@ -84,7 +72,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     }
   }
 
-  gotoShow() {
+  gotoShow(): void {
     if (this.props.needAnimate) this._animatedValue.setValue(0);
     Animated.timing(this._animatedValue, {
       toValue: 1,
@@ -93,7 +81,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
   }
 
   //insert ResizeHeight JS
-  WebViewResetHeightFunctionJSInsert() {
+  WebViewResetHeightFunctionJSInsert(): void {
     let jsstr = `
         window.location.hash = 1;
         window.postMessage("height:"+document.body.scrollHeight.toString());`;
@@ -103,9 +91,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     }, 500);
   }
 
-  getMessageFromWebView(event: any) {
-    // console.log("getMessageFromWebView");
-    // console.log(event);
+  getMessageFromWebView(event: any): void {
     let message = event.nativeEvent.data;
     if (message.indexOf('height') === 0) {
       if (this.heightMessage === undefined || this.heightMessage === null || this.heightMessage === "") {
@@ -119,7 +105,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     }
   }
 
-  resetHeight() {
+  resetHeight(): void {
     if (this.heightMessage === undefined || this.heightMessage === null || this.heightMessage === "") {
       return;
     }
@@ -131,7 +117,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     this.gotoShow();
   }
 
-  resetSmallHeight() {
+  resetSmallHeight(): void {
     this.setState({
       height: this.props.defaultHeight
     });
@@ -139,6 +125,18 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
   }
 
   render() {
+    const patchPostMessageJsCode = `
+        (${String(function () {
+      var originalPostMessage = window.postMessage
+      var patchedPostMessage = function (message, targetOrigin, transfer) {
+        originalPostMessage(message, targetOrigin, transfer)
+      }
+      patchedPostMessage = function () {
+        return String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')
+      }
+      window.postMessage = patchedPostMessage
+    })})();
+    `;
 
     let { bounces, onLoadEnd, style, scrollEnabled, automaticallyAdjustContentInsets, scalesPageToFit, onMessage, ...otherprops } = this.props;
     return (
@@ -170,9 +168,5 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-
-});
 
 export default ewebview;

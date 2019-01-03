@@ -1,18 +1,12 @@
-// 
 import React from 'react';
 import { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  FlatList
-} from 'react-native';
-const { width } = esp.mod('lib/style');
-import utils from '../lib/utils';
-import { esp } from 'esoftplay';
+import { View, StyleSheet, Image, FlatList } from 'react-native';
+import { Button, Icon} from 'native-base';
+const { width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+import { esp, LibUtils } from 'esoftplay';
 
 export interface ContentGalleryProps {
-
+  navigation: any
 }
 
 export interface ContentGalleryState {
@@ -21,8 +15,9 @@ export interface ContentGalleryState {
 
 // create a component
 export default class ezoom extends Component<ContentGalleryProps, ContentGalleryState> {
-  state: ContentGalleryState
-  props: ContentGalleryProps
+  state: ContentGalleryState;
+  props: ContentGalleryProps;
+
   constructor(props: ContentGalleryProps) {
     super(props);
     this.props = props
@@ -30,8 +25,8 @@ export default class ezoom extends Component<ContentGalleryProps, ContentGallery
   }
 
   render() {
-    const images = utils.getArgs(this.props, "images", [])
-    const image = utils.getArgs(this.props, "image", '')
+    const images = LibUtils.getArgs(this.props, "images", [])
+    const image = LibUtils.getArgs(this.props, "image", '')
     if (images.length == 0) {
       images.push({
         image: image,
@@ -60,7 +55,14 @@ export default class ezoom extends Component<ContentGalleryProps, ContentGallery
             )
           }}
           showsHorizontalScrollIndicator={false} />
-      </View>
+        <Button transparent
+          style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
+          onPress={() => this.props.navigation.goBack(null)}>
+          <Icon
+            style={{ color: 'white' }}
+            name='md-close' />
+        </Button>
+      </View >
     );
   }
 }

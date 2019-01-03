@@ -15,23 +15,23 @@ import {
 import { Left, Button, Icon, Text, ListItem } from 'native-base';
 import { LinearGradient } from 'expo';
 import moment from 'moment/min/moment-with-locales'
-import { esp, ContentItem } from 'esoftplay';
+import {
+    esp,
+    ContentItem,
+    LibUtils,
+    LibCurl,
+    ContentAudio,
+    LibWebview,
+    ContentVideo
+} from 'esoftplay';
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = esp.mod('lib/style');
-const utils = esp.mod('lib/utils');
 const config = esp.config();
 const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
-const Curl = esp.mod('lib/curl');
-const Eaudio = esp.mod('content/audio');
-const EwebView = esp.mod('lib/webview');
-const Evideo = esp.mod('content/video');
 
 var HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT;
 var HEADER_MIN_HEIGHT = 50 + STATUSBAR_HEIGHT;
 var HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-const download = (result: any) => {
-  Linking.openURL(result.link)
-}
 
 export interface ContentDetailProps {
   url?: string,
@@ -52,6 +52,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
   audioPlayer: any;
   state: ContentDetailState;
   props: ContentDetailProps
+
   constructor(props: ContentDetailProps) {
     super(props);
     this.props = props
@@ -69,9 +70,9 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
     moment.locale('id')
   }
 
-  componentDidMount = () => {
-    var url = this.props.url ? this.props.url : utils.getArgs(this.props, 'url', config.content)
-    new Curl(url, null,
+  componentDidMount() {
+    var url = this.props.url ? this.props.url : LibUtils.getArgs(this.props, 'url', config.content)
+    new LibCurl(url, null,
       (result: any, msg: string) => {
         setTimeout(() => {
           this.setState({ result: result })
@@ -89,11 +90,11 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
 
   render() {
     var result: any = {}
-    result.id = utils.getArgs(this.props, 'id', 0)
-    result.url = utils.getArgs(this.props, 'url', '')
-    result.title = utils.getArgs(this.props, 'title', '')
-    result.image = utils.getArgs(this.props, 'image', '')
-    result.created = utils.getArgs(this.props, 'created', '')
+    result.id = LibUtils.getArgs(this.props, 'id', 0)
+    result.url = LibUtils.getArgs(this.props, 'url', '')
+    result.title = LibUtils.getArgs(this.props, 'title', '')
+    result.image = LibUtils.getArgs(this.props, 'image', '')
+    result.created = LibUtils.getArgs(this.props, 'created', '')
 
     if (!this.state.result.content) {
       return <View style={{ flex: 1, backgroundColor: 'white' }} >
@@ -109,7 +110,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
                 width: width,
                 height: (width * 4 / 5) + STATUSBAR_HEIGHT
               }}
-              source={{ uri: utils.getArgs(this.props, 'image', '') }}
+              source={{ uri: LibUtils.getArgs(this.props, 'image', '') }}
             />
             <LinearGradient
               style={{ height: width / 4, position: 'absolute', bottom: 0, left: 0, right: 0 }}
@@ -122,6 +123,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
         {result.created != '' && <Text note style={styles.created}>{moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}</Text>}
       </View>
     }
+    
     result = this.state.result
     // if (result.image == '') {
     //   HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
@@ -171,7 +173,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
         <StatusBar barStyle={'light-content'} />
         {
           isAudio ?
-            <Eaudio
+            <ContentAudio
               code={result.code}
               onStatusChange={(isPlaying: boolean) => { this.setState({ isPlayingAudio: isPlaying }) }}
               onRef={(ref: any) => this.audioPlayer = ref} /> : null
@@ -197,7 +199,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
                 style={styles.created}>
                 {moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}
               </Text>
-              <EwebView
+              <LibWebview
                 source={{ html: result.content }}
                 style={{ flex: 1, marginVertical: 20 }}
                 width={width}
@@ -265,7 +267,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
           ]}>
           {
             (isVideo) ?
-              <Evideo code={result.code} style={styles.video} />
+              <ContentVideo code={result.code} style={styles.video} />
               :
               <Animated.ScrollView
                 horizontal
@@ -323,7 +325,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
           onPress={() => this.props.navigation.goBack()}>
           <Icon
             style={{ color: 'white' }}
-            name='arrow-back' />
+            name='md-arrow-back' />
         </Button>
         {
           isAudio || isDownload ?
@@ -331,7 +333,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
               style={[styles.fab, { opacity: imageOpacity, transform: [{ translateY: headerTranslate }] }]}>
               <TouchableWithoutFeedback
                 style={styles.fab}
-                onPress={isAudio ? () => this.audioPlayer._onPlayPausePressed() : () => download(result)}>
+                onPress={isAudio ? () => this.audioPlayer._onPlayPausePressed() : (result: any) => { Linking.openURL(result.link) }}>
                 <Icon
                   name={isAudio ? (this.state.isPlayingAudio ? 'md-pause' : 'md-play') : 'md-download'}
                   style={{ color: colorAccent, fontSize: 25 }} />

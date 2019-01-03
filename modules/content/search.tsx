@@ -3,15 +3,14 @@ import React from 'react';
 import { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Icon, Input } from 'native-base';
-import { esp } from 'esoftplay';
+import { esp, LibUtils } from 'esoftplay';
 const { elevation, colorPrimary } = esp.mod('lib/style');
-const utils = esp.mod('lib/utils');
 // create a component
 
 export interface ContentSearchProps {
-  defaultValue?: any,
-  close: () => void,
-  onSubmit: (uri: string) => void,
+  defaultValue?: string,
+  close(): void,
+  onSubmit(uri: string): void,
 }
 
 export interface ContentSearchState {
@@ -27,7 +26,7 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
     this.props = props
   }
 
-  componentWillMount = () => {
+  componentWillMount(): void {
     this.inputSearch = this.props.defaultValue || ''
   }
 
@@ -48,7 +47,7 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
             }}
             onPress={() => this.props.close()}>
             <Icon
-              name={'arrow-back'}
+              name={'md-arrow-back'}
               style={{
                 fontSize: 24,
                 color: '#353535'
@@ -57,7 +56,7 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
           <Input
             style={{ height: 50, width: '100%', fontSize: 17, color: '#555' }}
             placeholderTextColor={'#999'}
-            selectionColor={utils.colorAdjust(colorPrimary, 3)}
+            selectionColor={LibUtils.colorAdjust(colorPrimary, 3)}
             defaultValue={this.inputSearch}
             returnKeyType="search"
             onSubmitEditing={() => {
@@ -77,7 +76,7 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
               this.props.close()
             }}>
             <Icon
-              name='search'
+              name='ios-search'
               style={{
                 fontSize: 24,
                 color: '#353535'

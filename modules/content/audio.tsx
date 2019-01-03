@@ -4,9 +4,9 @@ import { Component } from 'react';
 import { Audio } from 'expo';
 
 export interface ContentAudioProps {
-  onRef: (ref: any) => void,
+  onRef(ref: any): void,
   code: string,
-  onStatusChange: (status: any) => void
+  onStatusChange(status: any): void
 }
 
 export interface ContentAudioState {
@@ -29,7 +29,7 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
   constructor(props: ContentAudioProps) {
     super(props)
     this.props = props;
-    this.playbackInstance = null
+    this.playbackInstance = null;
     this.state = {
       playbackInstanceName: 'loading...',
       muted: false,
@@ -40,19 +40,20 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
       isBuffering: false,
       isLoading: true,
       volume: 1.0,
-    }
+    };
   }
 
-  componentDidMount() {
-    this.props.onRef(this)
+  componentDidMount(): void {
+    this.props.onRef(this);
     Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
+      playThroughEarpieceAndroid:false,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-    })
-    this._loadNewPlaybackInstance(false)
+    });
+    this._loadNewPlaybackInstance(false);
   }
 
   componentWillUnmount(): void {
@@ -60,7 +61,7 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
     this.playbackInstance = null;
   }
 
-  async _loadNewPlaybackInstance(playing: boolean) {
+  async _loadNewPlaybackInstance(playing: boolean): Promise<void> {
     if (this.playbackInstance != null) {
       await this.playbackInstance.unloadAsync();
       this.playbackInstance.setOnPlaybackStatusUpdate(null);
@@ -81,7 +82,7 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
     this.playbackInstance = sound;
   }
 
-  _onPlaybackStatusUpdate(status: any) {
+  _onPlaybackStatusUpdate(status: any): void {
     if (status.isLoaded) {
       this.setState({
         playbackInstancePosition: status.positionMillis,
@@ -94,12 +95,11 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
       }, () => this.props.onStatusChange(this.state.isPlaying));
     } else {
       if (status.error) {
-
       }
     }
   };
 
-  _onPlayPausePressed() {
+  _onPlayPausePressed(): void {
     if (this.playbackInstance != null) {
       if (this.state.isPlaying) {
         this.playbackInstance.pauseAsync()

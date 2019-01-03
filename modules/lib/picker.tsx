@@ -34,7 +34,7 @@ export interface LibPickerProps {
   max: number | 0,
   color?: string,
   show: boolean,
-  dismiss: () => {}
+  dismiss(): void
 }
 export interface LibPickerState {
   photos: any[],
@@ -69,7 +69,7 @@ export default class epicker extends Component<LibPickerProps, LibPickerState> {
     }
   }
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     const { existingStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
@@ -81,14 +81,14 @@ export default class epicker extends Component<LibPickerProps, LibPickerState> {
   }
 
 
-  getPhotos = () => {
+  getPhotos(): void {
     let params: any = { first: 50, mimeTypes: ['image/jpeg'] };
     if (this.state.after) params.after = this.state.after
     if (!this.state.has_next_page) return
     CameraRoll.getPhotos(params).then(this.processPhotos)
   }
 
-  processPhotos = (r: any) => {
+  processPhotos(r: any): void {
     if (this.state.after === r.page_info.end_cursor) return;
     let uris = r.edges.map((i: any) => i.node).map((i: any) => i.image).map((i: any) => ({ image: i.uri, selected: false }))
     this.setState({
@@ -98,7 +98,7 @@ export default class epicker extends Component<LibPickerProps, LibPickerState> {
     });
   }
 
-  selectImage = (index: number) => {
+  selectImage(index: number): void {
     var photos = this.state.photos
     var selectedCount = photos.filter((item) => item.selected === true).length
     var isSelect = photos[index].selected

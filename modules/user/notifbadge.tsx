@@ -4,14 +4,13 @@ import React from 'react';
 import { Component } from 'react'
 import { View } from 'react-native';
 import { Badge, Text } from 'native-base'
-import { esp } from 'esoftplay';
+import { esp, UserNotification } from 'esoftplay';
 import { TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-const Enotification = esp.mod('user/notification');
 
 export interface UserNotifbadgeProps {
   data: any[],
-  onPress: () => void
+  onPress(): void
 }
 
 export interface UserNotifbadgeState {
@@ -27,17 +26,17 @@ class Enotifbadge extends Component<UserNotifbadgeProps, UserNotifbadgeState> {
     this.props = props
   }
 
-  static mapStateToProps = (state: any) => {
+  static mapStateToProps(state: any) {
     return {
       data: state.user_notification.data
     }
   }
 
-  componentDidMount() {
-    Enotification.action.user_notification_loadData()
+  componentDidMount(): void {
+    UserNotification.action.user_notification_loadData()
   }
 
-  render = () => {
+  render() {
     const { data } = this.props
     const counter = data.filter((item: any) => item.status != 2).length
     if (counter == 0) { return null }

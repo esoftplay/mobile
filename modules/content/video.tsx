@@ -14,6 +14,7 @@ export interface ContentVideoProps {
 export interface ContentVideoState {
 
 }
+
 export default class evideo extends Component<ContentVideoProps, ContentVideoState> {
 
   props: ContentVideoProps;

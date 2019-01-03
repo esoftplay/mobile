@@ -8,14 +8,8 @@ import Expo from 'expo'
 import { Ionicons } from '@expo/vector-icons'
 import Modal from 'react-native-modal';
 import { CameraRoll } from 'react-native';
-import { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } from '../lib/style';
-import { esp } from 'esoftplay';
-import _class from './class';
-import crypt from '../lib/crypt';
-import _curl from '../lib/curl';
-import _sociallogin from '../lib/sociallogin';
+import { esp, UserClass, LibCrypt, LibCurl, LibSociallogin } from 'esoftplay';
 const config = esp.config();
-const EsocialLogin = _sociallogin
 /* 
 
   <euserLogin
@@ -50,15 +44,15 @@ export default class euserLogin extends Component<UserLoginProps, UserLoginState
     isLoading: false
   }
 
-  onSuccessLogin(user: any) {
-    _class.create(user)
+  onSuccessLogin(user: any): void {
+    UserClass.create(user)
   }
 
-  onFailedLogin(msg: string) {
+  onFailedLogin(msg: string): void {
 
   }
 
-  attemptLogin() {
+  attemptLogin(): void {
     this.setState({ isLoading: true })
     const uri = 'user/mlogin'
     const config = esp.config();
@@ -66,17 +60,17 @@ export default class euserLogin extends Component<UserLoginProps, UserLoginState
     const { username, password, email } = this.state
     if (username != '' && password != '') {
       post = {
-        username: new crypt().encode(username),
-        password: new crypt().encode(password),
+        username: new LibCrypt().encode(username),
+        password: new LibCrypt().encode(password),
       }
     }
     if (email != '') {
       post = {
-        email: new crypt().encode(email)
+        email: new LibCrypt().encode(email)
       }
     }
     if (post.hasOwnProperty('email') || post.hasOwnProperty('username') || post.hasOwnProperty('password')) {
-      new _curl(config.content + uri, post,
+      new LibCurl(config.content + uri, post,
         (res, msg) => {
           esp.log(res, 'pesan');
           console.log(res)
@@ -97,11 +91,8 @@ export default class euserLogin extends Component<UserLoginProps, UserLoginState
     }
   }
 
-  async componentDidMount() {
-
-  }
-
-  render = () => {
+  render() {
+    const { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } = esp.mod('lib/style')
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20} >
         <StatusBar barStyle={'dark-content'} />
@@ -147,7 +138,7 @@ export default class euserLogin extends Component<UserLoginProps, UserLoginState
               onBackButtonPress={() => this.setState({ sosmed: '' })}
               onBackdropPress={() => this.setState({ sosmed: '' })} >
               <View style={{ margin: 24, flex: 1, backgroundColor: 'white', borderRadius: 4 }} >
-                <EsocialLogin
+                <LibSociallogin
                   url={config.content + 'user/commentlogin/' + this.state.sosmed}
                   onResult={(user) => {
                     this.inputUsername.setNativeProps({ text: '' })

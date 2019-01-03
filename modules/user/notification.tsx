@@ -3,7 +3,7 @@
 import React from 'react';
 import { Component } from 'react'
 import { TouchableOpacity, View, Alert, Linking, StatusBar } from 'react-native';
-import { esp } from 'esoftplay';
+import { esp, DbNotification, LibCrypt, LibCurl, UserClass, LibList } from 'esoftplay';
 import { store } from '../../../../App';
 import { connect } from 'react-redux'
 import moment from 'moment/min/moment-with-locales'
@@ -50,29 +50,27 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
     user_notification_loadData() {
       var uri = 'user/push-notif'
       try { Enotification.action.user_notification_parseData() } catch (error) { }
-      const EdbNotif = esp.mod('db/notification');
-      const db = new EdbNotif();
+      const db = new DbNotification();
       db.execute('SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1', (res: any) => {
         if (res.rows.length > 0) {
           uri += '?last_id=' + res.rows._array[0].notif_id
         }
         // esp.log(res);
-        const crypt = esp.mod('lib/crypt');
+
         const salt = esp.config('salt');
         var post = {
           user_id: '',
-          secretkey: crypt.encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
+          secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
         }
-        const User = esp.mod('user/class');
-        User.load((user: any) => {
+
+        UserClass.load((user: any) => {
           if (user) post['user_id'] = user.id
           Enotification.action.user_notification_fetchData(uri, post, db);
         })
       })
     },
     user_notification_fetchData(uri: string, post: any, db: any) {
-      const Curl = esp.mod('lib/curl');
-      new Curl(uri, post,
+      new LibCurl(uri, post,
         (res: any, msg: string) => {
           var list = res.list
           list.map((row: any) => {
@@ -92,8 +90,7 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
     },
     user_notification_parseData() {
       return store.dispatch((dispatch: any) => {
-        const EdbNotif = esp.mod('db/notification');
-        const db = new EdbNotif();
+        const db = new DbNotification();
         db.getAll(undefined, undefined, undefined, undefined, undefined, undefined, (res: any) => {
           dispatch({
             type: 'user_notification_parseData',
@@ -128,16 +125,13 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
   }
 
   openNotif(data: any) {
-    const Curl = esp.mod('lib/curl');
-    const crypt = esp.mod('lib/crypt');
     const salt = esp.config('salt');
-    new Curl('user/push-read', {
+    new LibCurl('user/push-read', {
       notif_id: data.notif_id,
-      secretkey: crypt.encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
+      secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
     }, (res: any, msg: string) => {
       // esp.log(res)
-      const EdbNotif = esp.mod('db/notification');
-      const db = new EdbNotif();
+      const db = new DbNotification();
       db.setRead(data.id)
       Enotification.action.user_notification_setRead(data.id)
     }, (msg: string) => {
@@ -183,7 +177,6 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
 
   render = () => {
     const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
-    const Elist = esp.mod('lib/list');
     const { goBack } = this.props.navigation
     return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -195,7 +188,7 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
             onPress={() => goBack()}>
             <Icon
               style={{ color: colorAccent }}
-              name='arrow-back' />
+              name='md-arrow-back' />
           </Button>
           <Text
             style={{
@@ -206,7 +199,7 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
               color: colorAccent
             }}>Notifikasi</Text>
         </View>
-        <Elist
+        <LibList
           data={this.props.data}
           keyExtractor={(e: any, i: number) => (e.id).toString()}
           renderItem={(item: any, index: number) => (

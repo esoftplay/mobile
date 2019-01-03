@@ -28,34 +28,7 @@ var Escroll = esp.mod("lib/scroll")
   //scrollable item
 </Escroll>
 */
-
-
 const { width } = Dimensions.get('window');
-class ContextHelper extends ContextProvider {
-  _contextStore: any
-  _uniqueKey: any;
-  constructor(uniqueKey: any) {
-    super();
-    this._contextStore = {};
-    this._uniqueKey = uniqueKey;
-  }
-
-  getUniqueKey() {
-    return this._uniqueKey;
-  };
-
-  save(key: any, value: any) {
-    this._contextStore[key] = value;
-  }
-
-  get(key: any) {
-    return this._contextStore[key];
-  }
-
-  remove(key: any) {
-    delete this._contextStore[key];
-  }
-}
 
 
 export interface LibScrollProps {
@@ -76,7 +49,7 @@ export default class escroll extends Component<LibScrollProps, LibScrollState> {
   dataProvider: any;
   state: LibScrollState;
   props: LibScrollProps;
-  
+
   constructor(props: LibScrollProps) {
     super(props);
     this.props = props;
@@ -87,17 +60,17 @@ export default class escroll extends Component<LibScrollProps, LibScrollState> {
         dim.height = props.defaultHeight || 100;
       }
     )
-    this.contextProvider = new ContextHelper('parent')
+    this.contextProvider = new LibContext('parent')
     this.rowRenderer = this.rowRenderer.bind(this)
     this.dataProvider = new DataProvider((a: any, b: any) => a !== b)
     this.state = { data: this.dataProvider.cloneWithRows(props.children), width: width }
   }
 
-  rowRenderer(type: any, data: any, width: number) {
+  rowRenderer(type: any, data: any, width: number): any {
     return <View style={[{ width: width }]} >{data}</View>
   }
 
-  componentDidUpdate = (prevProps: any, prevState: any) => {
+  componentDidUpdate(prevProps: any, prevState: any): void {
     if (prevProps.children !== this.props.children)
       this.setState({ data: this.dataProvider.cloneWithRows(this.props.children) })
   };
