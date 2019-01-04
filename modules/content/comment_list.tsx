@@ -254,7 +254,7 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
                 onSubmitEditing={() => this.postComment()}
                 onFocus={() => this.setState({ showLogin: true })}
                 placeholder='Tulis komentar'
-                selectionColor={LibUtils.colorAdjust(colorPrimary, 3)}
+                selectionColor={LibUtils.colorAdjust(colorPrimary, 1)}
                 returnKeyType={'send'}
                 placeholderTextColor={'#999'}
                 style={{ color: '#444', fontSize: 15, lineHeight: 20 }}
