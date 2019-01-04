@@ -2,6 +2,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Text, StyleSheet } from 'react-native';
+import { LibComponent } from 'esoftplay';
 
 export interface LibTextstyleProps {
   textStyle: 'largeTitle' | 'title1' | 'title2' | 'title3' | 'headline' | 'body' | 'callout' | 'subhead' | 'footnote' | 'caption1' | 'caption2',
@@ -14,7 +15,7 @@ export interface LibTextstyleState {
 
 }
 
-export default class etextstyle extends Component<LibTextstyleProps, LibTextstyleState>{
+export default class etextstyle extends LibComponent<LibTextstyleProps, LibTextstyleState>{
   props: any
 
   constructor(props: LibTextstyleProps) {
@@ -93,7 +94,7 @@ export default class etextstyle extends Component<LibTextstyleProps, LibTextstyl
     }
   }
 
-  render() {
+  render() : any {
     var st;
     if (typeof this.props.style === "object") {
       st = Object.assign({}, this.styles[this.props.textStyle], this.props.style)

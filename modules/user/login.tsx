@@ -8,7 +8,7 @@ import Expo from 'expo'
 import { Ionicons } from '@expo/vector-icons'
 import Modal from 'react-native-modal';
 import { CameraRoll } from 'react-native';
-import { esp, UserClass, LibCrypt, LibCurl, LibSociallogin } from 'esoftplay';
+import { esp, UserClass, LibCrypt, LibCurl, LibSociallogin, LibComponent } from 'esoftplay';
 const config = esp.config();
 /* 
 
@@ -31,7 +31,7 @@ export interface UserLoginState {
   isLoading: boolean
 }
 
-export default class euserLogin extends Component<UserLoginProps, UserLoginState> {
+export default class euserLogin extends LibComponent<UserLoginProps, UserLoginState> {
 
   inputUsername: any;
   inputPassword: any;
@@ -91,7 +91,7 @@ export default class euserLogin extends Component<UserLoginProps, UserLoginState
     }
   }
 
-  render() {
+  render() : any {
     const { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } = esp.mod('lib/style')
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20} >

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { StyleSheet, View, WebView, Animated, Dimensions } from 'react-native';
-import { esp } from 'esoftplay';
+import { esp, LibComponent } from 'esoftplay';
 let { width, height } = Dimensions.get('window');
 const config = esp.config();
 
@@ -27,7 +27,7 @@ export interface LibWebviewProps {
   scrollEnabled?: any,
   automaticallyAdjustContentInsets?: any,
   scalesPageToFit?: any,
-  onFinishLoad(): void
+  onFinishLoad: () => void
 }
 
 export interface LibWebviewState {
@@ -35,7 +35,7 @@ export interface LibWebviewState {
   source: any
 }
 
-class ewebview extends Component<LibWebviewProps, LibWebviewState> {
+class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
   props: LibWebviewProps
   state: LibWebviewState
   _animatedValue: any;
@@ -124,7 +124,7 @@ class ewebview extends Component<LibWebviewProps, LibWebviewState> {
     this.gotoShow();
   }
 
-  render() {
+  render(): any {
     const patchPostMessageJsCode = `
         (${String(function () {
       var originalPostMessage = window.postMessage

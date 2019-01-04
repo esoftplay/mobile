@@ -2,7 +2,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ContentList } from 'esoftplay';
+import { ContentList, LibComponent } from 'esoftplay';
 
 export interface ContentIndexProps {
   navigation: any
@@ -12,8 +12,7 @@ export interface ContentIndexState {
 
 }
 
-export default class econtent extends Component<ContentIndexProps, ContentIndexState> {
-
+export default class econtent extends LibComponent<ContentIndexProps, ContentIndexState> {
   props: ContentIndexProps
 
   constructor(props: ContentIndexProps) {
@@ -21,7 +20,7 @@ export default class econtent extends Component<ContentIndexProps, ContentIndexS
     this.props = props
   }
 
-  render() {
+  render(): any {
     return (
       <View
         style={styles.container}>

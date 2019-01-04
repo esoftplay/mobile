@@ -4,6 +4,7 @@ import React from 'react'
 import { Component } from 'react';
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 import { Dimensions, View } from 'react-native';
+import { LibComponent, LibContext } from 'esoftplay';
 
 /*
 Using ScrollView
@@ -42,7 +43,7 @@ export interface LibScrollState {
   data: any
 }
 
-export default class escroll extends Component<LibScrollProps, LibScrollState> {
+export default class escroll extends LibComponent<LibScrollProps, LibScrollState> {
 
   layoutProvider: any;
   contextProvider: any;
@@ -75,7 +76,7 @@ export default class escroll extends Component<LibScrollProps, LibScrollState> {
       this.setState({ data: this.dataProvider.cloneWithRows(this.props.children) })
   };
 
-  render() {
+  render() : any {
     const w = this.state.width / (this.props.numColumns || 1)
     return (
       <View onLayout={(e: any) => this.setState({ width: e.nativeEvent.layout.width })} style={[{ flex: 1 }]} >

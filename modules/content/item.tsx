@@ -5,7 +5,7 @@ import { Component } from 'react';
 import { Image, Linking, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
 import { Text } from 'native-base';
 import moment from 'moment/min/moment-with-locales';
-import { esp } from 'esoftplay';
+import { esp, LibComponent } from 'esoftplay';
 const { defaultStyle, width } = esp.mod('lib/style')
 
 export interface ContentItemProps {
@@ -26,7 +26,7 @@ export interface ContentItemState {
 
 }
 
-export default class eitem extends Component<ContentItemProps, ContentItemState> {
+export default class eitem extends LibComponent<ContentItemProps, ContentItemState> {
 
   props: ContentItemProps
   constructor(props: ContentItemProps) {
@@ -40,7 +40,7 @@ export default class eitem extends Component<ContentItemProps, ContentItemState>
     navigation.push('content/detail', { id, title, url, created, image, })
   }
 
-  render() {
+  render() : any {
     const props = this.props
     const { id, title, intro, description, image, created, updated, url, publish } = props
     if (created == 'sponsor') {

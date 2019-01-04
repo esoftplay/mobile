@@ -8,7 +8,7 @@ export interface DbGetAll {
   orderBy?: string,
   limit?: number,
   offset?: number
-  callback?(result: any[]): void,
+  callback?: (result: any[]) => void,
   debug?: 0 | 1
 }
 
@@ -17,7 +17,7 @@ export interface DbGetRow {
   id?: string | number,
   params?: any[],
   debug?: 0 | 1,
-  callback?(row: Object): void
+  callback?: (row: Object) => void
 }
 
 export interface DbDelete {
@@ -25,20 +25,20 @@ export interface DbDelete {
   id?: string | number,
   params?: any[],
   debug?: 0 | 1,
-  callback?(rowsAffected: number): void
+  callback?: (rowsAffected: number) => void
 }
 
 export interface DbUpdate {
   values: Object,
   debug?: 0 | 1,
-  callback?(rowsAffected: number): void,
+  callback?: (rowsAffected: number) => void,
   id?: string | number
 }
 
 export interface DbInsert {
   values: Object,
   debug?: 0 | 1,
-  callback?(insertId: number): void,
+  callback?: (insertId: number) => void,
 }
 
 class esqlite {
@@ -51,7 +51,7 @@ class esqlite {
 
   }
 
-  init(dbname?: string, createStatement?: string, version?: string, description?: string, size?: any) {
+  init(dbname?: string, createStatement?: string, version?: string, description?: string, size?: any): void {
     version = version ? version : '1';
     size = size ? size : '';
     if (dbname) {
@@ -186,8 +186,8 @@ class esqlite {
     }
   }
 
-  
-  Insert_(options?: DbInsert): Promise<any> {
+
+  Insert_(options: DbInsert): Promise<any> {
     return new Promise((r, j) => {
       if (options) {
         var { values, debug, callback } = options
@@ -278,7 +278,7 @@ class esqlite {
       }
     })
   }
-  
+
   Update(id: string | number, values: Object, callback?: (rowsAffected: number) => void, debug?: number): Promise<any> {
     return new Promise((r, j) => {
       values = this.verify(values);

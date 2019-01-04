@@ -3,7 +3,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
-import { esp, LibMenu } from 'esoftplay';
+import { esp, LibMenu, LibComponent } from 'esoftplay';
 const { colorPrimary } = esp.mod('lib/style');
 
 export interface LibMenusubProps {
@@ -11,24 +11,26 @@ export interface LibMenusubProps {
   id: number,
   selectedId: number,
   title: string,
-  onClick: (data: any) => {}
+  onClick: (data: any) => void
 }
 
 export interface LibMenusubState {
   expanded: boolean
 }
 
-export default class Emenusub extends Component<LibMenusubProps, LibMenusubState> {
+export default class Emenusub extends LibComponent<LibMenusubProps, LibMenusubState> {
 
   props: LibMenusubProps
   constructor(props: LibMenusubProps) {
     super(props)
     this.props = props
   }
+  
   state = {
     expanded: false
   }
-  render() {
+
+  render() : any {
     var data = this.props.data.filter((item:any) => item.par_id == this.props.id)
     return (
       <View>

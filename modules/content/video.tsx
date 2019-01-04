@@ -3,7 +3,7 @@
 import React from 'react'
 import { Component } from 'react';
 import { WebView, StyleSheet, View, ActivityIndicator } from 'react-native';
-import { esp } from 'esoftplay';
+import { esp, LibComponent } from 'esoftplay';
 const { colorPrimary } = esp.mod('lib/style');
 
 export interface ContentVideoProps {
@@ -15,7 +15,7 @@ export interface ContentVideoState {
 
 }
 
-export default class evideo extends Component<ContentVideoProps, ContentVideoState> {
+export default class evideo extends LibComponent<ContentVideoProps, ContentVideoState> {
 
   props: ContentVideoProps;
 
@@ -24,7 +24,7 @@ export default class evideo extends Component<ContentVideoProps, ContentVideoSta
     this.props = props
   }
 
-  render() {
+  render() : any {
     const code = this.props.code
     if (!code) {
       return new Error('Missing Youtube Code in Props');

@@ -13,15 +13,15 @@ if (!fs.existsSync(tmpDir)) {
 }
 
 /* FETCH ALL SCRIPTS */
-var Modules    = {}; // Object semua module/task yang bisa dipanggil
-var Reducers   = {}; // Object semua reducer yang akan dikumpulkan
-var Extender   = {};
-var grabClass  = null;
+var Modules = {}; // Object semua module/task yang bisa dipanggil
+var Reducers = {}; // Object semua reducer yang akan dikumpulkan
+var Extender = {};
+var grabClass = null;
 var delReducer = true;
-var countLoop  = 0; // jumlah file yang telah dihitung
-var countRead  = 0; // jumlah file yang telah di baca
-var tmpTask    = {}; // template ModuleTaks yang akan dimasukkan ke index.d.ts
-var tmpExp     = ["LibCrypt"]; // nama2 class yang tidak perlu dibuat
+var countLoop = 0; // jumlah file yang telah dihitung
+var countRead = 0; // jumlah file yang telah di baca
+var tmpTask = {}; // template ModuleTaks yang akan dimasukkan ke index.d.ts
+var tmpExp = ["LibCrypt"]; // nama2 class yang tidak perlu dibuat
 
 checks.forEach(modules => {
   if (fs.existsSync(modules)) {
@@ -35,13 +35,13 @@ checks.forEach(modules => {
             var name = file.replace(replacer, '');
             var path = modules + module + "/" + name;
             var clsName = module;
-            if (name != "index") {
-              clsName += " "+name;
-            }
-            clsName = clsName.toLowerCase().replace(/\b[a-z]/g, function(a) {return a.toUpperCase();});
+            // if (name != "index") {
+            clsName += " " + name;
+            // }
+            clsName = clsName.toLowerCase().replace(/\b[a-z]/g, function (a) { return a.toUpperCase(); });
             clsName = clsName.replace(/\s/g, "");
             Modules[module][name] = path;
-            if (typeof tmpTask[clsName]=="undefined") {
+            if (typeof tmpTask[clsName] == "undefined") {
               tmpTask[clsName] = {
                 "interface": [],
                 "class": "",
@@ -53,7 +53,7 @@ checks.forEach(modules => {
               if (err) {
                 return console.log(err)
               } else {
-                var isIndexed =  (tmpExp.indexOf(clsName) > -1) ? false : true;
+                var isIndexed = (tmpExp.indexOf(clsName) > -1) ? false : true;
                 /* REGEX INTERFACE */
                 if (isIndexed) {
                   if (m = data.match(/\n\s{0,}(export\s+interface\s+[a-zA-Z0-9_]+\s{0,}\{[^\}]+\})/g)) {
@@ -64,8 +64,13 @@ checks.forEach(modules => {
                 }
                 /* REGEX CLASS NAME */
                 if (m = /\n\s{0,}(?:export\s+default\s+)?(class\s+([^\s]+)[^\{]+)/.exec(data)) {
-                  if (tmpTask[clsName]["class"]=="") {
-                    tmpTask[clsName]["class"] = m[1].replace(m[2], clsName).trim();
+                  if (tmpTask[clsName]["class"] == "") {
+                    tmpTask[clsName]["class"] = 'export ' + m[1].replace(m[2], clsName).trim();
+                    /* tambahkan fungsi Crypt */
+                    if (clsName == 'LibCrypt') {
+                      tmpTask[clsName]["function"]['encode'] = 'encode(text: string): string;';
+                      tmpTask[clsName]["function"]['decode'] = 'decode(text: string): string;';
+                    }
                   }
                 }
                 /* REGEX All Functions */
@@ -74,87 +79,17 @@ checks.forEach(modules => {
                   if (s = r.exec(data)) {
                     if (m = data.match(r)) {
                       for (var i = 0; i < m.length; i++) {
-                        if (S = m[i].match(/\n([^\na-zA-Z0-9_]+)([a-zA-Z0-9_]{3,})/)) {
-                          if (S[1]==s[1]) {
-                            tmpTask[clsName]["function"][S[2]] = m[i].trim()+";";
+                        if (S = m[i].match(/\n([^\na-zA-Z0-9_]+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,})/)) {
+                          if (S[1] === s[1].replace(new RegExp('\n', 'g'), '')) {
+                            var a = m[i].trim().replace('async ', '') + ";"
+                            tmpTask[clsName]["function"][S[2]] = a;
                           }
                         }
                       }
+
                     }
                   }
                 }
-
-
-
-
-
-                /*
-                  Grab index.d.ts disini
-
-                  1. grab semua dengan prefix 'export interface' berikut nama dan body sampai dengan kurung tutup '}'
-                    - nama interface selalu diawali dengan module-task dan diakhiri dengan 'State' atau 'Props', misal 'LibPickerProps','ContentAudioState'
-
-                  2. ambil nama kelas Component (jika ada) dan ubah sesuai nama path (ModuleTask), sampai dengan SuperClassnya (jika ada), dan (jika ada) sampai dengan interface (yang berada diantara < >).
-                     jika didalam sebuah kelas terdapat fungsi misal :(render(), componentDidMount(), constructor() dan lain sebagainya ) maka fungsi tersebut diambil juga dengan syarat seperti no 3 berikut ini;
-
-                  3. mengambil fungsi dilakukan dengan cara mengambil nama fungsi berserta indentitas modifiernya (static, public, private, dll) sampai akhir parameter kecuali body fungsi ditandai dengan '{'
-
-                  sample generate dati file di 'module/content/audio.tsx'
-
-                  ======================================================  START
-
-                    export interface ContentAudioProps {
-                      onRef: (ref: any) => void,
-                      code: string,
-                      onStatusChange: (status: any) => void
-                    }
-
-                    export interface ContentAudioState {
-                      playbackInstanceName: string,
-                      muted: boolean,
-                      playbackInstancePosition: any,
-                      playbackInstanceDuration: any,
-                      shouldPlay: boolean,
-                      isPlaying: boolean,
-                      isBuffering: boolean,
-                      isLoading: boolean,
-                      volume: number,
-                    }
-
-                    export class eaudio extends Component<ContentAudioProps, ContentAudioState> {
-                      constructor(props: ContentAudioProps)
-                      componentDidMount()
-                      componentWillUnmount(): void
-                      async _loadNewPlaybackInstance(playing: boolean)
-                      _onPlaybackStatusUpdate(status: any)
-                      _onPlayPausePressed()
-                      render()
-                    }
-
-                  +++++++++++++++++++++++++++++++++++++++++++++++ END
-
-                  sample generate dati file di 'esp.ts'
-
-                  ======================================================
-
-                  export class esp {
-                      static asset(path: string): any;
-                      static config(param?: string, ...params: string[]): any;
-                      static _config(): string | number | boolean;
-                      static mod(path: string): any;
-                      static reducer(): any;
-                      static navigations(): any;
-                      static home(): any;
-                      static log(message?: any, ...optionalParams: any[]): void;
-                      static routes(): any;
-                      static getTokenAsync(callback: (token: string) => void): void;
-                      static notif(): any;
-                    }
-
-                  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ END
-                */
-
-
 
                 var key = module + "_" + name;
                 if ((new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g)).test(data)) { // is contains 'reducer'
@@ -234,31 +169,32 @@ fs.writeFile(tmpDir + "assets.js", Text, { flag: 'w' }, function (err) {
 
 /* CREATE INDEX.D.TS */
 function createIndex() {
-  var Text = "import { Component, ComponentClass, Ref, ComponentType } from 'react';\n"+
-    "declare module esoftplay {\n"+
-    "  export class esp {\n"+
-    "    static asset(path: string): any;\n"+
-    "    static config(param?: string, ...params: string[]): any;\n"+
-    "    static _config(): string | number | boolean;\n"+
-    "    static mod(path: string): any;\n"+
-    "    static reducer(): any;\n"+
-    "    static navigations(): any;\n"+
-    "    static home(): any;\n"+
-    "    static log(message?: any, ...optionalParams: any[]): void;\n"+
-    "    static routes(): any;\n"+
-    "    static getTokenAsync(callback: (token: string) => void): void;\n"+
-    "    static notif(): any;\n"+
+  var Text = "import { Component, ComponentClass, Ref, ComponentType } from 'react';\n" +
+    "import { ContextProvider } from 'recyclerlistview';\n" +
+    "\n" +
+    "  export class esp {\n" +
+    "    static assets(path: string): any;\n" +
+    "    static config(param?: string, ...params: string[]): any;\n" +
+    "    static _config(): string | number | boolean;\n" +
+    "    static mod(path: string): any;\n" +
+    "    static reducer(): any;\n" +
+    "    static navigations(): any;\n" +
+    "    static home(): any;\n" +
+    "    static log(message?: any, ...optionalParams: any[]): void;\n" +
+    "    static routes(): any;\n" +
+    "    static getTokenAsync(callback: (token: string) => void): void;\n" +
+    "    static notif(): any;\n" +
     "  }\n";
-  for(clsName in tmpTask) {
+  for (clsName in tmpTask) {
     if (tmpTask[clsName]["class"]) {
       Text += "\n";
       for (var i = 0; i < tmpTask[clsName]["interface"].length; i++) {
-        Text += "\n  "+tmpTask[clsName]["interface"][i].replace(/\n/g, "\n  ");
+        Text += "\n  " + tmpTask[clsName]["interface"][i].replace(/\n/g, "\n  ");
       }
-      Text += "\n  "+tmpTask[clsName]["class"]+" {";
+      Text += "\n  " + tmpTask[clsName]["class"] + " {";
       var isFilled = false;
-      for(fun in tmpTask[clsName]["function"]) {
-        Text += "\n    "+tmpTask[clsName]["function"][fun];
+      for (fun in tmpTask[clsName]["function"]) {
+        Text += "\n    " + tmpTask[clsName]["function"][fun];
         isFilled = true;
       }
       if (isFilled) {
@@ -267,7 +203,6 @@ function createIndex() {
       Text += "}";
     }
   }
-  Text += "\n}";
   fs.writeFile(tmpDir + "index.d.ts", Text, { flag: 'w' }, function (err) {
     if (err) {
       return console.log(err);
@@ -318,23 +253,36 @@ function capitalizeFirstLetter(string) {
 /* CREATE ROUTER LIST */
 var Task = "";
 var nav = "";
-var staticImport = "export { default as esp } from '../../../node_modules/esoftplay/esp';\n"
 var Navigations = [];
+var staticImport = []
+staticImport.push("export { default as esp } from '../../../node_modules/esoftplay/esp';\n")
 for (const module in Modules) {
   for (const task in Modules[module]) {
     nav = module + '/' + task;
     Navigations.push(nav);
     Task += "\t\t" + 'case "' + nav + '":' + "\n\t\t\t" +
-      'Out = require("../../.' + Modules[module][task] + '").default;' + "\n\t\t\t" +
+      'Out = require("../../.' + Modules[module][task] + '").default' + "\n\t\t\t" +
       'break;' + "\n";
-    staticImport += "export { default as " + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + " } from '../../." + Modules[module][task] + "';\n";
+    /* ADD ROUTER EACH FILE FOR STATIC IMPORT */
+    let item = "export { default as " + capitalizeFirstLetter(module) + capitalizeFirstLetter(task) + " } from '../../." + Modules[module][task] + "';\n"
+    if (module == 'lib' && task == 'component') {
+      staticImport.splice(0, 0, item)
+    } else if (module == 'lib' && task == 'style') {
+      staticImport.splice(2, 0, item)
+    } else if (module == 'lib' && task == 'sqlite') {
+      staticImport.splice(2, 0, item)
+    } else {
+      staticImport.push(item);
+    }
   }
 }
-fs.writeFile(tmpDir + 'index.js', staticImport, { flag: 'w' }, function (err) {
+
+fs.writeFile(tmpDir + 'index.js', staticImport.join(''), { flag: 'w' }, function (err) {
   if (err) {
     return console.log(err);
   }
 });
+
 Text = 'function routers(modtask) {' + "\n\t" +
   'var Out = {}' + "\n\t" +
   'switch (modtask) {' + "\n" +

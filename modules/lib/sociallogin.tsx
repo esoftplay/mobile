@@ -2,19 +2,19 @@
 import React from 'react'
 import { Component } from 'react';
 import { View, WebView, AsyncStorage, ActivityIndicator } from 'react-native';
-import { esp, LibUtils } from 'esoftplay';
+import { esp, LibUtils, LibComponent } from 'esoftplay';
 const config = esp.config()
 const { colorPrimary } = esp.mod('lib/style')
 
 export interface LibSocialloginProps {
   url?: string,
-  onResult(userData: any): void
+  onResult: (userData: any) => void
 }
 export interface LibSocialloginState {
 
 }
 
-export default class esocialLogin extends Component<LibSocialloginProps, LibSocialloginState> {
+export default class esocialLogin extends LibComponent<LibSocialloginProps, LibSocialloginState> {
   props: LibSocialloginProps
 
   constructor(props: LibSocialloginProps) {
@@ -42,7 +42,7 @@ export default class esocialLogin extends Component<LibSocialloginProps, LibSoci
       })
     })
   }
-  render() {
+  render(): any {
     var { url, onResult } = this.props
     if (!url) {
       url = LibUtils.getArgs(this.props, 'url');

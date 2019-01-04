@@ -4,12 +4,12 @@ import { View, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { Text, Button, Icon, Item, Input, Thumbnail } from 'native-base';
 const { colorPrimary, width } = esp.mod('lib/style');
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
-import { esp, LibUtils, LibCurl, LibContext, LibSociallogin, ContentComment_item } from 'esoftplay';
+import { esp, LibUtils, LibCurl, LibContext, LibSociallogin, ContentComment_item, LibComponent } from 'esoftplay';
 const config = esp.config();
 
 export interface ContentComment_listProps {
   par_id: number,
-  setUser(user: any): void,
+  setUser: (user: any) => void,
   url: any,
   url_post: any,
   user: any,
@@ -30,7 +30,7 @@ export interface ContentComment_listState {
   comment: string
 }
 
-export default class commentList extends Component<ContentComment_listProps, ContentComment_listState> {
+export default class commentList extends LibComponent<ContentComment_listProps, ContentComment_listState> {
   layoutProvider: any = undefined
   contextProvider: any
   dataProvider: any
@@ -135,10 +135,11 @@ export default class commentList extends Component<ContentComment_listProps, Con
   }
 
   componentDidMount(): void {
+    super.componentDidMount()
     this.loadData()
   }
 
-  render() {
+  render(): any {
     var replyText = ''
     var replySend = 'Kirim'
     if (this.props.par_id != 0) {

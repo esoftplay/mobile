@@ -5,7 +5,7 @@ import { View, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { Text, Button, Container, Icon } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
 const { colorPrimary, colorAccent, STATUSBAR_HEIGHT } = esp.mod('lib/style');
-import { esp, LibSociallogin, ContentComment_list } from 'esoftplay';
+import { esp, LibSociallogin, ContentComment_list, LibComponent } from 'esoftplay';
 const config = esp.config();
 
 export interface ContentCommentProps {
@@ -22,7 +22,7 @@ export interface ContentCommentState {
   url_post: string
 }
 
-export default class ecomment extends Component<ContentCommentProps, ContentCommentState> {
+export default class ecomment extends LibComponent<ContentCommentProps, ContentCommentState> {
 
   state: ContentCommentState
   props: ContentCommentProps
@@ -40,6 +40,7 @@ export default class ecomment extends Component<ContentCommentProps, ContentComm
   }
 
   componentDidMount(): void {
+    super.componentDidMount();
     LibSociallogin.getUser((res: any) => {
       if (res) {
         this.setState({ user: res })
@@ -47,7 +48,7 @@ export default class ecomment extends Component<ContentCommentProps, ContentComm
     })
   }
 
-  render() {
+  render(): any {
     const { goBack } = this.props.navigation
     return (
       <KeyboardAvoidingView

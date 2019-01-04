@@ -5,7 +5,7 @@ import { Text, Button, Icon, Thumbnail } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
 const { colorPrimary, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
 import Modal from 'react-native-modal';
-import { esp, ContentComment_list } from 'esoftplay';
+import { esp, ContentComment_list, LibComponent } from 'esoftplay';
 
 export interface ContentComment_itemProps {
   id: number,
@@ -13,7 +13,7 @@ export interface ContentComment_itemProps {
   name: string,
   image: string,
   email: string,
-  setUser(user: any): void,
+  setUser: (user: any) => void,
   website: string,
   content: string,
   date: string,
@@ -27,7 +27,7 @@ export interface ContentComment_itemState {
   isOpenChild: boolean
 }
 
-export default class Comment_item extends Component<ContentComment_itemProps, ContentComment_itemState> {
+export default class Comment_item extends LibComponent<ContentComment_itemProps, ContentComment_itemState> {
   state: ContentComment_itemState
   props: ContentComment_itemProps
 
@@ -37,7 +37,7 @@ export default class Comment_item extends Component<ContentComment_itemProps, Co
     this.state = { isOpenChild: false };
   }
 
-  render() {
+  render() : any {
     var { id, par_id, name, image, email, website, content, date, reply, url, url_post, user } = this.props
     url = url + ((/\?/g).test(url) ? '&par_id=' + id : '?par_id=' + id)
     url_post = url_post + ((/\?/g).test(url_post) ? '&par_id=' + id : '?par_id=' + id)

@@ -16,13 +16,14 @@ import { Left, Button, Icon, Text, ListItem } from 'native-base';
 import { LinearGradient } from 'expo';
 import moment from 'moment/min/moment-with-locales'
 import {
-    esp,
-    ContentItem,
-    LibUtils,
-    LibCurl,
-    ContentAudio,
-    LibWebview,
-    ContentVideo
+  esp,
+  ContentItem,
+  LibUtils,
+  LibCurl,
+  ContentAudio,
+  LibWebview,
+  ContentVideo,
+  LibComponent
 } from 'esoftplay';
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = esp.mod('lib/style');
 const config = esp.config();
@@ -48,7 +49,7 @@ export interface ContentDetailState {
   isPageReady: boolean,
 }
 
-export default class edetail extends Component<ContentDetailProps, ContentDetailState> {
+export default class edetail extends LibComponent<ContentDetailProps, ContentDetailState> {
   audioPlayer: any;
   state: ContentDetailState;
   props: ContentDetailProps
@@ -70,7 +71,8 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
     moment.locale('id')
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
+    super.componentDidMount();
     var url = this.props.url ? this.props.url : LibUtils.getArgs(this.props, 'url', config.content)
     new LibCurl(url, null,
       (result: any, msg: string) => {
@@ -88,7 +90,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
     this.setState({ images_page: Math.floor(contentOffset.x / viewSize.width) + 1 })
   }
 
-  render() {
+  render(): any {
     var result: any = {}
     result.id = LibUtils.getArgs(this.props, 'id', 0)
     result.url = LibUtils.getArgs(this.props, 'url', '')
@@ -123,7 +125,7 @@ export default class edetail extends Component<ContentDetailProps, ContentDetail
         {result.created != '' && <Text note style={styles.created}>{moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}</Text>}
       </View>
     }
-    
+
     result = this.state.result
     // if (result.image == '') {
     //   HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
