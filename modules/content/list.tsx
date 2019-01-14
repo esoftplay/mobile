@@ -1,15 +1,31 @@
 // 
 import React from 'react';
 import { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, BackHandler, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  BackHandler,
+  Platform,
+  RefreshControl
+} from 'react-native';
 import { Container, Button, Text, Icon } from 'native-base';
 import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
-import { esp, LibCurl, LibUtils, ContentMenu, ContentSearch, ContentItem } from 'esoftplay';
+import {
+    esp,
+    LibCurl,
+    LibUtils,
+    ContentMenu,
+    ContentSearch,
+    ContentItem,
+    LibComponent,
+    LibStyle
+} from 'esoftplay';
 import { StatusBar, Animated } from 'react-native';
 import { connect } from 'react-redux';
-const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 const config = esp.config();
 
 var menu: any;
@@ -40,7 +56,7 @@ export interface ContentListState {
 }
 
 
-class elist extends Component<ContentListProps, ContentListState>{
+class elist extends LibComponent<ContentListProps, ContentListState>{
   dataProvider: any;
   _layoutProvider: any;
   drawer: any;
@@ -104,20 +120,22 @@ class elist extends Component<ContentListProps, ContentListState>{
     this.onBackPress = this.onBackPress.bind(this)
   }
 
-  loadData(): void {
-    this.doFetch()
+  loadData(isRefreshing?: boolean): void {
+    this.doFetch(0, isRefreshing)
   }
 
   loadMore(): void {
     this.doFetch(this.state.page + 1)
   }
 
-  doFetch(page: number = 0): void {
+  doFetch(page?: number, isRefreshing?: boolean): void {
+    if (!page) page = 0;
+    if (isRefreshing) this.setState({ data: [], isStop: false })
     new LibCurl(this.state.url + '?page=' + page, null,
       (result: any, msg: string) => {
         this.setState((state, props) => {
           return {
-            data: state.data.length > 0 ?  [...state.data, ...result.list] : [...result.list],
+            data: state.data.length > 0 ? [...state.data, ...result.list] : [...result.list],
             page: page,
             isStop: result.list.length === 0,
             isRefreshing: false
@@ -125,9 +143,10 @@ class elist extends Component<ContentListProps, ContentListState>{
         })
       },
       (msg: string) => {
-        console.log('sampe sini', msg)
+        // console.log('sampe sini', msg)
       }, 1
     )
+
   }
 
   onRefresh(): void {
@@ -138,12 +157,17 @@ class elist extends Component<ContentListProps, ContentListState>{
     }, () => this.doFetch())
   }
 
-  closeDrawer() { this.drawer.close() }
+  closeDrawer(): void {
+    this.drawer.close()
+  }
 
-  openDrawer() { this.drawer.open() }
+  openDrawer(): void {
+    this.drawer.open()
+  }
 
 
   componentDidMount(): void {
+    super.componentDidMount();
     this.loadData();
     setTimeout(() => {
       BackHandler.addEventListener('hardwareBackPress', this.onBackPress)
@@ -153,7 +177,8 @@ class elist extends Component<ContentListProps, ContentListState>{
     }, 500);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
+    super.componentWillUnmount()
     setTimeout(() => {
       BackHandler.removeEventListener("hardwareBackPress", this.onBackPress);
     }, 500);
@@ -164,7 +189,7 @@ class elist extends Component<ContentListProps, ContentListState>{
     if (!this.state.isDrawerOpen) {
       if (Platform.OS == 'ios') {
         return false;
-      } else if (!this.state.searchView && !routers.index || routers.index == 0) {
+      } else if (!this.state.searchView && (!routers.index || routers.index == 0)) {
         esp.log('url', this.state.url, this.state.urlori);
         try {
           if (this.state.url != this.state.urlori) {
@@ -189,13 +214,13 @@ class elist extends Component<ContentListProps, ContentListState>{
     return true;
   };
 
-  componentDidUpdate(prevProps: ContentListProps, prevState: ContentListState) {
+  componentDidUpdate(prevProps: ContentListProps, prevState: ContentListState): void {
     if (prevState.url != this.state.url) {
       this.onRefresh()
     }
   }
 
-  openSearch() {
+  openSearch(): void {
     this.setState({ searchView: true }, () => {
       Animated.timing(this.state.animSearch, {
         toValue: 1,
@@ -204,7 +229,7 @@ class elist extends Component<ContentListProps, ContentListState>{
     })
   }
 
-  closeSearch() {
+  closeSearch(): void {
     Animated.timing(this.state.animSearch, {
       toValue: 0,
       duration: 300
@@ -213,7 +238,7 @@ class elist extends Component<ContentListProps, ContentListState>{
     })
   }
 
-  render() {
+  render(): any {
     const { goBack, navigate } = this.props.navigation
     const { routes } = this.props
     var indexRoutes = routes.index
@@ -304,6 +329,9 @@ class elist extends Component<ContentListProps, ContentListState>{
           {
             this.state.data.length > 0 ?
               <RecyclerListView
+                scrollViewProps={{
+                  refreshControl: <RefreshControl refreshing={this.state.isRefreshing} onRefresh={() => this.loadData(true)} />
+                }}
                 layoutProvider={this._layoutProvider}
                 onEndReached={() => this.loadMore()}
                 renderFooter={() => {
@@ -323,12 +351,12 @@ class elist extends Component<ContentListProps, ContentListState>{
           }
           {
             this.state.searchView ?
-              <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, right: 0, opacity: searchOpacity }} >
+              <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT_MASTER, left: 0, right: 0, opacity: searchOpacity }} >
                 <ContentSearch
                   close={() => this.closeSearch()}
                   defaultValue={this.searchQuery}
                   onSubmit={(e: any) => {
-                    this.props.navigation.push('content/list', { url: this.state.urlori + 'search.htm?id=' + e, title: decodeURI(e) })
+                    this.props.navigation.push('content/list', { url: String(this.state.urlori).substr(0, String(this.state.urlori).lastIndexOf('/') + 1) + 'search.htm?id=' + e, title: decodeURI(e) })
                     this.searchQuery = decodeURI(e)
                   }}
                 />
@@ -340,7 +368,7 @@ class elist extends Component<ContentListProps, ContentListState>{
     );
   }
 
-  _rowRenderer(type: number, item: any) {
+  _rowRenderer(type: number, item: any): any {
     switch (type) {
       case ViewTypes.HEADER:
         return (

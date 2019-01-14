@@ -2,11 +2,12 @@
 import React from 'react'
 import { Component } from 'react';
 import { Audio } from 'expo';
+import { LibComponent } from 'esoftplay';
 
 export interface ContentAudioProps {
-  onRef(ref: any): void,
+  onRef: (ref: any) => void,
   code: string,
-  onStatusChange(status: any): void
+  onStatusChange: (status: any) => void
 }
 
 export interface ContentAudioState {
@@ -22,7 +23,7 @@ export interface ContentAudioState {
 }
 
 // create a component
-class eaudio extends Component<ContentAudioProps, ContentAudioState> {
+class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
   playbackInstance: any
   state: ContentAudioState;
   props: ContentAudioProps;
@@ -44,19 +45,21 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
   }
 
   componentDidMount(): void {
+    super.componentDidMount();
     this.props.onRef(this);
     Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
-      playThroughEarpieceAndroid:false,
-      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: false,
+      interruptionModeAndroid: true,
     });
     this._loadNewPlaybackInstance(false);
   }
 
   componentWillUnmount(): void {
+    super.componentWillUnmount();
     this.props.onRef(undefined)
     this.playbackInstance = null;
   }
@@ -109,7 +112,7 @@ class eaudio extends Component<ContentAudioProps, ContentAudioState> {
     }
   }
 
-  render() {
+  render(): any {
     return null
   }
 }

@@ -4,28 +4,26 @@ import { Component } from 'react';
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider } from 'recyclerlistview';
 import { Dimensions } from 'react-native';
 const { width } = Dimensions.get('window')
-import { LibContext } from 'esoftplay';
+import { LibContext, LibComponent } from 'esoftplay';
 
 export interface LibListProps {
   staticWidth?: number,
   staticHeight?: number,
   data: any[],
-  renderItem(data: any, index: number): void,
+  renderItem: (data: any, index: number) => void,
 }
 
 export interface LibListState {
   data: any[]
 }
 
-export default class EList extends Component<LibListProps, LibListState> {
-
+export default class EList extends LibComponent<LibListProps, LibListState> {
   layoutProvider: any;
   contextProvider: any;
   dataProvider: any;
   fastList: any;
   props: LibListProps
   state: LibListState
-
   constructor(props: LibListProps) {
     super(props);
     this.props = props;
@@ -45,28 +43,29 @@ export default class EList extends Component<LibListProps, LibListState> {
     this.state = { data: this.dataProvider.cloneWithRows(props.data) }
   }
 
-  rowRenderer(type: number, data: any) {
+  rowRenderer(type: number, data: any): any {
     return this.props.renderItem(data, type)
   }
 
-  scrollToIndex(x: number, anim: boolean = true) {
+  scrollToIndex(x: number, anim?: boolean): void {
+    if (!anim) anim = true;
     this.fastList.scrollToIndex(x, anim)
   }
 
-  componentDidUpdate(prevProps: LibListProps, prevState: LibListState) {
+  componentDidUpdate(prevProps: LibListProps, prevState: LibListState): void {
     if (prevProps.data !== this.props.data) {
       this.setState({
-        data: this.dataProvider.cloneWithRows(this.props.data)
+        data: this.props.data
       })
     }
   }
 
-  render() {
+  render(): any {
     return (
       <RecyclerListView
         ref={(e) => this.fastList = e}
         layoutProvider={this.layoutProvider}
-        dataProvider={this.state.data}
+        dataProvider={this.dataProvider.cloneWithRows(this.state.data)}
         itemAnimator={new BaseItemAnimator()}
         forceNonDeterministicRendering={this.props.staticHeight == null}
         contextProvider={this.contextProvider}

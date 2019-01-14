@@ -56,7 +56,7 @@ export default class enotification {
       }, 1500);
     })
   }
-  static async requestPermission(callback?: (token: any) => void): Promise<any> {
+  static requestPermission(callback?: (token: any) => void): Promise<any> {
     return new Promise(async (r, j) => {
       const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
       let finalStatus = status;

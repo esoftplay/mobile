@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Dimensions, StatusBar, Platform } from 'react-native';
+
 const { height, width } = Dimensions.get('window');
 const isIphoneX = Platform.OS === "ios" && height === 812 && width === 375;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? isIphoneX ? 44 : 20 : StatusBar.currentHeight;
+const STATUSBAR_HEIGHT_MASTER = Platform.OS === 'ios' ? isIphoneX ? 44 : 20 : StatusBar.currentHeight;
 const colorPrimary = '#3E50B4'
 const colorPrimaryDark = '#3E50B4'
 const colorAccent = '#FFF'
@@ -11,7 +13,7 @@ const colorTextPrimary = "#353535"
 const colorTextBody = '#353535'
 const colorTextCaption = '#686868'
 const colorLightGrey = '#fbfbfb'
-function elevation(value: any) {
+function elevation(value: any): any {
   if (Platform.OS === 'ios') {
     if (value == 0) return {}
     return { shadowColor: 'black', shadowOffset: { width: 0, height: value / 2 }, shadowRadius: value, shadowOpacity: 0.24 }
@@ -60,19 +62,20 @@ const defaultStyle = {
   },
 }
 
-export default {
-  isIphoneX,
-  STATUSBAR_HEIGHT,
-  colorPrimary,
-  colorPrimaryDark,
-  colorAccent,
-  colorGrey,
-  colorTextPrimary,
-  colorTextBody,
-  colorTextCaption,
-  colorLightGrey,
-  elevation,
-  width,
-  height,
-  defaultStyle,
+export default class Style {
+  static isIphoneX: boolean = isIphoneX;
+  static STATUSBAR_HEIGHT: number = STATUSBAR_HEIGHT;
+  static STATUSBAR_HEIGHT_MASTER: number = STATUSBAR_HEIGHT_MASTER;
+  static colorPrimary: string = colorPrimary;
+  static colorPrimaryDark: string = colorPrimaryDark;
+  static colorAccent: string = colorAccent;
+  static colorGrey: string = colorGrey;
+  static colorTextPrimary: string = colorTextPrimary;
+  static colorTextBody: string = colorTextBody;
+  static colorTextCaption: string = colorTextCaption;
+  static colorLightGrey: string = colorLightGrey;
+  static elevation(val: number): any { return elevation(val) };
+  static width: number = width;
+  static height: number = height;
+  static defaultStyle: any = defaultStyle;
 }

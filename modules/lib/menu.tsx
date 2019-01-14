@@ -2,11 +2,11 @@
 import React from 'react'
 import { Component } from 'react';
 import { FlatList } from 'react-native';
-import { LibMenusub } from 'esoftplay';
+import { LibMenusub, LibComponent } from 'esoftplay';
 
 
 export interface LibMenuProps {
-  onItemSelected(item: any): void,
+  onItemSelected: (item: any) => void,
   parent?: number,
   style?: any,
   data: any,
@@ -17,7 +17,7 @@ export interface LibMenuState {
 
 }
 
-export default class emenu extends Component<LibMenuProps, LibMenuState> {
+export default class emenu extends LibComponent<LibMenuProps, LibMenuState> {
 
   props: LibMenuProps
   constructor(props: LibMenuProps) {
@@ -31,7 +31,7 @@ export default class emenu extends Component<LibMenuProps, LibMenuState> {
       this.props.onItemSelected(item)
     }
   }
-  render() {
+  render(): any {
     var parent = this.props.parent ? this.props.parent : 0
     var style = this.props.style ? this.props.style : {}
     var data = this.props.data

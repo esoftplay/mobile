@@ -3,7 +3,16 @@
 import React from 'react';
 import { Component } from 'react'
 import { TouchableOpacity, View, Alert, Linking, StatusBar } from 'react-native';
-import { esp, DbNotification, LibCrypt, LibCurl, UserClass, LibList } from 'esoftplay';
+import {
+  esp,
+  DbNotification,
+  LibCrypt,
+  LibCurl,
+  UserClass,
+  LibList,
+  LibComponent,
+  LibStyle
+} from 'esoftplay';
 import { store } from '../../../../App';
 import { connect } from 'react-redux'
 import moment from 'moment/min/moment-with-locales'
@@ -20,11 +29,12 @@ export interface UserNotificationState {
 }
 
 
-class Enotification extends Component<UserNotificationProps, UserNotificationState> {
+class Enotification extends LibComponent<UserNotificationProps, UserNotificationState> {
 
   props: UserNotificationProps
 
-  static reducer = (state = { data: [] }, action: any) => {
+  static reducer(state: any, action: any): any {
+    if (!state) state = { data: [] };
     switch (action.type) {
       case 'user_notification_parseData':
         return {
@@ -46,69 +56,67 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
     }
   }
 
-  static action = {
-    user_notification_loadData() {
-      var uri = 'user/push-notif'
-      try { Enotification.action.user_notification_parseData() } catch (error) { }
-      const db = new DbNotification();
-      db.execute('SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1', (res: any) => {
-        if (res.rows.length > 0) {
-          uri += '?last_id=' + res.rows._array[0].notif_id
-        }
-        // esp.log(res);
 
-        const salt = esp.config('salt');
-        var post = {
-          user_id: '',
-          secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
-        }
+  static user_notification_loadData(): void {
+    var uri = 'user/push-notif'
+    try { Enotification.user_notification_parseData() } catch (error) { }
+    const db = new DbNotification();
+    db.execute('SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1', (res: any) => {
+      if (res.rows.length > 0) {
+        uri += '?last_id=' + res.rows._array[0].notif_id
+      }
+      // esp.log(res);
 
-        UserClass.load((user: any) => {
-          if (user) post['user_id'] = user.id
-          Enotification.action.user_notification_fetchData(uri, post, db);
+      const salt = esp.config('salt');
+      var post = {
+        user_id: '',
+        secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
+      }
+
+      UserClass.load((user: any) => {
+        if (user) post['user_id'] = user.id
+        Enotification.user_notification_fetchData(uri, post, db);
+      })
+    })
+  }
+  static user_notification_fetchData(uri: string, post: any, db: any): void {
+    new LibCurl(uri, post,
+      (res: any, msg: string) => {
+        var list = res.list
+        list.map((row: any) => {
+          db.insertOrUpdate(row)
         })
-      })
-    },
-    user_notification_fetchData(uri: string, post: any, db: any) {
-      new LibCurl(uri, post,
-        (res: any, msg: string) => {
-          var list = res.list
-          list.map((row: any) => {
-            db.insertOrUpdate(row)
-          })
-          if (res.next != '') {
-            Enotification.action.user_notification_fetchData(res.next, post, db)
-          }
-          if (list.length > 0) {
-            try { Enotification.action.user_notification_parseData() } catch (error) { }
-          }
-          // esp.log(res)
-        }, (msg: any) => {
-          // esp.log(msg)
+        if (res.next != '') {
+          Enotification.user_notification_fetchData(res.next, post, db)
         }
-      )
-    },
-    user_notification_parseData() {
-      return store.dispatch((dispatch: any) => {
-        const db = new DbNotification();
-        db.getAll(undefined, undefined, undefined, undefined, undefined, undefined, (res: any) => {
-          dispatch({
-            type: 'user_notification_parseData',
-            payload: res
-          })
-        })
+        if (list.length > 0) {
+          try { Enotification.user_notification_parseData() } catch (error) { }
+        }
+        // esp.log(res)
+      }, (msg: any) => {
+        // esp.log(msg)
+      }
+    )
+  }
+  static user_notification_parseData(): void {
+    const db = new DbNotification();
+    db.getAll_().then((res) => {
+      store.dispatch({
+        type: 'user_notification_parseData',
+        payload: res
       })
-    },
-    user_notification_setRead(id: string | number) {
-      return store.dispatch({
-        type: 'user_notification_setRead',
-        payload: id
-      })
-    }
-
+    })
+  }
+  static user_notification_setRead(id: string | number): void {
+    store.dispatch({
+      type: 'user_notification_setRead',
+      payload: id
+    })
   }
 
-  static mapStateToProps = (state: any) => {
+
+
+  static mapStateToProps(state: any): Object {
     return {
       data: state.user_notification.data
     }
@@ -120,11 +128,12 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
   }
 
   componentDidMount() {
+    super.componentDidMount()
     moment.locale('id')
-    Enotification.action.user_notification_loadData()
+    Enotification.user_notification_loadData()
   }
 
-  openNotif(data: any) {
+  openNotif(data: any): void {
     const salt = esp.config('salt');
     new LibCurl('user/push-read', {
       notif_id: data.notif_id,
@@ -133,7 +142,7 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
       // esp.log(res)
       const db = new DbNotification();
       db.setRead(data.id)
-      Enotification.action.user_notification_setRead(data.id)
+      Enotification.user_notification_setRead(data.id)
     }, (msg: string) => {
       // esp.log(msg)
     }, 1)
@@ -166,7 +175,7 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
   }
 
   // emptyView = ({ image, msg }) => {
-  //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+  //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
   //       <Typo colorPrimary />
@@ -175,14 +184,14 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
   // }
 
 
-  render = () => {
-    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+  render(): any {
+    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
     return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <StatusBar barStyle={'light-content'} />
         <View
-          style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
+          style={{ flexDirection: 'row', height: (STATUSBAR_HEIGHT) + 50, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
           <Button transparent
             style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
             onPress={() => goBack()}>
@@ -201,7 +210,6 @@ class Enotification extends Component<UserNotificationProps, UserNotificationSta
         </View>
         <LibList
           data={this.props.data}
-          keyExtractor={(e: any, i: number) => (e.id).toString()}
           renderItem={(item: any, index: number) => (
             <TouchableOpacity onPress={() => this.openNotif(item)} >
               <View style={[{ padding: 16, flexDirection: 'row', backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >

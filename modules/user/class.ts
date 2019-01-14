@@ -8,7 +8,8 @@ import { Constants } from 'expo';
 
 export default class eclass {
 
-  static reducer = (state = null, action) => {
+  static reducer(state: any, action: any): any {
+    if (!state) state = null
     switch (action.type) {
       case 'user_class_create':
         return action.payload
@@ -22,13 +23,14 @@ export default class eclass {
   }
 
   static create(user: any): Promise<void> {
-    return new Promise((res, rej) => {
+    return new Promise((r, j) => {
       store.dispatch({ type: 'user_class_create', payload: user });
       AsyncStorage.setItem('user', JSON.stringify(user))
-      res();
+      r();
     })
   }
-  static load(callback?: (user?: any) => void): Promise<any> {
+
+  static load(callback?: (user?: any | null) => void): Promise<any> {
     return new Promise((r, j) => {
       AsyncStorage.getItem('user').then((user: any) => {
         if (user) {
@@ -56,10 +58,10 @@ export default class eclass {
   }
 
   static delete(): Promise<any> {
-    return new Promise((res) => {
+    return new Promise((r) => {
       store.dispatch({ type: 'user_class_delete' });
       AsyncStorage.removeItem('user');
-      res()
+      r()
     })
   }
 

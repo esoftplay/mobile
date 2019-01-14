@@ -1,9 +1,9 @@
 import React from 'react';
 import { Component } from 'react';
 import { View, StyleSheet, Image, FlatList } from 'react-native';
-import { Button, Icon} from 'native-base';
-const { width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
-import { esp, LibUtils } from 'esoftplay';
+import { Button, Icon } from 'native-base';
+const { width, STATUSBAR_HEIGHT } = LibStyle;
+import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
 
 export interface ContentGalleryProps {
   navigation: any
@@ -14,7 +14,7 @@ export interface ContentGalleryState {
 }
 
 // create a component
-export default class ezoom extends Component<ContentGalleryProps, ContentGalleryState> {
+export default class ezoom extends LibComponent<ContentGalleryProps, ContentGalleryState> {
   state: ContentGalleryState;
   props: ContentGalleryProps;
 
@@ -24,7 +24,7 @@ export default class ezoom extends Component<ContentGalleryProps, ContentGallery
     this.state = { scroll: 0 };
   }
 
-  render() {
+  render(): any {
     const images = LibUtils.getArgs(this.props, "images", [])
     const image = LibUtils.getArgs(this.props, "image", '')
     if (images.length == 0) {

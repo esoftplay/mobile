@@ -1,8 +1,7 @@
 // 
 
 import react from 'react';
-import { esp } from 'esoftplay';
-const LibSqlite  = esp.mod('lib/sqlite');
+import { esp, LibSqlite } from 'esoftplay';
 
 export default class enotification extends LibSqlite {
   /* tablename */
@@ -27,7 +26,7 @@ export default class enotification extends LibSqlite {
     this.init(enotification.table, this.sql)
   }
 
-  insertOrUpdate(notif: any) {
+  insertOrUpdate(notif: any): void {
     notif['notif_id'] = notif.id
     delete notif.id
     this.getRow(null, [enotification.notif_id], [notif.notif_id], (res) => {
@@ -39,12 +38,13 @@ export default class enotification extends LibSqlite {
     })
   }
 
-  setRead(id: number, status: number = 2) {
+  setRead(id: number, status?: number): void {
+    if (!status) status = 2
     this.Update(id, { [enotification.status]: status })
   }
 
   /* return fieldname */
-  getColumn() {
+  getColumn(): string[] {
     return [
       enotification.id,
       enotification.notif_id,

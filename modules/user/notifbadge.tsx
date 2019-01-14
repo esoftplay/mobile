@@ -4,13 +4,13 @@ import React from 'react';
 import { Component } from 'react'
 import { View } from 'react-native';
 import { Badge, Text } from 'native-base'
-import { esp, UserNotification } from 'esoftplay';
+import { esp, UserNotification, LibComponent } from 'esoftplay';
 import { TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 
 export interface UserNotifbadgeProps {
   data: any[],
-  onPress(): void
+  onPress: () => void
 }
 
 export interface UserNotifbadgeState {
@@ -18,7 +18,7 @@ export interface UserNotifbadgeState {
 }
 
 
-class Enotifbadge extends Component<UserNotifbadgeProps, UserNotifbadgeState> {
+class Enotifbadge extends LibComponent<UserNotifbadgeProps, UserNotifbadgeState> {
 
   props: UserNotifbadgeProps
   constructor(props: UserNotifbadgeProps) {
@@ -33,10 +33,11 @@ class Enotifbadge extends Component<UserNotifbadgeProps, UserNotifbadgeState> {
   }
 
   componentDidMount(): void {
-    UserNotification.action.user_notification_loadData()
+    super.componentDidMount()
+    UserNotification.user_notification_loadData()
   }
 
-  render() {
+  render() : any {
     const { data } = this.props
     const counter = data.filter((item: any) => item.status != 2).length
     if (counter == 0) { return null }

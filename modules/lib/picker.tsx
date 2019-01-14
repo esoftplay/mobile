@@ -7,6 +7,7 @@ import { Permissions } from 'expo';
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 import update from 'immutability-helper';
 import { Ionicons } from '@expo/vector-icons';
+import { LibComponent } from 'esoftplay';
 const { width } = Dimensions.get('window')
 /*
 USAGE
@@ -34,7 +35,7 @@ export interface LibPickerProps {
   max: number | 0,
   color?: string,
   show: boolean,
-  dismiss(): void
+  dismiss: () => void
 }
 export interface LibPickerState {
   photos: any[],
@@ -43,7 +44,7 @@ export interface LibPickerState {
   has_next_page: boolean
 }
 
-export default class epicker extends Component<LibPickerProps, LibPickerState> {
+export default class epicker extends LibComponent<LibPickerProps, LibPickerState> {
   layoutProvider: any;
   ImageTile: any;
   dataProvider: any;
@@ -70,9 +71,10 @@ export default class epicker extends Component<LibPickerProps, LibPickerState> {
   }
 
   async componentDidMount(): Promise<void> {
-    const { existingStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
+    super.componentDidMount()
+    const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    let finalStatus = status;
+    if (status !== 'granted') {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       finalStatus = status;
     }

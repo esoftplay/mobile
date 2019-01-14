@@ -42,7 +42,8 @@ export default class eutils {
     navigation.navigate(routeName, params)
   }
 
-  static money(value: string | number = -1, currency?: string, part?: number): string {
+  static money(value: string | number, currency?: string, part?: number): string {
+    if (!value) value = -1
     var val;
     if (typeof value === 'number') {
       val = value.toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,')
@@ -136,9 +137,9 @@ export default class eutils {
     Linking.openURL((Platform.OS === 'ios' ? 'http://maps.apple.com/?q=' + title + '&ll=' : 'http://maps.google.com/maps?q=loc:') + latlong + '(' + title + ')')
   }
   static copyToClipboard(string: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise((r, j) => {
       Clipboard.setString(string)
-      resolve(true)
+      r(true)
     })
   }
   static colorAdjust(hex: string, lum: number): string {
@@ -157,11 +158,11 @@ export default class eutils {
     return rgb;
   }
 
-  static escapeRegExp(str: string) {
+  static escapeRegExp(str: string): string {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   }
 
-  static async download(url: string, onDownloaded: (file: string) => void) {
+  static async download(url: string, onDownloaded: (file: string) => void): Promise<any> {
     const config = esp.config();
     try { await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + config.domain, { intermediates: true }) } catch (error) { }
     var fileExtentions = url.split('.').pop();

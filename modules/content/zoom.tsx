@@ -8,8 +8,8 @@ import {
   FlatList
 } from 'react-native';
 import { Left, Button, Icon, Text, ListItem } from 'native-base';
-const { width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
-import { esp, LibUtils } from 'esoftplay';
+const { width, STATUSBAR_HEIGHT } = LibStyle;
+import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
 
 
 export interface ContentZoomProps {
@@ -21,7 +21,7 @@ export interface ContentZoomState {
 }
 
 // create a component
-export default class ezoom extends Component<ContentZoomProps, ContentZoomState> {
+export default class ezoom extends LibComponent<ContentZoomProps, ContentZoomState> {
 
   props: ContentZoomProps
   state: ContentZoomState
@@ -32,7 +32,7 @@ export default class ezoom extends Component<ContentZoomProps, ContentZoomState>
     this.props = props
   }
 
-  render() {
+  render() : any {
     const images = LibUtils.getArgs(this.props, "images", [])
     const image = LibUtils.getArgs(this.props, "image")
     if (images.length == 0) {

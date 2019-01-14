@@ -3,9 +3,9 @@ import { Component } from 'react';
 import { View, TouchableWithoutFeedback, Platform, StyleSheet } from 'react-native';
 import { Text, Button, Icon, Thumbnail } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
-const { colorPrimary, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+import { esp, ContentComment_list, LibComponent, LibStyle } from 'esoftplay';
+const { colorPrimary, width, STATUSBAR_HEIGHT } = LibStyle;
 import Modal from 'react-native-modal';
-import { esp, ContentComment_list } from 'esoftplay';
 
 export interface ContentComment_itemProps {
   id: number,
@@ -13,7 +13,7 @@ export interface ContentComment_itemProps {
   name: string,
   image: string,
   email: string,
-  setUser(user: any): void,
+  setUser: (user: any) => void,
   website: string,
   content: string,
   date: string,
@@ -27,7 +27,7 @@ export interface ContentComment_itemState {
   isOpenChild: boolean
 }
 
-export default class Comment_item extends Component<ContentComment_itemProps, ContentComment_itemState> {
+export default class Comment_item extends LibComponent<ContentComment_itemProps, ContentComment_itemState> {
   state: ContentComment_itemState
   props: ContentComment_itemProps
 
@@ -37,7 +37,7 @@ export default class Comment_item extends Component<ContentComment_itemProps, Co
     this.state = { isOpenChild: false };
   }
 
-  render() {
+  render(): any {
     var { id, par_id, name, image, email, website, content, date, reply, url, url_post, user } = this.props
     url = url + ((/\?/g).test(url) ? '&par_id=' + id : '?par_id=' + id)
     url_post = url_post + ((/\?/g).test(url_post) ? '&par_id=' + id : '?par_id=' + id)
@@ -69,8 +69,8 @@ export default class Comment_item extends Component<ContentComment_itemProps, Co
               </TouchableWithoutFeedback>
             </View>
             <Modal
-              visible={this.state.isOpenChild}
-              animationType='slide'
+              isVisible={this.state.isOpenChild}
+              // animationType='slide'
               onBackButtonPress={() => this.setState({ isOpenChild: false })}
               onBackdropPress={() => this.setState({ isOpenChild: false })}
               style={{ justifyContent: 'flex-end', margin: 0, backgroundColor: 'transparent' }}>

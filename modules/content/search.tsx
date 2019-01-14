@@ -1,16 +1,16 @@
 // 
-import React from 'react';
+import React, { ReactElement, createRef } from 'react';
 import { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Icon, Input } from 'native-base';
-import { esp, LibUtils } from 'esoftplay';
-const { elevation, colorPrimary } = esp.mod('lib/style');
+import { esp, LibUtils, LibStyle } from 'esoftplay';
+const { elevation, colorPrimary } = LibStyle;
 // create a component
 
 export interface ContentSearchProps {
   defaultValue?: string,
-  close(): void,
-  onSubmit(uri: string): void,
+  close: () => void,
+  onSubmit: (uri: string) => void,
 }
 
 export interface ContentSearchState {
@@ -18,19 +18,25 @@ export interface ContentSearchState {
 }
 
 export default class esearch extends Component<ContentSearchProps, ContentSearchState> {
-
   inputSearch: any;
+  inputText: any;
   props: ContentSearchProps;
   constructor(props: ContentSearchProps) {
     super(props)
     this.props = props
+    this.inputText = createRef();
   }
 
-  componentWillMount(): void {
+  componentDidMount(): void {
     this.inputSearch = this.props.defaultValue || ''
+    setTimeout(() => {
+      if (this.inputText) {
+        this.inputText._root.focus()
+      }
+    }, 300);
   }
 
-  render() {
+  render(): any {
     return (
       <View>
         <View style={[{
@@ -54,9 +60,10 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
               }} />
           </Button>
           <Input
+            ref={(e) => this.inputText = e}
             style={{ height: 50, width: '100%', fontSize: 17, color: '#555' }}
             placeholderTextColor={'#999'}
-            selectionColor={LibUtils.colorAdjust(colorPrimary, 3)}
+            selectionColor={LibUtils.colorAdjust(colorPrimary, 1)}
             defaultValue={this.inputSearch}
             returnKeyType="search"
             onSubmitEditing={() => {

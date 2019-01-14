@@ -2,9 +2,6 @@
 import { ContextProvider } from 'recyclerlistview';
 
 export default class ContextHelper extends ContextProvider {
-  
-  _contextStore: any;
-  _uniqueKey: any;
 
   constructor(uniqueKey: any) {
     super();
@@ -27,4 +24,7 @@ export default class ContextHelper extends ContextProvider {
   remove(key: any): void {
     delete this._contextStore[key];
   }
+
+  _contextStore: any;
+  _uniqueKey: any;
 }

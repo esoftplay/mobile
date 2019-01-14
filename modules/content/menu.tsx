@@ -3,16 +3,19 @@ import React from 'react'
 import { Component } from 'react';
 import { View, AsyncStorage, ScrollView, Image, Platform } from 'react-native';
 import { BlurView } from 'expo';
-import { esp } from 'esoftplay';
+import { esp, LibComponent, LibStyle } from 'esoftplay';
 const Curl = esp.mod('lib/curl')
-const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
+const { STATUSBAR_HEIGHT_MASTER } = LibStyle;
 const Menu = esp.mod('lib/menu');
 
 export interface ContentMenuProps {
   url: string,
-  closeDrawer(): void,
-  onItemSelected(item: any): void,
-  style?: any
+  navigation?: any,
+  closeDrawer: () => void,
+  onItemSelected: (item: any) => void,
+  style?: any,
+  dispatch: any,
+  nav: any
 }
 
 export interface ContentMenuState {
@@ -20,7 +23,7 @@ export interface ContentMenuState {
   selectedId: number
 }
 
-export default class emenu extends Component<ContentMenuProps, ContentMenuState> {
+export default class emenu extends LibComponent<ContentMenuProps, ContentMenuState> {
   state: ContentMenuState;
   props: ContentMenuProps;
   constructor(props: ContentMenuProps) {
@@ -55,7 +58,8 @@ export default class emenu extends Component<ContentMenuProps, ContentMenuState>
     })
   }
 
-  componentWillMount(): void {
+  componentDidMount(): void {
+    super.componentDidMount()
     this.loadData()
   }
 
@@ -82,11 +86,11 @@ export default class emenu extends Component<ContentMenuProps, ContentMenuState>
   }
 
 
-  render() {
+  render(): any {
     const BGView = Platform.OS == 'ios' ? BlurView : View
     return (
       <BGView tint={'light'} intensity={99} style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.99)' }, this.props.style]}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: STATUSBAR_HEIGHT }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: STATUSBAR_HEIGHT_MASTER }}>
           <View style={{ backgroundColor: 'transparent', height: 100, padding: 20 }}>
             <Image source={esp.assets('logo.png')} style={{ height: 60, width: '100%', resizeMode: 'contain' }} />
           </View>

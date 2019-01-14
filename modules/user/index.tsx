@@ -5,25 +5,26 @@ import { Component } from 'react'
 import moment from 'moment'
 import navs from '../../cache/navigations';
 import { AsyncStorage, View } from 'react-native';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer, StackNavigatorConfig } from 'react-navigation';
 import { store } from '../../../../App';
 import { Constants } from 'expo';
-import { esp, LibNotification, UserClass, LibCurl, LibCrypt } from 'esoftplay';
+import { esp, LibNotification, UserClass, LibCurl, LibCrypt, LibComponent } from 'esoftplay';
 
 export interface UserIndexProps {
 
 }
 
-interface UserIndexState {
+export interface UserIndexState {
   loading: boolean
 }
 
 var Router: any;
 
-export default class euser extends Component<UserIndexProps, UserIndexState> {
+export default class euser extends LibComponent<UserIndexProps, UserIndexState> {
   static initState = {};
 
-  static reducer = (state: any = euser.initState, action: any) => {
+  static reducer(state: any, action: any): any {
+    if (!state) state = euser.initState
     switch (action.type) {
       case 'user_nav_change':
         return action.payload;
@@ -32,13 +33,11 @@ export default class euser extends Component<UserIndexProps, UserIndexState> {
     }
   }
 
-  static action = {
-    user_nav_change(state: any) {
-      store.dispatch({
-        type: 'user_nav_change',
-        payload: state
-      })
-    }
+  static user_nav_change(state: any): void {
+    store.dispatch({
+      type: 'user_nav_change',
+      payload: state
+    })
   }
 
   state = {
@@ -46,10 +45,11 @@ export default class euser extends Component<UserIndexProps, UserIndexState> {
   }
 
   onNavigationStateChange(prevState: any, currentState: any): void {
-    euser.action.user_nav_change(currentState)
+    euser.user_nav_change(currentState)
   }
 
   async componentDidMount(): Promise<void> {
+    super.componentDidMount()
     if (esp.config().notification == 1) {
       LibNotification.listen((notifObj: any) => { })
     }
@@ -66,12 +66,9 @@ export default class euser extends Component<UserIndexProps, UserIndexState> {
       }
     }
     UserClass.isLogin(async (isLogin) => {
-      var config = {
+      var config: StackNavigatorConfig = {
         headerMode: 'none',
-        initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public"),
-        navigationOptions: {
-          header: null
-        }
+        initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public")
       }
       Router = await createAppContainer(createStackNavigator(navigations, config))
       this.setState({ loading: false })
@@ -91,7 +88,7 @@ export default class euser extends Component<UserIndexProps, UserIndexState> {
     return (this.isClassComponent(component) || this.isFunctionComponent(component)) ? true : false;
   }
 
-  render() {
+  render(): any {
     if (this.state.loading) return null
     return (
       <View style={{ flex: 1 }}>
