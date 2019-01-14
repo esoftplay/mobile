@@ -2,9 +2,9 @@
 import React from 'react'
 import { Component } from 'react';
 import { View, WebView, AsyncStorage, ActivityIndicator } from 'react-native';
-import { esp, LibUtils, LibComponent } from 'esoftplay';
+import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
 const config = esp.config()
-const { colorPrimary } = esp.mod('lib/style')
+const { colorPrimary } = LibStyle
 
 export interface LibSocialloginProps {
   url?: string,

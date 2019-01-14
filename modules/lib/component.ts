@@ -8,7 +8,7 @@ export default class SaveComponent <K, S, U=any> extends Component<K, S, U>{
   }
 
   setState(obj: any, callback?: () => void): void {
-    console.log(this._isMounted)
+    // console.log(this._isMounted)
     if (this._isMounted)
       super.setState(obj, callback)
   }

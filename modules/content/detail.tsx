@@ -21,16 +21,17 @@ import {
   LibUtils,
   LibCurl,
   ContentAudio,
+  LibStyle,
   LibWebview,
   ContentVideo,
   LibComponent
 } from 'esoftplay';
-const { colorPrimary, width, colorAccent, colorPrimaryDark } = esp.mod('lib/style');
+const { colorPrimary, width, colorAccent, colorPrimaryDark } = LibStyle;
 const config = esp.config();
-const { STATUSBAR_HEIGHT } = esp.mod('lib/style');
+const { STATUSBAR_HEIGHT_MASTER } = LibStyle;
 
-var HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT;
-var HEADER_MIN_HEIGHT = 50 + STATUSBAR_HEIGHT;
+var HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT_MASTER;
+var HEADER_MIN_HEIGHT = 50 + STATUSBAR_HEIGHT_MASTER;
 var HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 
@@ -102,7 +103,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
       return <View style={{ flex: 1, backgroundColor: 'white' }} >
         {
           result.image != '' &&
-          <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT }} >
+          <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT_MASTER }} >
             <Animated.Image
               style={{
                 position: 'absolute',
@@ -110,7 +111,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                 left: 0,
                 right: 0,
                 width: width,
-                height: (width * 4 / 5) + STATUSBAR_HEIGHT
+                height: (width * 4 / 5) + STATUSBAR_HEIGHT_MASTER
               }}
               source={{ uri: LibUtils.getArgs(this.props, 'image', '') }}
             />
@@ -204,8 +205,6 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
               <LibWebview
                 source={{ html: result.content }}
                 style={{ flex: 1, marginVertical: 20 }}
-                width={width}
-                renderLoading={() => <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={colorPrimary} /></View>}
                 onFinishLoad={() => { this.setState({ isPageReady: true }) }}
               />
               {
@@ -310,7 +309,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
         <Animated.View
           style={[
             styles.bar,
-            { height: this.state.toolbarHeight - STATUSBAR_HEIGHT, opacity: isVideo ? 0 : titleOpacity, },
+            { height: this.state.toolbarHeight - STATUSBAR_HEIGHT_MASTER, opacity: isVideo ? 0 : titleOpacity, },
           ]}>
           <Left>
             <Text
@@ -368,11 +367,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: STATUSBAR_HEIGHT,
+    top: STATUSBAR_HEIGHT_MASTER,
     left: 0,
     alignSelf: 'center',
     justifyContent: 'center',
-    height: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT
+    height: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT_MASTER
   },
   header: {
     position: 'absolute',
@@ -415,10 +414,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     flexDirection: 'row',
-    top: STATUSBAR_HEIGHT,
+    top: STATUSBAR_HEIGHT_MASTER,
     padding: 10,
-    paddingRight: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT + 10,
-    marginLeft: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT,
+    paddingRight: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT_MASTER + 10,
+    marginLeft: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT_MASTER,
     left: 0,
     right: 0,
   },
@@ -475,7 +474,7 @@ const styles = StyleSheet.create({
   },
   absIndicator: {
     position: 'absolute',
-    top: 10 + STATUSBAR_HEIGHT,
+    top: 10 + STATUSBAR_HEIGHT_MASTER,
     right: 10,
     color: 'white',
     backgroundColor: 'rgba(5, 5, 5, 0.6)',

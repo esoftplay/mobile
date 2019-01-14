@@ -34,10 +34,7 @@ checks.forEach(modules => {
           if ((new RegExp("\.ts|.tsx|.js$")).test(file)) {
             var name = file.replace(replacer, '');
             var path = modules + module + "/" + name;
-            var clsName = module;
-            // if (name != "index") {
-            clsName += " " + name;
-            // }
+            var clsName = module + " " + name;
             clsName = clsName.toLowerCase().replace(/\b[a-z]/g, function (a) { return a.toUpperCase(); });
             clsName = clsName.replace(/\s/g, "");
             Modules[module][name] = path;
@@ -56,12 +53,19 @@ checks.forEach(modules => {
                 var isIndexed = (tmpExp.indexOf(clsName) > -1) ? false : true;
                 /* REGEX INTERFACE */
                 if (isIndexed) {
+                  /* check jika class tersebut nge replace bukan nge extends maka hapus semua interface bawaan dari supernya */
+                  if (tmpTask[clsName].interface.length > 0) {
+                    if (!data.includes('esoftplay/modules/') && !data.includes('extends')) {
+                      tmpTask[clsName]["interface"] = [];
+                    }
+                  }
                   if (m = data.match(/\n\s{0,}(export\s+interface\s+[a-zA-Z0-9_]+\s{0,}\{[^\}]+\})/g)) {
                     for (var i = 0; i < m.length; i++) {
                       tmpTask[clsName]["interface"].push(m[i].trim());
                     }
                   }
                 }
+
                 /* REGEX CLASS NAME */
                 if (m = /\n\s{0,}(?:export\s+default\s+)?(class\s+([^\s]+)[^\{]+)/.exec(data)) {
                   if (tmpTask[clsName]["class"] == "") {
@@ -73,11 +77,30 @@ checks.forEach(modules => {
                     }
                   }
                 }
+
                 /* REGEX All Functions */
                 if (isIndexed) {
+                  if (clsName === 'LibStyle') {
+                    var r = /((static[\s]+[A-Za-z0-9_]+)\:\s+[a-zA-z]+)/g
+                    if (c = data.match(r)) {
+                      for (let i = 0; i < c.length; i++) {
+                        const v = c[i];
+                        var z = (/((static[\s]+[A-Za-z0-9_]+)\:\s+[a-zA-z]+)/g).exec(v)
+                        if (z) {
+                          tmpTask[clsName]['function'][z[2]] = z[1] + ';'
+                        }
+                      }
+                    }
+                  }
                   var r = /\n(\s+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,}\s{0,}(?:=\s{0,})?\([^{]+)/g; // 1=spaces 2=FunctionObject
                   if (s = r.exec(data)) {
                     if (m = data.match(r)) {
+                      /* check jika class tersebut nge replace bukan nge extends maka hapus semua fungsi bawaan dari supernya */
+                      if (Object.keys(tmpTask[clsName].function).length > 0) {
+                        if (!data.includes('esoftplay/modules/') && !data.includes('extends') && clsName != 'LibStyle') {
+                          tmpTask[clsName]["function"] = {};
+                        }
+                      }
                       for (var i = 0; i < m.length; i++) {
                         if (S = m[i].match(/\n([^\na-zA-Z0-9_]+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,})/)) {
                           if (S[1] === s[1].replace(new RegExp('\n', 'g'), '')) {
@@ -86,10 +109,10 @@ checks.forEach(modules => {
                           }
                         }
                       }
-
                     }
                   }
                 }
+
 
                 var key = module + "_" + name;
                 if ((new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g)).test(data)) { // is contains 'reducer'
@@ -169,6 +192,7 @@ fs.writeFile(tmpDir + "assets.js", Text, { flag: 'w' }, function (err) {
 
 /* CREATE INDEX.D.TS */
 function createIndex() {
+
   var Text = "import { Component, ComponentClass, Ref, ComponentType } from 'react';\n" +
     "import { ContextProvider } from 'recyclerlistview';\n" +
     "\n" +

@@ -171,7 +171,12 @@ export default class App extends React.Component {\n\
     const { loading } = this.state\n\
     return loading\n\
       ?\n\
-      <AppLoading />\n\
+			<AppLoading
+				onFinish={() => { }}
+        autoHideSplash={true}
+        onError={() => { }}
+        startAsync={async () => { }}
+			/>\n\
       :\n\
       <Provider store={store}>\n\
         <this.Home />\n\

@@ -4,13 +4,14 @@ import React from 'react';
 import { Component } from 'react'
 import { TouchableOpacity, View, Alert, Linking, StatusBar } from 'react-native';
 import {
-    esp,
-    DbNotification,
-    LibCrypt,
-    LibCurl,
-    UserClass,
-    LibList,
-    LibComponent
+  esp,
+  DbNotification,
+  LibCrypt,
+  LibCurl,
+  UserClass,
+  LibList,
+  LibComponent,
+  LibStyle
 } from 'esoftplay';
 import { store } from '../../../../App';
 import { connect } from 'react-redux'
@@ -174,7 +175,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 
   // emptyView = ({ image, msg }) => {
-  //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+  //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
   //       <Typo colorPrimary />
@@ -184,13 +185,13 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
 
   render(): any {
-    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
     return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <StatusBar barStyle={'light-content'} />
         <View
-          style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
+          style={{ flexDirection: 'row', height: (STATUSBAR_HEIGHT) + 50, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
           <Button transparent
             style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
             onPress={() => goBack()}>

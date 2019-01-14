@@ -3,8 +3,8 @@
 import React from 'react'
 import { Component } from 'react';
 import { WebView, StyleSheet, View, ActivityIndicator } from 'react-native';
-import { esp, LibComponent } from 'esoftplay';
-const { colorPrimary } = esp.mod('lib/style');
+import { esp, LibComponent, LibStyle } from 'esoftplay';
+const { colorPrimary } = LibStyle;
 
 export interface ContentVideoProps {
   code: string,

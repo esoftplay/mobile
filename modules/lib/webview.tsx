@@ -17,9 +17,9 @@ export interface LibWebviewSourceProps {
 export interface LibWebviewProps {
   defaultHeight?: number,
   source: LibWebviewSourceProps,
-  needAnimate: boolean,
-  AnimationDuration: number,
-  needAutoResetHeight: boolean,
+  needAnimate?: boolean,
+  AnimationDuration?: number,
+  needAutoResetHeight?: boolean,
   onMessage?: any,
   bounces?: any,
   onLoadEnd?: any,

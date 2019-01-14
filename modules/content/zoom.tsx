@@ -8,8 +8,8 @@ import {
   FlatList
 } from 'react-native';
 import { Left, Button, Icon, Text, ListItem } from 'native-base';
-const { width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
-import { esp, LibUtils, LibComponent } from 'esoftplay';
+const { width, STATUSBAR_HEIGHT } = LibStyle;
+import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
 
 
 export interface ContentZoomProps {

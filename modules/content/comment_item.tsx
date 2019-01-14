@@ -3,9 +3,9 @@ import { Component } from 'react';
 import { View, TouchableWithoutFeedback, Platform, StyleSheet } from 'react-native';
 import { Text, Button, Icon, Thumbnail } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
-const { colorPrimary, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+import { esp, ContentComment_list, LibComponent, LibStyle } from 'esoftplay';
+const { colorPrimary, width, STATUSBAR_HEIGHT } = LibStyle;
 import Modal from 'react-native-modal';
-import { esp, ContentComment_list, LibComponent } from 'esoftplay';
 
 export interface ContentComment_itemProps {
   id: number,
@@ -37,7 +37,7 @@ export default class Comment_item extends LibComponent<ContentComment_itemProps,
     this.state = { isOpenChild: false };
   }
 
-  render() : any {
+  render(): any {
     var { id, par_id, name, image, email, website, content, date, reply, url, url_post, user } = this.props
     url = url + ((/\?/g).test(url) ? '&par_id=' + id : '?par_id=' + id)
     url_post = url_post + ((/\?/g).test(url_post) ? '&par_id=' + id : '?par_id=' + id)
@@ -69,8 +69,8 @@ export default class Comment_item extends LibComponent<ContentComment_itemProps,
               </TouchableWithoutFeedback>
             </View>
             <Modal
-              visible={this.state.isOpenChild}
-              animationType='slide'
+              isVisible={this.state.isOpenChild}
+              // animationType='slide'
               onBackButtonPress={() => this.setState({ isOpenChild: false })}
               onBackdropPress={() => this.setState({ isOpenChild: false })}
               style={{ justifyContent: 'flex-end', margin: 0, backgroundColor: 'transparent' }}>

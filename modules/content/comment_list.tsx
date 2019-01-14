@@ -2,9 +2,18 @@ import React from 'react';
 import { Component } from 'react';
 import { View, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { Text, Button, Icon, Item, Input, Thumbnail } from 'native-base';
-const { colorPrimary, width } = esp.mod('lib/style');
+const { colorPrimary, width } = LibStyle;
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
-import { esp, LibUtils, LibCurl, LibContext, LibSociallogin, ContentComment_item, LibComponent } from 'esoftplay';
+import {
+  esp,
+  LibUtils,
+  LibCurl,
+  LibContext,
+  LibSociallogin,
+  ContentComment_item,
+  LibComponent,
+  LibStyle
+} from 'esoftplay';
 const config = esp.config();
 
 export interface ContentComment_listProps {

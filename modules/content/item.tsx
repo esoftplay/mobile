@@ -5,8 +5,8 @@ import { Component } from 'react';
 import { Image, Linking, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
 import { Text } from 'native-base';
 import moment from 'moment/min/moment-with-locales';
-import { esp, LibComponent } from 'esoftplay';
-const { defaultStyle, width } = esp.mod('lib/style')
+import { esp, LibComponent, LibStyle } from 'esoftplay';
+const { defaultStyle, width } = LibStyle
 
 export interface ContentItemProps {
   index: number,

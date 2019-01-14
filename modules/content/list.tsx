@@ -13,10 +13,19 @@ import { Container, Button, Text, Icon } from 'native-base';
 import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
-import { esp, LibCurl, LibUtils, ContentMenu, ContentSearch, ContentItem, LibComponent } from 'esoftplay';
+import {
+    esp,
+    LibCurl,
+    LibUtils,
+    ContentMenu,
+    ContentSearch,
+    ContentItem,
+    LibComponent,
+    LibStyle
+} from 'esoftplay';
 import { StatusBar, Animated } from 'react-native';
 import { connect } from 'react-redux';
-const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT } = esp.mod('lib/style');
+const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 const config = esp.config();
 
 var menu: any;
@@ -134,7 +143,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
         })
       },
       (msg: string) => {
-        console.log('sampe sini', msg)
+        // console.log('sampe sini', msg)
       }, 1
     )
 
@@ -180,7 +189,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
     if (!this.state.isDrawerOpen) {
       if (Platform.OS == 'ios') {
         return false;
-      } else if (!this.state.searchView && !routers.index || routers.index == 0) {
+      } else if (!this.state.searchView && (!routers.index || routers.index == 0)) {
         esp.log('url', this.state.url, this.state.urlori);
         try {
           if (this.state.url != this.state.urlori) {
@@ -342,7 +351,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
           }
           {
             this.state.searchView ?
-              <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, right: 0, opacity: searchOpacity }} >
+              <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT_MASTER, left: 0, right: 0, opacity: searchOpacity }} >
                 <ContentSearch
                   close={() => this.closeSearch()}
                   defaultValue={this.searchQuery}

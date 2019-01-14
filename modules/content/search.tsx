@@ -3,8 +3,8 @@ import React, { ReactElement, createRef } from 'react';
 import { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Icon, Input } from 'native-base';
-import { esp, LibUtils } from 'esoftplay';
-const { elevation, colorPrimary } = esp.mod('lib/style');
+import { esp, LibUtils, LibStyle } from 'esoftplay';
+const { elevation, colorPrimary } = LibStyle;
 // create a component
 
 export interface ContentSearchProps {

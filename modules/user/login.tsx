@@ -8,7 +8,15 @@ import Expo from 'expo'
 import { Ionicons } from '@expo/vector-icons'
 import Modal from 'react-native-modal';
 import { CameraRoll } from 'react-native';
-import { esp, UserClass, LibCrypt, LibCurl, LibSociallogin, LibComponent } from 'esoftplay';
+import {
+    esp,
+    UserClass,
+    LibCrypt,
+    LibCurl,
+    LibSociallogin,
+    LibComponent,
+    LibStyle
+} from 'esoftplay';
 const config = esp.config();
 /* 
 
@@ -73,7 +81,7 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
       new LibCurl(config.content + uri, post,
         (res, msg) => {
           esp.log(res, 'pesan');
-          console.log(res)
+          // console.log(res)
           this.onSuccessLogin(res)
           this.inputUsername.setNativeProps({ text: '' })
           this.inputPassword.setNativeProps({ text: '' })
@@ -83,7 +91,7 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
           })
         },
         (msg) => {
-          console.log('gagal => ' + msg, email)
+          // console.log('gagal => ' + msg, email)
           this.onFailedLogin(msg)
           this.setState({ isLoading: false, email: '' })
         }, 1
@@ -92,7 +100,7 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
   }
 
   render() : any {
-    const { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } = esp.mod('lib/style')
+    const { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } = LibStyle
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20} >
         <StatusBar barStyle={'dark-content'} />

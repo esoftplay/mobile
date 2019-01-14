@@ -53,7 +53,7 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
-      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      interruptionModeAndroid: true,
     });
     this._loadNewPlaybackInstance(false);
   }

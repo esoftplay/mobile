@@ -6,8 +6,6 @@ import { LibNotification, esp, UserClass, LibCrypt, LibCurl } from 'esoftplay';
 import moment from 'moment';
 import { Constants } from 'expo';
 
-
-
 export default class eclass {
 
   static reducer(state: any, action: any): any {

@@ -3,8 +3,8 @@ import React from 'react';
 import { Component } from 'react';
 import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
-import { esp, LibMenu, LibComponent } from 'esoftplay';
-const { colorPrimary } = esp.mod('lib/style');
+import { esp, LibMenu, LibComponent, LibStyle } from 'esoftplay';
+const { colorPrimary } = LibStyle;
 
 export interface LibMenusubProps {
   data: any,
