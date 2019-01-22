@@ -73,7 +73,7 @@ export default class ecurl {
     }
     await this.setHeader()
     var options = {
-      method: this.post === null ? 'GET' : 'POST',
+      method: !this.post ? 'GET' : 'POST',
       headers: this.header,
       body: this.post
     }
@@ -111,7 +111,7 @@ export default class ecurl {
 
     await this.setHeader();
     var options = {
-      method: this.post === null ? 'GET' : 'POST',
+      method: !this.post ? 'GET' : 'POST',
       headers: this.header,
       body: this.post
     }

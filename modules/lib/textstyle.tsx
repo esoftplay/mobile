@@ -7,7 +7,7 @@ import { LibComponent } from 'esoftplay';
 export interface LibTextstyleProps {
   textStyle: 'largeTitle' | 'title1' | 'title2' | 'title3' | 'headline' | 'body' | 'callout' | 'subhead' | 'footnote' | 'caption1' | 'caption2',
   style?: any,
-  children: string | '',
+  children?: string | '',
   text: string | ''
 }
 

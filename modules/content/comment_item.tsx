@@ -70,7 +70,9 @@ export default class Comment_item extends LibComponent<ContentComment_itemProps,
             </View>
             <Modal
               isVisible={this.state.isOpenChild}
+              backdropColor={'transparent'}
               // animationType='slide'
+              avoidKeyboard={Platform.OS == 'ios'}
               onBackButtonPress={() => this.setState({ isOpenChild: false })}
               onBackdropPress={() => this.setState({ isOpenChild: false })}
               style={{ justifyContent: 'flex-end', margin: 0, backgroundColor: 'transparent' }}>

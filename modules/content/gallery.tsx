@@ -2,7 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { View, StyleSheet, Image, FlatList } from 'react-native';
 import { Button, Icon } from 'native-base';
-const { width, STATUSBAR_HEIGHT } = LibStyle;
+const { width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
 
 export interface ContentGalleryProps {
@@ -56,7 +56,7 @@ export default class ezoom extends LibComponent<ContentGalleryProps, ContentGall
           }}
           showsHorizontalScrollIndicator={false} />
         <Button transparent
-          style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
+          style={{ position: 'absolute', top: STATUSBAR_HEIGHT_MASTER, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
           onPress={() => this.props.navigation.goBack(null)}>
           <Icon
             style={{ color: 'white' }}

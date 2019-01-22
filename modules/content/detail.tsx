@@ -474,11 +474,11 @@ const styles = StyleSheet.create({
   },
   absIndicator: {
     position: 'absolute',
-    top: 10 + STATUSBAR_HEIGHT_MASTER,
+    top: 12 + STATUSBAR_HEIGHT_MASTER,
     right: 10,
     color: 'white',
-    backgroundColor: 'rgba(5, 5, 5, 0.6)',
-    borderRadius: 15,
+    backgroundColor: 'transparent',
+    borderRadius: 15,    
     paddingHorizontal: 10,
     paddingVertical: 3,
   }

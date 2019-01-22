@@ -143,6 +143,7 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
             </View>
             <Modal
               isVisible={this.state.sosmed != ''}
+              backdropColor={'transparent'}
               onBackButtonPress={() => this.setState({ sosmed: '' })}
               onBackdropPress={() => this.setState({ sosmed: '' })} >
               <View style={{ margin: 24, flex: 1, backgroundColor: 'white', borderRadius: 4 }} >

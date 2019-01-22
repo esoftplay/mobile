@@ -92,7 +92,7 @@ checks.forEach(modules => {
                       }
                     }
                   }
-                  var r = /\n(\s+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,}\s{0,}(?:=\s{0,})?\([^{]+)/g; // 1=spaces 2=FunctionObject
+                  var r = /\n(\s+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,}\s{0,}(?:=\s{0,})?\([^{\n]+)/g; // 1=spaces 2=FunctionObject
                   if (s = r.exec(data)) {
                     if (m = data.match(r)) {
                       /* check jika class tersebut nge replace bukan nge extends maka hapus semua fungsi bawaan dari supernya */
@@ -292,9 +292,9 @@ for (const module in Modules) {
     if (module == 'lib' && task == 'component') {
       staticImport.splice(0, 0, item)
     } else if (module == 'lib' && task == 'style') {
-      staticImport.splice(2, 0, item)
+      staticImport.splice(0, 0, item)
     } else if (module == 'lib' && task == 'sqlite') {
-      staticImport.splice(2, 0, item)
+      staticImport.splice(1, 0, item)
     } else {
       staticImport.push(item);
     }
