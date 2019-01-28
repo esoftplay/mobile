@@ -55,7 +55,7 @@ checks.forEach(modules => {
                 if (isIndexed) {
                   /* check jika class tersebut nge replace bukan nge extends maka hapus semua interface bawaan dari supernya */
                   if (tmpTask[clsName].interface.length > 0) {
-                    if (!data.includes('esoftplay/modules/') && !data.includes('extends')) {
+                    if (!data.includes('esoftplay/modules/')) {
                       tmpTask[clsName]["interface"] = [];
                     }
                   }
@@ -97,7 +97,7 @@ checks.forEach(modules => {
                     if (m = data.match(r)) {
                       /* check jika class tersebut nge replace bukan nge extends maka hapus semua fungsi bawaan dari supernya */
                       if (Object.keys(tmpTask[clsName].function).length > 0) {
-                        if (!data.includes('esoftplay/modules/') && !data.includes('extends') && clsName != 'LibStyle') {
+                        if (!data.includes('esoftplay/modules/') && clsName != 'LibStyle') {
                           tmpTask[clsName]["function"] = {};
                         }
                       }
