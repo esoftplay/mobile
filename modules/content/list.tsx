@@ -14,18 +14,18 @@ import Drawer from 'react-native-drawer';
 import moment from 'moment/min/moment-with-locales'
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 import {
-    esp,
-    LibCurl,
-    LibUtils,
-    ContentMenu,
-    ContentSearch,
-    ContentItem,
-    LibComponent,
-    LibStyle
+  esp,
+  LibCurl,
+  LibUtils,
+  ContentMenu,
+  ContentSearch,
+  ContentItem,
+  LibComponent,
+  LibStyle
 } from 'esoftplay';
 import { StatusBar, Animated } from 'react-native';
 import { connect } from 'react-redux';
-const { defaultStyle, colorPrimary, colorAccent, width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
+const { defaultStyle, colorPrimaryDark, colorAccent, width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 const config = esp.config();
 
 var menu: any;
@@ -270,6 +270,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
           <ContentMenu
             ref={(e: any) => this.ContentMenu = e}
             url={this.state.url + 'menu'}
+            style={{ opacity: isRoot ? 1 : 0 }}
             closeDrawer={() => this.closeDrawer()}
             onItemSelected={(e: any) => { this.setState({ url: e.url, title: e.title }) }}
             navigation={this.props.navigation}
@@ -283,7 +284,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
               barStyle='light-content' />
           </View>
           <View style={{
-            backgroundColor: colorPrimary,
+            backgroundColor: colorPrimaryDark,
             height: 50,
             alignItems: 'center',
             flexDirection: 'row'
@@ -337,7 +338,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
                 renderFooter={() => {
                   return this.state.isStop ? null :
                     <ActivityIndicator
-                      color={colorPrimary}
+                      color={colorPrimaryDark}
                       style={{ padding: 20, alignSelf: 'center' }} />
                 }}
                 dataProvider={this.dataProvider.cloneWithRows(this.state.data)}
@@ -346,7 +347,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} ><Text note >Berita masih kosong</Text></View>
                 :
                 <ActivityIndicator
-                  color={colorPrimary}
+                  color={colorPrimaryDark}
                   style={{ padding: 20, alignSelf: 'center' }} />
           }
           {

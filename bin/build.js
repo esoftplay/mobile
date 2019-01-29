@@ -7,6 +7,7 @@ const DIR = "../../"
 const packjson = DIR + "package.json"
 const appjson = DIR + "app.json"
 const babelrc = DIR +".babelrc"
+const tsconfig = DIR + "tsconfig.json"
 const appjs = DIR + "App.tsx"
 const pathScript = DIR + "node_modules/react-native-scripts/build/bin/react-native-scripts.js"
 if (fs.existsSync(packjson)) {
@@ -143,8 +144,35 @@ if (fs.existsSync(packjson)) {
 
 		/* Update App.js */
 		if (args[0] == "install") {
-			const AppJS = "import React from 'react';\n\
-import { AppLoading, Font } from 'expo';\n\
+			const TSconfig = `{\n\
+	"compilerOptions": {\n\
+		"allowSyntheticDefaultImports": true,\n\
+		"experimentalDecorators": true,\n\
+		"forceConsistentCasingInFileNames": true,\n\
+		"importHelpers": true,\n\
+		"jsx": "react-native",\n\
+		"lib": [\n\
+			"es2017"\n\
+		],\n\
+		"module": "es2015",\n\
+		"moduleResolution": "node",    \n\
+		"noEmitHelpers": true,\n\
+		"noImplicitReturns": true,\n\
+		"noUnusedLocals": true,\n\
+		"sourceMap": false,\n\
+		"strict": true,\n\
+		"target": "es2017"\n\
+	},\n\
+	"exclude": [\n\
+		"node_modules"\n\
+	]\n\
+}`
+			fs.writeFile(tsconfig, TSconfig, (err) => {
+				if (err) throw err;
+				console.log('tsconfig has been created');
+			});
+
+			const AppJS = `import React from 'react';\n\
 import { applyMiddleware, createStore } from 'redux';\n\
 import thunk from 'redux-thunk';\n\
 import { Provider } from 'react-redux'\n\
@@ -154,38 +182,21 @@ const middleware = applyMiddleware(thunk)\n\
 export const store = createStore(esp.reducer(), middleware)\n\
 \n\
 export default class App extends React.Component {\n\
-  state = {\n\
-    loading: true\n\
-  }\n\
-  Home = esp.home()\n\
-\n\
-  componentDidMount = async () => {\n\
-    await Font.loadAsync({\n\
-      'Roboto': require('native-base/Fonts/Roboto.ttf'),\n\
-      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),\n\
-    })\n\
-    this.setState({ loading: false })\n\
-  }\n\
-\n\
-  render = () => {\n\
-    const { loading } = this.state\n\
-    return loading\n\
-      ?\n\
-			<AppLoading\n\
-				onFinish={() => { }}\n\
-        autoHideSplash={true}\n\
-        onError={() => { }}\n\
-        startAsync={async () => { }}\n\
-			/>\n\
-      :\n\
-      <Provider store={store}>\n\
-        <this.Home />\n\
-      </Provider>\n\
-  }\n\
-}";
+	Home = esp.home()\n\
+	render() {\n\
+		return (\n\
+			<Provider store={store}>\n\
+				<this.Home />\n\
+			</Provider>\n\
+		)\n\
+	}\n\
+}`;
 			fs.writeFile(appjs, AppJS, (err) => {
 				if (err) throw err;
 				console.log('App.tsx has been updated');
+				console.log('\n##### NOTE : Execute this command if this is the first time using TypeScript');
+				console.log('\nnpm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript\n')
+				console.log('##### END NOTE ');
 			});
 		}
 	}

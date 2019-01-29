@@ -1,41 +1,19 @@
-// 
-
 import React from 'react';
-import { Component } from 'react';
 import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from 'react-native';
 import { Permissions } from 'expo';
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 import update from 'immutability-helper';
 import { Ionicons } from '@expo/vector-icons';
-import { LibComponent } from 'esoftplay';
 const { width } = Dimensions.get('window')
-/*
-USAGE
-
-var Imagespicker = esp.mod("lib/picker")
-
-...
-<Imagespicker
-  images={(images)=>console.log(images)}
-  max={3}
-  color={colorPrimary}
-  show={this.state.showImagespicker}
-  dismiss={()=>this.setState({showImagespicker:false})}
-PROPS
-
-  images  = funtion   = A callback to receive images selection
-  max     = number    = maximum count images selection
-  color   = string    = color code for Imagespicker
-  show    = boolean   = determine Imagespicker show or not
-  dismiss = function  = function to make props.show = false
-*/
+import { esp, LibComponent } from 'esoftplay';
 
 
 export interface LibPickerProps {
   max: number | 0,
   color?: string,
   show: boolean,
-  dismiss: () => void
+  dismiss: () => void,
+  images: (images: any) => void
 }
 export interface LibPickerState {
   photos: any[],
@@ -44,22 +22,20 @@ export interface LibPickerState {
   has_next_page: boolean
 }
 
-export default class epicker extends LibComponent<LibPickerProps, LibPickerState> {
+export default class libPicker extends LibComponent<LibPickerProps, LibPickerState> {
+
   layoutProvider: any;
-  ImageTile: any;
   dataProvider: any;
   state: LibPickerState
-  props: LibPickerProps
   constructor(props: LibPickerProps) {
     super(props);
-    this.props = props
-    this.layoutProvider = new LayoutProvider((index: number) => index,
-      (type: number, dim: any) => {
+    this.layoutProvider = new LayoutProvider(index => index,
+      (type, dim) => {
         dim.width = width / 3;
         dim.height = width / 3
       })
-    this.dataProvider = new DataProvider((a: any, b: any) => a !== b)
-    // this.rowRenderer = this.rowRenderer.bind(this);
+    this.dataProvider = new DataProvider((a, b) => a !== b)
+    this.rowRenderer = this.rowRenderer.bind(this);
     this.selectImage = this.selectImage.bind(this);
     this.ImageTile = this.ImageTile.bind(this);
     this.state = {
@@ -72,9 +48,9 @@ export default class epicker extends LibComponent<LibPickerProps, LibPickerState
 
   async componentDidMount(): Promise<void> {
     super.componentDidMount()
-    const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-    let finalStatus = status;
-    if (status !== 'granted') {
+    const { existingStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       finalStatus = status;
     }
@@ -92,7 +68,7 @@ export default class epicker extends LibComponent<LibPickerProps, LibPickerState
 
   processPhotos(r: any): void {
     if (this.state.after === r.page_info.end_cursor) return;
-    let uris = r.edges.map((i: any) => i.node).map((i: any) => i.image).map((i: any) => ({ image: i.uri, selected: false }))
+    let uris = r.edges.map(i => i.node).map(i => i.image).map(i => ({ image: i.uri, selected: false }))
     this.setState({
       photos: [...this.state.photos, ...uris],
       after: r.page_info.end_cursor,
@@ -100,7 +76,7 @@ export default class epicker extends LibComponent<LibPickerProps, LibPickerState
     });
   }
 
-  selectImage(index: number): void {
+  selectImage(index: any): void {
     var photos = this.state.photos
     var selectedCount = photos.filter((item) => item.selected === true).length
     var isSelect = photos[index].selected
@@ -133,32 +109,75 @@ export default class epicker extends LibComponent<LibPickerProps, LibPickerState
     },
   })
 
-  // ImageTile(props: any) {
-  //   let { item, index, selectImage } = props;
-  //   var color = this.props.color || 'blue'
-  //   if (!item) return null;
-  //   return (
-  //     <TouchableHighlight
-  //       underlayColor='transparent'
-  //       onPress={() => selectImage(index)}>
-  //       <View style={{ width: width / 3, height: width / 3 }} >
-  //         <Image
-  //           style={{ width: width / 3, height: width / 3 }}
-  //           source={{ uri: item.image }}
-  //         />
-  //         <Ionicons name={item.selected ? 'ios-checkmark-circle' : 'ios-radio-button-off'} style={{ color: color, position: 'absolute', bottom: 5, right: 5, fontSize: 34, fontWeight: 'bold' }} />
-  //       </View>
-  //     </TouchableHighlight>
-  //   )
-  // }
+  ImageTile(props: any): any {
+    let { item, index, selectImage } = props;
+    var color = this.props.color || 'blue'
+    if (!item) return null;
+    return (
+      <TouchableHighlight
+        underlayColor='transparent'
+        onPress={() => selectImage(index)}>
+        <View style={{ width: width / 3, height: width / 3 }} >
+          <Image
+            style={{ width: width / 3, height: width / 3 }}
+            source={{ uri: item.image }}
+          />
+          <Ionicons name={item.selected ? 'ios-checkmark-circle' : 'ios-radio-button-off-outline'} style={{ color: color, position: 'absolute', bottom: 5, right: 5, fontSize: 34, fontWeight: 'bold' }} />
+        </View>
+      </TouchableHighlight>
+    )
+  }
 
-  // rowRenderer = (index: number, item: any) => {
-  //   return (
-  //     <ImageTile
-  //       item={item}
-  //       index={index}
-  //       selectImage={this.selectImage}
-  //     />
-  //   )
-  // }
+  rowRenderer(index: any, item: number): any {
+    return (
+      <this.ImageTile
+        item={item}
+        index={index}
+        selectImage={this.selectImage}
+      />
+    )
+  }
+
+  render(): any {
+    var { max, show, dismiss, color, images } = this.props
+    var { has_next_page, photos } = this.state
+    color = color ? color : 'blue'
+    var selectedPhotos = this.state.photos.filter((item) => item.selected === true).map((item) => item.image)
+    var selectedCount = selectedPhotos.length
+    let headerText = selectedCount + ' dipilih';
+    if (max && selectedCount === max) headerText = headerText + ' (max)';
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent={false}
+        onRequestClose={() => dismiss()}
+        visible={show}>
+        <View style={this.styles.container}>
+          <View style={this.styles.header}>
+            <TouchableHighlight onPress={() => dismiss()} >
+              <Text style={{ fontSize: 20, color: color }} >Batal</Text>
+            </TouchableHighlight>
+            <Text style={{ fontSize: 16 }} >{headerText}</Text>
+            <TouchableHighlight onPress={() => {
+              images(selectedPhotos)
+              dismiss()
+            }} >
+              <Text style={{ fontSize: 20, color: color }} >Selesai</Text>
+            </TouchableHighlight>
+          </View>
+          {
+            has_next_page && photos.length == 0 ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={color} size="large" /></View>
+              : !has_next_page && photos.length == 0 ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><Text>Gambar Tidak ditemukan</Text></View>
+                :
+                <RecyclerListView
+                  layoutProvider={this.layoutProvider}
+                  dataProvider={this.dataProvider.cloneWithRows(this.state.photos)}
+                  rowRenderer={this.rowRenderer}
+                  onEndReached={() => { this.getPhotos() }}
+                />
+          }
+        </View>
+      </Modal>
+    );
+  }
 }

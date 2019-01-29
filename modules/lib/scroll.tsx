@@ -35,7 +35,31 @@ const { width } = Dimensions.get('window');
 export interface LibScrollProps {
   numColumns?: number,
   defaultHeight?: number,
-  children: any,
+  children?: any,
+  onEndReached?: () => void,
+  renderFooter?: () => any,
+  bounces?: boolean,
+  layoutProvider?: any,
+  dataProvider?: any,
+  contextProvider?: any,
+  initialOffset?: number,
+  renderAheadOffset?: number,
+  isHorizontal?: boolean,
+  onScroll?: (rawEvent: any, offsetX: number, offsetY: number) => void,
+  onRecreate?: Function,  
+  onEndReachedThreshold?: number,
+  initialRenderIndex?: number,
+  scrollThrottle?: number,
+  canChangeSize?: boolean,
+  distanceFromWindow?: number,
+  useWindowScroll?: boolean,
+  disableRecycling?: boolean,
+  forceNonDeterministicRendering?: boolean,
+  extendedState?: any,
+  itemAnimator?: any,
+  optimizeForInsertDeleteAnimations?: boolean,
+  style?: any,
+  scrollViewProps?: any
 }
 
 export interface LibScrollState {
@@ -76,7 +100,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
       this.setState({ data: this.dataProvider.cloneWithRows(this.props.children) })
   };
 
-  render() : any {
+  render(): any {
     const w = this.state.width / (this.props.numColumns || 1)
     return (
       <View onLayout={(e: any) => this.setState({ width: e.nativeEvent.layout.width })} style={[{ flex: 1 }]} >

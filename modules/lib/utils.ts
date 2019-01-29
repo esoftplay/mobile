@@ -65,12 +65,12 @@ export default class eutils {
 
   static number(toNumber: string | number): string {
     var toNumb = typeof toNumber === 'number' ? toNumber.toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,') : parseInt(toNumber).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,')
-    return toNumb
+    return String(toNumb).replace(/,/g, '.')
   }
 
   static countDays(start: string | Date, end: string | Date): number {
-    var _start = start instanceof Date ? start.getMilliseconds() : new Date(start).getMilliseconds()
-    var _end = end instanceof Date ? end.getMilliseconds() : new Date(end).getMilliseconds()
+    var _start = start instanceof Date ? start.getTime() : new Date(start).getTime()
+    var _end = end instanceof Date ? end.getTime() : new Date(end).getTime()
     var diff = Math.abs(_end - _start)
     var oneDay = 1000 * 60 * 60 * 24
     var day = Math.floor(diff / oneDay)

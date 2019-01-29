@@ -26,7 +26,7 @@ class Enotifbadge extends LibComponent<UserNotifbadgeProps, UserNotifbadgeState>
     this.props = props
   }
 
-  static mapStateToProps(state: any) {
+  static mapStateToProps(state: any): any {
     return {
       data: state.user_notification.data
     }
@@ -37,7 +37,7 @@ class Enotifbadge extends LibComponent<UserNotifbadgeProps, UserNotifbadgeState>
     UserNotification.user_notification_loadData()
   }
 
-  render() : any {
+  render(): any {
     const { data } = this.props
     const counter = data.filter((item: any) => item.status != 2).length
     if (counter == 0) { return null }

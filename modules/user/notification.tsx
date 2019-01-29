@@ -127,7 +127,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     this.props = props
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     super.componentDidMount()
     moment.locale('id')
     Enotification.user_notification_loadData()

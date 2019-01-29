@@ -8,7 +8,7 @@ import {
   FlatList
 } from 'react-native';
 import { Left, Button, Icon, Text, ListItem } from 'native-base';
-const { width, STATUSBAR_HEIGHT } = LibStyle;
+const { width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
 
 
@@ -64,7 +64,7 @@ export default class ezoom extends LibComponent<ContentZoomProps, ContentZoomSta
           }}
           showsHorizontalScrollIndicator={false} />
         <Button transparent
-          style={{ position: 'absolute', top: STATUSBAR_HEIGHT, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
+          style={{ position: 'absolute', top: STATUSBAR_HEIGHT_MASTER, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
           onPress={() => this.props.navigation.goBack(null)}>
           <Icon
             style={{ color: 'white' }}

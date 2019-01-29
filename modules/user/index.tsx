@@ -1,14 +1,12 @@
 // 
 
 import React from 'react';
-import { Component } from 'react'
-import moment from 'moment'
 import navs from '../../cache/navigations';
 import { AsyncStorage, View } from 'react-native';
 import { createStackNavigator, createAppContainer, StackNavigatorConfig } from 'react-navigation';
 import { store } from '../../../../App';
-import { Constants } from 'expo';
-import { esp, LibNotification, UserClass, LibCurl, LibCrypt, LibComponent } from 'esoftplay';
+import { Font } from 'expo';
+import { esp, LibNotification, UserClass, LibComponent } from 'esoftplay';
 
 export interface UserIndexProps {
 
@@ -40,8 +38,16 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     })
   }
 
-  state = {
-    loading: true
+  constructor(props: UserIndexProps) {
+    super(props)
+    this.state = {
+      loading: true
+    }
+    this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
+    this.isClassComponent = this.isClassComponent.bind(this)
+    this.isFunctionComponent = this.isFunctionComponent.bind(this)
+    this.isReactComponent = this.isReactComponent.bind(this)
+    this.setFonts = this.setFonts.bind(this)
   }
 
   onNavigationStateChange(prevState: any, currentState: any): void {
@@ -71,6 +77,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
         initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public")
       }
       Router = await createAppContainer(createStackNavigator(navigations, config))
+      await this.setFonts()
       this.setState({ loading: false })
     })
   }
@@ -86,6 +93,16 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
 
   isReactComponent(component: any): boolean {
     return (this.isClassComponent(component) || this.isFunctionComponent(component)) ? true : false;
+  }
+
+
+  setFonts(): Promise<void> {
+    return new Promise((r, j) => {
+      Font.loadAsync({
+        'Roboto': require('native-base/Fonts/Roboto.ttf'),
+        'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf')
+      }).then(() => r())
+    })
   }
 
   render(): any {

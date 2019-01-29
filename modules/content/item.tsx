@@ -35,12 +35,12 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
     this.goToDetail = this.goToDetail.bind(this);
   }
 
-  goToDetail() {
+  goToDetail(): void {
     const { navigation, id, title, url, created, image } = this.props
     navigation.push('content/detail', { id, title, url, created, image, })
   }
 
-  render() : any {
+  render(): any {
     const props = this.props
     const { id, title, intro, description, image, created, updated, url, publish } = props
     if (created == 'sponsor') {

@@ -4,7 +4,7 @@ import { Component } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { Text, Button, Container, Icon } from 'native-base';
 import moment from 'moment/min/moment-with-locales'
-const { colorPrimary, colorAccent, STATUSBAR_HEIGHT_MASTER } = LibStyle;
+const { colorPrimaryDark, colorAccent, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 import { esp, LibSociallogin, ContentComment_list, LibComponent, LibStyle } from 'esoftplay';
 const config = esp.config();
 
@@ -57,7 +57,7 @@ export default class ecomment extends LibComponent<ContentCommentProps, ContentC
         style={styles.container}>
         <Container>
           <View
-            style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT_MASTER, paddingTop: STATUSBAR_HEIGHT_MASTER, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
+            style={{ flexDirection: 'row', height: 50 + STATUSBAR_HEIGHT_MASTER, paddingTop: STATUSBAR_HEIGHT_MASTER, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimaryDark }}>
             <Button transparent
               style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
               onPress={() => goBack()}>
