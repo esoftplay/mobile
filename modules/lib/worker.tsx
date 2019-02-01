@@ -123,7 +123,7 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
               onMessage={(e) => {
                 item.result(e.nativeEvent.data);
                 console.log('end')
-                if (!item.keepAlive) Worker.lib_worker_del(item.taskName)
+                if (!item.keepAlive) Worker.delete(item.taskName)
               }}
             />
           ))
