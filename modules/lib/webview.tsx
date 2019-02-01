@@ -54,7 +54,7 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
     this.props = props
     this.state = {
       height: props.defaultHeight,
-      source: props.source && props.source.hasOwnProperty('html') ? { html: config.webviewOpen + props.source.html + config.webviewClose } : props.source,
+      source: props.source && props.source.hasOwnProperty('html') ? { html: config.webviewOpen + ewebview.fixHtml(props.source.html) + config.webviewClose } : props.source,
     };
     this._animatedValue = new Animated.Value(1);
     this.gotoShow = this.gotoShow.bind(this)
@@ -71,7 +71,7 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
       this.setState({
         source: (this.props.source && this.props.source.hasOwnProperty('html'))
           ?
-          { html: config.webviewOpen + this.props.source.html + config.webviewClose }
+          { html: config.webviewOpen + ewebview.fixHtml(this.props.source.html) + config.webviewClose }
           :
           this.props.source
       });
@@ -85,6 +85,10 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
       toValue: 1,
       duration: this.props.AnimationDuration
     }).start();
+  }
+
+  componentDidMount(): void {
+    super.componentDidMount()
   }
 
   //insert ResizeHeight JS
@@ -133,13 +137,35 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
   }
 
   /* work onli onIos */
-  _updateWebViewHeight(event:any): void {
+  _updateWebViewHeight(event: any): void {
     this.setState({ height: parseInt(event.jsEvaluationValue) + 50 }, () => {
       if (this.props.onFinishLoad !== undefined)
         setTimeout(() => {
           this.props.onFinishLoad()
         }, 1000)
     });
+  }
+  /*change hex to rgb, hex not supported in latest android system webview [v72.0.3626.76 28-Jan-2019] in playstore*/
+  static fixHtml(html: string): string {
+    var regex = /\#([0-9a-fA-F]+)/g;
+    var matches = html.match(regex) || [];
+    for (let i = 0; i < matches.length; i++) {
+      var e = matches[i];
+      if (e.length >= 6 && e.length <= 7) {
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        e = e.replace(shorthandRegex, function (m, r, g, b) {
+          return r + r + g + g + b + b;
+        });
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(e);
+        if (result) {
+          var rgb = 'rgb(' + parseInt(result[1], 16) + ',' + parseInt(result[2], 16) + ',' + parseInt(result[3], 16) + ')'
+        } else {
+          rgb = 'rgb(0,0,0)'
+        }
+        html = html.replace(e, rgb)
+      }
+    }
+    return html
   }
 
   render(): any {
@@ -157,10 +183,9 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
     `;
 
     let isIos = Platform.OS == 'ios'
-
     let { bounces, onLoadEnd, style, scrollEnabled, automaticallyAdjustContentInsets, scalesPageToFit, onMessage, ...otherprops } = this.props;
     return (
-      <Animated.View style={{ height: this.state.height, opacity: this._animatedValue }}>
+      <Animated.View style={{ height: this.state.height, overflow: 'hidden' }}>
         <WebView
           {...otherprops}
           ref={(e: any) => this.webview = e}
@@ -190,3 +215,5 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
 }
 
 export default ewebview;
+
+
