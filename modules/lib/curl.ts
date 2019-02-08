@@ -2,7 +2,7 @@
 import react from 'react';
 import momentTimeZone from 'moment-timezone'
 import moment from 'moment/min/moment-with-locales'
-import { esp, LibCrypt } from 'esoftplay';
+import { esp, LibCrypt, LibWorker } from 'esoftplay';
 
 export default class ecurl {
   isDebug = esp.config('isDebug');
@@ -14,6 +14,7 @@ export default class ecurl {
   constructor(uri?: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number) {
     this.setUri = this.setUri.bind(this);
     this.setUrl = this.setUrl.bind(this);
+    this.onFetched = this.onFetched.bind(this)
     this.header = {}
     this.setHeader = this.setHeader.bind(this);
     if (uri) {
@@ -49,20 +50,19 @@ export default class ecurl {
     var uName = fileUri.substring(fileUri.lastIndexOf('/') + 1, fileUri.length);
     var uType = mimeType || 'image/jpeg'
     var post = { [postKey]: { uri: fileUri, type: uType, name: uName } }
-    this.init(uri, post, onDone, onFailed, debug)
+    this.init(uri, post, onDone, onFailed, debug, true)
   }
 
   async custom(uri: string, post?: any, onDone?: (res: any) => void, debug?: number): Promise<void> {
     if (post) {
-      let fd = new FormData();
-      Object.keys(post).map(function (key) {
+      let fd = '';
+      Object.keys(post).map((key) => {
         if (key !== undefined) {
-          if (post[key] !== '') {
-            fd.append(key, post[key])
-          }
+          fd += encodeURI(key) + '=' + encodeURI(post[key]) + '&'
         }
-      });
-      this.post = fd
+      })
+      this.post = fd.substring(0, fd.length - 2)
+      this.header["Content-Type"] = "application/x-www-form-urlencoded"
     }
     this.setUri(uri)
     if ((/^[A-z]+:\/\//g).test(uri)) {
@@ -79,20 +79,27 @@ export default class ecurl {
     }
     if (debug == 1)
       esp.log(this.url + this.uri, options)
-    var res
-    res = await fetch(this.url + this.uri, options)
-    var resText = await res.text()
-    var resJson = (resText.startsWith('{') || resText.startsWith('[')) ? JSON.parse(resText) : null
-    if (resJson) {
-      if (onDone) onDone(resJson)
-      this.onDone(resJson)
-    } else {
-      if (debug == 1) this.onError(resText)
-    }
+    LibWorker.curl(this.url + this.uri, options, async (resText) => {
+      var resJson = (resText.startsWith('{') || resText.startsWith('[')) ? JSON.parse(resText) : null
+      if (resJson) {
+        if (onDone) onDone(resJson)
+        this.onDone(resJson)
+      } else {
+        if (debug == 1) this.onError(resText)
+      }
+    })
   }
 
-  async init(uri: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number): Promise<void> {
-    if (post) {
+  async init(uri: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number, upload?: boolean): Promise<void> {
+    if (post && !upload) {
+      let fd = '';
+      Object.keys(post).map((key) => {
+        if (key !== undefined) {
+          fd += encodeURI(key) + '=' + encodeURI(post[key]) + '&'
+        }
+      })
+      this.post = fd.substring(0, fd.length - 2)
+    } else if (upload) {
       let fd = new FormData();
       Object.keys(post).map(function (key) {
         if (key !== undefined) {
@@ -108,7 +115,9 @@ export default class ecurl {
     } else {
       this.setUrl(esp.config("url"))
     }
-
+    if (!upload) {
+      this.header["Content-Type"] = "application/x-www-form-urlencoded"
+    }
     await this.setHeader();
     var options = {
       method: !this.post ? 'GET' : 'POST',
@@ -116,9 +125,18 @@ export default class ecurl {
       body: this.post
     }
     if (debug == 1) esp.log(this.url + this.uri, options)
-    // console.log(this.url + uri, options)
-    var res = await fetch(this.url + this.uri, options)
-    var resText = await res.text()
+    if (!upload) {
+      LibWorker.curl(this.url + this.uri, options, async (resText) => {
+        this.onFetched(resText, onDone, onFailed, debug)
+      })
+    } else {
+      var res = await fetch(this.url + this.uri, options);
+      let resText = await res.text()
+      this.onFetched(resText, onDone, onFailed, debug)
+    }
+  }
+
+  onFetched(resText: string, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number): void {
     var resJson = (resText.startsWith('{') && resText.endsWith('}')) || (resText.startsWith('[') && resText.endsWith(']')) ? JSON.parse(resText) : resText
     if (typeof resJson == 'object') {
       if (resJson.ok === 1) {
@@ -132,6 +150,7 @@ export default class ecurl {
       if (debug == 1) this.onError(resText)
     }
   }
+
 
   onError(msg: string): void {
     esp.log(msg)
@@ -170,3 +189,5 @@ export default class ecurl {
     return day
   }
 }
+
+

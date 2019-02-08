@@ -109,8 +109,8 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     if (this.state.loading) return null
     return (
       <View style={{ flex: 1 }}>
-        <Router onNavigationStateChange={this.onNavigationStateChange} />
         <LibWorker />
+        <Router onNavigationStateChange={this.onNavigationStateChange} />
       </View>
     );
   }

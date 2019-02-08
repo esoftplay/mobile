@@ -12,7 +12,8 @@ export interface WorkerInit {
   /** `output` that return from `window.postMessage` from `task` props */
   result: (res: string) => void,
   /** `true` if you want warker keep alive after  */
-  keepAlive: boolean
+  keepAlive: boolean,
+  isCurl: boolean
 }
 
 export interface LibWorkerProps {
@@ -57,7 +58,8 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
           taskName: taskName,
           task: task,
           result: result,
-          keepAlive: !!keepAlive
+          keepAlive: !!keepAlive,
+          isCurl: false
         }
       })
     } else {
@@ -65,7 +67,6 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
     }
   }
   static delete(taskName: string): void {
-    // console.log(taskName)
     store.dispatch({
       type: 'lib_worker_del',
       payload: taskName
@@ -83,31 +84,37 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
   }
 
 
-  // static curl(url: string, options: any, result: (r: any) => void): void {
-  //   function parseObject(obj: any): string {
-  //     var sObj = ''
-  //     let objKeys = Object.keys(obj)
-  //     sObj += '{'
-  //     objKeys.forEach((key: any, index: number) => {
-  //       // console.log(key)
-  //       let value = obj[key]
-  //       if (!value) {
-  //         sObj += '\"' + key + '\":' + value + ','
-  //       } else if (typeof value != 'string') {
-  //         sObj += '\"' + key + '\":' + parseObject(value) + ','
-  //       } else {
-  //         sObj += '\"' + key + '\":\"' + value + '\",'
-  //       }
-  //     })
-  //     return sObj.substring(0, sObj.length - 1) + '}'
-  //   }
-  //   var _task = 'fetch(\"' + url + '\"' + ',' + parseObject(options) + ').then((e) => window.postMessage(e,\"' + url + '\")).catch((e)=> window.postMessage(e,\"' + url + '\"))';
-  //   console.log(_task)
-  //   Worker.lib_worker_add(url, _task, result, false)
-  // }
+  static curl(url: string, options: any, result: (r: any) => void): void {
+    function parseObject(obj: any): string {
+      var sObj = ''
+      let objKeys = Object.keys(obj)
+      sObj += '{'
+      objKeys.forEach((key: any, index: number) => {
+        let value = obj[key]
+          if (!value) {
+            sObj += '\"' + key + '\":' + value + ','
+          } else if (typeof value != 'string') {
+            sObj += '\"' + key + '\":' + parseObject(value) + ','
+          } else {
+            sObj += '\"' + key + '\":\"' + value + '\",'
+          }
+      })
+      return sObj.substring(0, sObj.length - 1) + '}'
+    }
+    var _task = 'fetch(\"' + url + '\"' + ',' + parseObject(options) + ').then( async (e) => { var r = await e.text(); window.postMessage(r)}).catch((e)=> window.postMessage(e))';
+    store.dispatch({
+      type: 'lib_worker_add',
+      payload: {
+        taskName: url,
+        task: _task,
+        result: result,
+        keepAlive: false,
+        isCurl: true
+      }
+    })
+  }
 
   render(): any {
-    // console.log(this.props.tasks)
     return (
       <View style={{ width: 0, height: 0 }} >
         {
@@ -119,16 +126,14 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
               useWebKit
               originWhitelist={['*']}
               injectedJavaScript={item.task || `alert('wow')`}
-              source={{ html: '<html><body></body></html>' }}
+              source={item.isCurl ? { uri: item.taskName } : { html: '<html><body></body></html>' }}
               onMessage={(e) => {
                 item.result(e.nativeEvent.data);
-                console.log('end')
                 if (!item.keepAlive) Worker.delete(item.taskName)
               }}
             />
           ))
         }
-
       </View>
     )
   }
