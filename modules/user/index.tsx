@@ -6,7 +6,7 @@ import { AsyncStorage, View } from 'react-native';
 import { createStackNavigator, createAppContainer, StackNavigatorConfig } from 'react-navigation';
 import { store } from '../../../../App';
 import { Font } from 'expo';
-import { esp, LibNotification, UserClass, LibComponent } from 'esoftplay';
+import { esp, LibNotification, UserClass, LibComponent, LibWorker, LibNet_status } from 'esoftplay';
 
 export interface UserIndexProps {
 
@@ -109,8 +109,11 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     if (this.state.loading) return null
     return (
       <View style={{ flex: 1 }}>
+        <LibWorker />
         <Router onNavigationStateChange={this.onNavigationStateChange} />
+        <LibNet_status />
       </View>
     );
   }
 }
+

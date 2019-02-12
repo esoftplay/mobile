@@ -41,6 +41,8 @@ checks.forEach(modules => {
             if (typeof tmpTask[clsName] == "undefined") {
               tmpTask[clsName] = {
                 "interface": [],
+                "type": [],
+                "var": {},
                 "class": "",
                 "function": {}
               };
@@ -66,6 +68,20 @@ checks.forEach(modules => {
                   }
                 }
 
+                /* REGEX TYPE */
+                if (isIndexed) {
+                  if (tmpTask[clsName].interface.length > 0) {
+                    if (!data.includes('esoftplay/modules/')) {
+                      tmpTask[clsName]["type"] = [];
+                    }
+                  }
+                  if (m = data.match(/\n{0,}\s{0,}(export\s+type\s+[a-zA-Z0-9_]+\s\=.*\n)/g)) {
+                    for (let i = 0; i < m.length; i++) {
+                      tmpTask[clsName]["type"].push(m[i].trim());
+                    }
+                  }
+                }
+
                 /* REGEX CLASS NAME */
                 if (m = /\n\s{0,}(?:export\s+default\s+)?(class\s+([^\s]+)[^\{]+)/.exec(data)) {
                   if (tmpTask[clsName]["class"] == "") {
@@ -78,20 +94,27 @@ checks.forEach(modules => {
                   }
                 }
 
-                /* REGEX All Functions */
-                if (isIndexed) {
-                  if (clsName === 'LibStyle') {
-                    var r = /((static[\s]+[A-Za-z0-9_]+)\:\s+[a-zA-z]+)/g
-                    if (c = data.match(r)) {
-                      for (let i = 0; i < c.length; i++) {
-                        const v = c[i];
-                        var z = (/((static[\s]+[A-Za-z0-9_]+)\:\s+[a-zA-z]+)/g).exec(v)
-                        if (z) {
-                          tmpTask[clsName]['function'][z[2]] = z[1] + ';'
+                if (isIndexed) {                  
+                  var r = /\n{0,}(\s+)(static\s[a-zA-Z0-9_]+:\s{0,}.*)=.*;{0,}\n/g
+                  if (s = r.exec(data)) {
+                    if (m = data.match(r)) {
+                      /* check jika class tersebut nge replace bukan nge extends maka hapus semua static var bawaan dari supernya */
+                      if (Object.keys(tmpTask[clsName].var).length > 0) {
+                        if (!data.includes('esoftplay/modules/') && clsName != 'LibStyle') {
+                          tmpTask[clsName]["var"] = {};
+                        }
+                      }
+                      for (var i = 0; i < m.length; i++) {
+                        if (S = m[i].match(/\n{0,}(\s+)(static\s[a-zA-Z0-9_]+:\s{0,}.*)=.*;{0,}\n/)) {
+                          if (S[1] === s[1].replace(new RegExp('\n', 'g'), '')) {
+                            var a = S[2].trim() + ";"
+                            tmpTask[clsName]["var"][S[2]] = a;
+                          }
                         }
                       }
                     }
                   }
+                  /* REGEX All Functions */
                   var r = /\n(\s+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,}\s{0,}(?:=\s{0,})?\([^{\n]+)/g; // 1=spaces 2=FunctionObject
                   if (s = r.exec(data)) {
                     if (m = data.match(r)) {
@@ -212,11 +235,17 @@ function createIndex() {
   for (clsName in tmpTask) {
     if (tmpTask[clsName]["class"]) {
       Text += "\n";
+      for (var i = 0; i < tmpTask[clsName]["type"].length; i++) {
+        Text += "\n  " + tmpTask[clsName]["type"][i].replace(/\n/g, "\n  ");
+      }
       for (var i = 0; i < tmpTask[clsName]["interface"].length; i++) {
         Text += "\n  " + tmpTask[clsName]["interface"][i].replace(/\n/g, "\n  ");
       }
       Text += "\n  " + tmpTask[clsName]["class"] + " {";
       var isFilled = false;
+      for (fun in tmpTask[clsName]["var"]) {
+        Text += "\n    " + tmpTask[clsName]["var"][fun];
+      }
       for (fun in tmpTask[clsName]["function"]) {
         Text += "\n    " + tmpTask[clsName]["function"][fun];
         isFilled = true;
