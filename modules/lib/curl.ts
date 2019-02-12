@@ -3,6 +3,8 @@ import react from 'react';
 import momentTimeZone from 'moment-timezone'
 import moment from 'moment/min/moment-with-locales'
 import { esp, LibCrypt, LibWorker } from 'esoftplay';
+import { store } from '../../../../App';
+import { Alert } from 'react-native';
 
 export default class ecurl {
   isDebug = esp.config('isDebug');
@@ -17,8 +19,11 @@ export default class ecurl {
     this.onFetched = this.onFetched.bind(this)
     this.header = {}
     this.setHeader = this.setHeader.bind(this);
-    if (uri) {
+    const str: any = store.getState()
+    if (uri && str.lib_net_status.isOnline) {
       this.init(uri, post, onDone, onFailed, debug);
+    } else if (!str.lib_net_status.isOnline) {
+      onFailed("Failed to access");
     }
   }
 
@@ -54,40 +59,43 @@ export default class ecurl {
   }
 
   async custom(uri: string, post?: any, onDone?: (res: any) => void, debug?: number): Promise<void> {
-    if (post) {
-      let fd = '';
-      Object.keys(post).map((key) => {
-        if (key !== undefined) {
-          fd += encodeURI(key) + '=' + encodeURI(post[key]) + '&'
+    const str: any = store.getState()
+    if (str.lib_net_status.isOnline) {
+      if (post) {
+        let fd = '';
+        Object.keys(post).map((key) => {
+          if (key !== undefined) {
+            fd += encodeURI(key) + '=' + encodeURI(post[key]) + '&'
+          }
+        })
+        this.post = fd.substring(0, fd.length - 2)
+        this.header["Content-Type"] = "application/x-www-form-urlencoded"
+      }
+      this.setUri(uri)
+      if ((/^[A-z]+:\/\//g).test(uri)) {
+        this.setUrl(uri)
+        this.setUri('')
+      } else {
+        this.setUrl(esp.config("url"))
+      }
+      await this.setHeader()
+      var options = {
+        method: !this.post ? 'GET' : 'POST',
+        headers: this.header,
+        body: this.post
+      }
+      if (debug == 1)
+        esp.log(this.url + this.uri, options)
+      LibWorker.curl(this.url + this.uri, options, async (resText) => {
+        var resJson = (resText.startsWith('{') || resText.startsWith('[')) ? JSON.parse(resText) : null
+        if (resJson) {
+          if (onDone) onDone(resJson)
+          this.onDone(resJson)
+        } else {
+          if (debug == 1) this.onError(resText)
         }
       })
-      this.post = fd.substring(0, fd.length - 2)
-      this.header["Content-Type"] = "application/x-www-form-urlencoded"
     }
-    this.setUri(uri)
-    if ((/^[A-z]+:\/\//g).test(uri)) {
-      this.setUrl(uri)
-      this.setUri('')
-    } else {
-      this.setUrl(esp.config("url"))
-    }
-    await this.setHeader()
-    var options = {
-      method: !this.post ? 'GET' : 'POST',
-      headers: this.header,
-      body: this.post
-    }
-    if (debug == 1)
-      esp.log(this.url + this.uri, options)
-    LibWorker.curl(this.url + this.uri, options, async (resText) => {
-      var resJson = (resText.startsWith('{') || resText.startsWith('[')) ? JSON.parse(resText) : null
-      if (resJson) {
-        if (onDone) onDone(resJson)
-        this.onDone(resJson)
-      } else {
-        if (debug == 1) this.onError(resText)
-      }
-    })
   }
 
   async init(uri: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number, upload?: boolean): Promise<void> {

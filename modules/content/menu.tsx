@@ -52,7 +52,7 @@ export default class emenu extends LibComponent<ContentMenuProps, ContentMenuSta
   loadData(): void {
     this.loadMenu((res) => {
       if (res) {
-        this.setState({ menu: res })
+        this.setState({ menu: res, selectedId: res[0].id })
       }
       this.newData()
     })
@@ -75,7 +75,7 @@ export default class emenu extends LibComponent<ContentMenuProps, ContentMenuSta
         }
         if (res.list && res && res.list && res.list[0]) {
           trimMenu.push(...res.list[0])
-          this.setState({ menu: trimMenu })
+          this.setState({ menu: trimMenu, selectedId: trimMenu[0].id })
           this.saveMenu(trimMenu)
         }
       },
