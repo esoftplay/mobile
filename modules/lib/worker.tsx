@@ -91,15 +91,15 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
       sObj += '{'
       objKeys.forEach((key: any, index: number) => {
         let value = obj[key]
-          if (!value) {
-            sObj += '\"' + key + '\":' + value + ','
-          } else if (typeof value != 'string') {
-            sObj += '\"' + key + '\":' + parseObject(value) + ','
-          } else {
-            sObj += '\"' + key + '\":\"' + value + '\",'
-          }
+        if (!value) {
+          sObj += '\"' + key + '\":' + value + ','
+        } else if (typeof value != 'string') {
+          sObj += '\"' + key + '\":' + parseObject(value) + ','
+        } else {
+          sObj += '\"' + key + '\":\"' + value + '\",'
+        }
       })
-      return sObj.substring(0, sObj.length - 1) + '}'
+      return sObj.length > 1 ? sObj.substring(0, sObj.length - 1) + '}' : sObj + '}'
     }
     var _task = 'fetch(\"' + url + '\"' + ',' + parseObject(options) + ').then( async (e) => { var r = await e.text(); window.postMessage(r)}).catch((e)=> window.postMessage(e))';
     store.dispatch({
@@ -140,3 +140,4 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
 }
 
 export default connect(Worker.mapStateToProps)(Worker)
+

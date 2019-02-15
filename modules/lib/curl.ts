@@ -86,15 +86,16 @@ export default class ecurl {
       }
       if (debug == 1)
         esp.log(this.url + this.uri, options)
-      LibWorker.curl(this.url + this.uri, options, async (resText) => {
-        var resJson = (resText.startsWith('{') || resText.startsWith('[')) ? JSON.parse(resText) : null
-        if (resJson) {
-          if (onDone) onDone(resJson)
-          this.onDone(resJson)
-        } else {
-          if (debug == 1) this.onError(resText)
-        }
-      })
+      var res
+      res = await fetch(this.url + this.uri, options)
+      var resText = await res.text()
+      var resJson = (resText.startsWith('{') || resText.startsWith('[')) ? JSON.parse(resText) : null
+      if (resJson) {
+        if (onDone) onDone(resJson)
+        this.onDone(resJson)
+      } else {
+        if (debug == 1) this.onError(resText)
+      }
     }
   }
 
@@ -133,15 +134,15 @@ export default class ecurl {
       body: this.post
     }
     if (debug == 1) esp.log(this.url + this.uri, options)
-    if (!upload) {
-      LibWorker.curl(this.url + this.uri, options, async (resText) => {
-        this.onFetched(resText, onDone, onFailed, debug)
-      })
-    } else {
-      var res = await fetch(this.url + this.uri, options);
-      let resText = await res.text()
-      this.onFetched(resText, onDone, onFailed, debug)
-    }
+    // if (!upload) {
+    //   LibWorker.curl(this.url + this.uri, options, async (resText) => {
+    //     this.onFetched(resText, onDone, onFailed, debug)
+    //   })
+    // } else {
+    var res = await fetch(this.url + this.uri, options);
+    let resText = await res.text()
+    this.onFetched(resText, onDone, onFailed, debug)
+    // }
   }
 
   onFetched(resText: string, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number): void {
@@ -197,5 +198,6 @@ export default class ecurl {
     return day
   }
 }
+
 
 
