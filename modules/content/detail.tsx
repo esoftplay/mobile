@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Component } from 'react';
+import React from "react";
+import { Component } from "react";
 import {
   View,
   StyleSheet,
@@ -10,11 +10,10 @@ import {
   Image,
   TouchableWithoutFeedback,
   Linking,
-  ActivityIndicator,
-} from 'react-native';
-import { Left, Button, Icon, Text, ListItem } from 'native-base';
-import { LinearGradient } from 'expo';
-import moment from 'moment/min/moment-with-locales'
+} from "react-native";
+import { Left, Button, Icon, Text, ListItem } from "native-base";
+import { LinearGradient } from "expo";
+import moment from "moment/min/moment-with-locales"
 import {
   esp,
   ContentItem,
@@ -25,7 +24,7 @@ import {
   LibWebview,
   ContentVideo,
   LibComponent
-} from 'esoftplay';
+} from "esoftplay";
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = LibStyle;
 const config = esp.config();
 const { STATUSBAR_HEIGHT_MASTER } = LibStyle;
@@ -37,7 +36,11 @@ var HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 export interface ContentDetailProps {
   url?: string,
-  navigation: any
+  navigation: any,
+  id?: number,
+  title?: string,
+  image?: string,
+  created?: string
 }
 export interface ContentDetailState {
   scrollY: any,
@@ -61,7 +64,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
     this.state = {
       scrollY: new Animated.Value(0),
       toolbarHeight: HEADER_MIN_HEIGHT,
-      result: '',
+      result: "",
       images_page: 1,
       isPlayingAudio: false,
       showModal: false,
@@ -69,12 +72,12 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
       isPageReady: false
     };
     this.onScrollEnd = this.onScrollEnd.bind(this)
-    moment.locale('id')
+    moment.locale(esp.langId());
   }
 
   componentDidMount(): void {
     super.componentDidMount();
-    var url = this.props.url ? this.props.url : LibUtils.getArgs(this.props, 'url', config.content)
+    var url = this.props.url ? this.props.url : LibUtils.getArgs(this.props, "url", config.content)
     new LibCurl(url, null,
       (result: any, msg: string) => {
         setTimeout(() => {
@@ -93,47 +96,48 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
 
   render(): any {
     var result: any = {}
-    result.id = LibUtils.getArgs(this.props, 'id', 0)
-    result.url = LibUtils.getArgs(this.props, 'url', '')
-    result.title = LibUtils.getArgs(this.props, 'title', '')
-    result.image = LibUtils.getArgs(this.props, 'image', '')
-    result.created = LibUtils.getArgs(this.props, 'created', '')
+    result.id = LibUtils.getArgs(this.props, "id", this.props.id);
+    result.url = LibUtils.getArgs(this.props, "url", this.props.url);
+    result.title = LibUtils.getArgs(this.props, "title", this.props.title);
+    result.image = LibUtils.getArgs(this.props, "image", this.props.image);
+    result.created = LibUtils.getArgs(this.props, "created", this.props.created);
 
     if (!this.state.result.content) {
-      return <View style={{ flex: 1, backgroundColor: 'white' }} >
+      return <View style={{ flex: 1, backgroundColor: "white" }} >
         {
-          result.image != '' &&
+          result.image != "" &&
           <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT_MASTER }} >
             <Animated.Image
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 left: 0,
                 right: 0,
                 width: width,
                 height: (width * 4 / 5) + STATUSBAR_HEIGHT_MASTER
               }}
-              source={{ uri: LibUtils.getArgs(this.props, 'image', '') }}
+              source={{ uri: LibUtils.getArgs(this.props, "image", "") }}
             />
             <LinearGradient
-              style={{ height: width / 4, position: 'absolute', bottom: 0, left: 0, right: 0 }}
+              style={{ height: width / 4, position: "absolute", bottom: 0, left: 0, right: 0 }}
               locations={[0.01, 0.99]}
-              colors={['rgba(255,255,255,0.0)', 'rgba(255,255,255,1)']} />
+              colors={["rgba(255,255,255,0.0)", "rgba(255,255,255,1)"]} />
           </View>
         }
-        {/* <View style={{ marginTop: 30 }} /> */}
         <Text style={[styles.title]} >{result.title}</Text>
-        {result.created != '' && <Text note style={styles.created}>{moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}</Text>}
+        {result.created != "" && <Text note style={styles.created}>{moment(result.created).format("dddd, DD MMMM YYYY kk:mm")}</Text>}
       </View>
     }
 
     result = this.state.result
-    // if (result.image == '') {
-    //   HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
-    // }
-    var isDownload = result.link != '' && result.type === 'download'
-    var isAudio = result.code != '' && result.type === 'audio'
-    var isVideo = result.code != '' && result.type === 'video'
+    if (result.image == "") {
+      HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
+    } else {
+      HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT_MASTER;
+    }
+    var isDownload = result.link != "" && result.type === "download"
+    var isAudio = result.code != "" && result.type === "audio"
+    var isVideo = result.code != "" && result.type === "video"
 
     HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - this.state.toolbarHeight;
 
@@ -143,37 +147,37 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
     const headerTranslate = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_SCROLL_DISTANCE],
       outputRange: [0, -HEADER_SCROLL_DISTANCE],
-      extrapolate: 'clamp',
+      extrapolate: "clamp",
     });
 
     const imageOpacity = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
       outputRange: [1, 1, 0],
-      extrapolate: 'clamp',
+      extrapolate: "clamp",
     });
 
     const imageTranslate = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_SCROLL_DISTANCE],
       outputRange: [0, 100],
-      extrapolate: 'clamp',
+      extrapolate: "clamp",
     });
 
     const titleOpacity = this.state.scrollY.interpolate({
       inputRange: [HEADER_SCROLL_DISTANCE - 1, HEADER_SCROLL_DISTANCE],
       outputRange: [0, 1],
-      extrapolate: 'clamp',
+      extrapolate: "clamp",
     });
 
     const titleScale = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
       outputRange: [1, 1, 1],
-      extrapolate: 'clamp',
+      extrapolate: "clamp",
     });
 
     return (
       <View
         style={styles.fill}>
-        <StatusBar barStyle={'light-content'} />
+        <StatusBar barStyle={"light-content"} />
         {
           isAudio ?
             <ContentAudio
@@ -200,7 +204,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
               <Text
                 note
                 style={styles.created}>
-                {moment(result.created).format('dddd, DD MMMM YYYY kk:mm')}
+                {moment(result.created).format("dddd, DD MMMM YYYY kk:mm")}
               </Text>
               <LibWebview
                 source={{ html: result.content }}
@@ -214,9 +218,9 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                       result.comment == 1 ?
                         <Button
                           small
-                          style={{ alignSelf: 'center', backgroundColor: colorPrimary }}
-                          onPress={() => this.props.navigation.navigate('content/comment', { id: result.id })} >
-                          <Text>Komentar</Text>
+                          style={{ alignSelf: "center", backgroundColor: colorPrimary }}
+                          onPress={() => this.props.navigation.navigate("content/comment", { id: result.id })} >
+                          <Text>{esp.lang("Komentar", "Comment")}</Text>
                         </Button>
                         : null
                     }
@@ -230,7 +234,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                             <Button
                               key={cat + i}
                               style={{ margin: 5, borderColor: colorPrimary }} success small bordered
-                              onPress={() => this.props.navigation.push('content/list', { url: cat.url, title: cat.title })} >
+                              onPress={() => this.props.navigation.push("content/list", { url: cat.url, title: cat.title })} >
                               <Text style={{ color: colorPrimary }} >{cat.title}</Text>
                             </Button>
                           )
@@ -241,7 +245,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                       {
                         (result.related.length > 0) ?
                           <ListItem itemDivider first>
-                            <Text>Related Content</Text>
+                            <Text>{esp.lang("Artikel Terkait", "Related Content")}</Text>
                           </ListItem>
                           : null
                       }
@@ -284,16 +288,16 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                     return <TouchableWithoutFeedback
                       key={image + i}
                       style={{ flex: 1, width: width, height: HEADER_MAX_HEIGHT }}
-                      onPress={() => this.props.navigation.navigate('content/zoom', { images: images, position: this.state.images_page - 1 })} >
+                      onPress={() => this.props.navigation.navigate("content/zoom", { images: images, position: this.state.images_page - 1 })} >
                       <View>
                         <Image
                           style={styles.backgroundImage}
                           source={{ uri: image.image }}
                         />
                         <LinearGradient
-                          style={{ height: width / 4, position: 'absolute', bottom: 0, left: 0, right: 0 }}
+                          style={{ height: width / 4, position: "absolute", bottom: 0, left: 0, right: 0 }}
                           locations={[0.01, 0.99]}
-                          colors={['rgba(255,255,255,0.0)', 'rgba(255,255,255,1)']} />
+                          colors={["rgba(255,255,255,0.0)", "rgba(255,255,255,1)"]} />
                       </View>
                     </TouchableWithoutFeedback>
                   })
@@ -314,7 +318,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
           <Left>
             <Text
               numberOfLines={1}
-              ellipsizeMode={'tail'}
+              ellipsizeMode={"tail"}
               onLayout={(event: any) => {
                 var { x, y, width, height } = event.nativeEvent.layout;
                 this.setState({ toolbarHeight: HEADER_MIN_HEIGHT > height ? HEADER_MIN_HEIGHT : /*height*/ HEADER_MIN_HEIGHT })
@@ -325,8 +329,8 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
           style={styles.backButton}
           onPress={() => this.props.navigation.goBack()}>
           <Icon
-            style={{ color: 'white' }}
-            name='md-arrow-back' />
+            style={{ color: "white" }}
+            name="md-arrow-back" />
         </Button>
         {
           isAudio || isDownload ?
@@ -336,7 +340,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                 style={styles.fab}
                 onPress={isAudio ? () => this.audioPlayer._onPlayPausePressed() : (result: any) => { Linking.openURL(result.link) }}>
                 <Icon
-                  name={isAudio ? (this.state.isPlayingAudio ? 'md-pause' : 'md-play') : 'md-download'}
+                  name={isAudio ? (this.state.isPlayingAudio ? "md-pause" : "md-play") : "md-download"}
                   style={{ color: colorAccent, fontSize: 25 }} />
               </TouchableWithoutFeedback>
             </Animated.View>
@@ -353,45 +357,45 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
 const styles = StyleSheet.create({
   fill: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: "white"
   },
   imageSquare: {
     margin: 3,
     borderRadius: 5,
     width: (width / 3) - 2,
     height: (width / 3) - 2,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   content: {
     flex: 1,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     top: STATUSBAR_HEIGHT_MASTER,
     left: 0,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
     height: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT_MASTER
   },
   header: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     backgroundColor: colorPrimaryDark,
 
     // opacity: 0.5,
-    overflow: 'hidden',
+    overflow: "hidden",
     height: HEADER_MAX_HEIGHT,
 
   },
   toolbarTitle: {
-    color: 'white',
-    fontSize: 17.5,
-    fontWeight: 'bold'
+    color: "white",
+    fontSize: 18,
+    // fontWeight: "bold"
   },
   foregroundHeader: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -400,20 +404,20 @@ const styles = StyleSheet.create({
   },
   isPageReady: {
     padding: 10,
-    alignItems: 'center'
+    alignItems: "center"
   },
   backgroundImage: {
     width: width,
     flex: 1,
     height: HEADER_MAX_HEIGHT,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   bar: {
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    flexDirection: 'row',
+    backgroundColor: "transparent",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    flexDirection: "row",
     top: STATUSBAR_HEIGHT_MASTER,
     padding: 10,
     paddingRight: HEADER_MIN_HEIGHT - STATUSBAR_HEIGHT_MASTER + 10,
@@ -427,31 +431,31 @@ const styles = StyleSheet.create({
     marginLeft: 17,
     marginRight: 17,
     marginBottom: 5,
-    fontWeight: 'bold',
-    color: '#353535'
+    fontWeight: "bold",
+    color: "#353535"
   },
   created: {
     marginHorizontal: 17,
     marginBottom: 10
   },
   subtitle: {
-    color: 'white',
+    color: "white",
     fontSize: 14,
   },
   scrollViewContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginTop: 30,
   },
   row: {
     height: 40,
     margin: 16,
-    backgroundColor: '#D3D3D3',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#D3D3D3",
+    alignItems: "center",
+    justifyContent: "center",
   },
   fab: {
-    elevation: 3, shadowColor: 'black', shadowOffset: { width: 0, height: 3 / 2 }, shadowRadius: 3, shadowOpacity: 0.24,
-    position: 'absolute',
+    elevation: 3, shadowColor: "black", shadowOffset: { width: 0, height: 3 / 2 }, shadowRadius: 3, shadowOpacity: 0.24,
+    position: "absolute",
     marginVertical: 3,
     marginHorizontal: 3,
     height: 50,
@@ -460,11 +464,11 @@ const styles = StyleSheet.create({
     right: 12,
     backgroundColor: colorPrimary,
     borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center"
   },
   video: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -473,12 +477,12 @@ const styles = StyleSheet.create({
     height: HEADER_MAX_HEIGHT,
   },
   absIndicator: {
-    position: 'absolute',
+    position: "absolute",
     top: 12 + STATUSBAR_HEIGHT_MASTER,
     right: 10,
-    color: 'white',
-    backgroundColor: 'transparent',
-    borderRadius: 15,    
+    color: "white",
+    backgroundColor: "transparent",
+    borderRadius: 15,
     paddingHorizontal: 10,
     paddingVertical: 3,
   }

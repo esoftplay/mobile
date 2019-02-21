@@ -1,12 +1,12 @@
 // 
 
-import React from 'react';
-import { Component } from 'react'
-import { View } from 'react-native';
-import { Badge, Text } from 'native-base'
-import { esp, UserNotification, LibComponent } from 'esoftplay';
-import { TouchableOpacity } from 'react-native';
-import { connect } from 'react-redux';
+import React from "react";
+import { Component } from "react"
+import { View } from "react-native";
+import { Badge, Text } from "native-base"
+import { esp, UserNotification, LibComponent } from "esoftplay";
+import { TouchableOpacity } from "react-native";
+import { connect } from "react-redux";
 
 export interface UserNotifbadgeProps {
   data: any[],
@@ -42,7 +42,7 @@ class Enotifbadge extends LibComponent<UserNotifbadgeProps, UserNotifbadgeState>
     const counter = data.filter((item: any) => item.status != 2).length
     if (counter == 0) { return null }
     return (
-      <View style={{ position: 'absolute', top: 5, right: 5 }} >
+      <View style={{ position: "absolute", top: 5, right: 5 }} >
         <TouchableOpacity onPress={() => this.props.onPress()} >
           <Badge style={{ transform: [{ scale: 0.7 }] }} >
             <Text>{counter}</Text>

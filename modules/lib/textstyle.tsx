@@ -1,14 +1,14 @@
 // 
-import React from 'react';
-import { Component } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import { LibComponent } from 'esoftplay';
+import React from "react";
+import { Component } from "react";
+import { Text, StyleSheet } from "react-native";
+import { LibComponent } from "esoftplay";
 
 export interface LibTextstyleProps {
-  textStyle: 'largeTitle' | 'title1' | 'title2' | 'title3' | 'headline' | 'body' | 'callout' | 'subhead' | 'footnote' | 'caption1' | 'caption2',
+  textStyle: "largeTitle" | "title1" | "title2" | "title3" | "headline" | "body" | "callout" | "subhead" | "footnote" | "caption1" | "caption2",
   style?: any,
-  children?: string | '',
-  text: string | ''
+  children?: string | "",
+  text: string | ""
 }
 
 export interface LibTextstyleState {

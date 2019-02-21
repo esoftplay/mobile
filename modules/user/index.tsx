@@ -1,12 +1,12 @@
 // 
 
-import React from 'react';
-import navs from '../../cache/navigations';
-import { AsyncStorage, View } from 'react-native';
-import { createStackNavigator, createAppContainer, StackNavigatorConfig } from 'react-navigation';
-import { store } from '../../../../App';
-import { Font } from 'expo';
-import { esp, LibNotification, UserClass, LibComponent, LibWorker, LibNet_status } from 'esoftplay';
+import React from "react";
+import navs from "../../cache/navigations";
+import { AsyncStorage, View } from "react-native";
+import { createStackNavigator, createAppContainer, StackNavigatorConfig } from "react-navigation";
+import { store } from "../../../../App";
+import { Font } from "expo";
+import { esp, LibNotification, UserClass, LibComponent, LibWorker, LibNet_status } from "esoftplay";
 
 export interface UserIndexProps {
 
@@ -24,7 +24,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
   static reducer(state: any, action: any): any {
     if (!state) state = euser.initState
     switch (action.type) {
-      case 'user_nav_change':
+      case "user_nav_change":
         return action.payload;
       default:
         return state
@@ -33,7 +33,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
 
   static user_nav_change(state: any): void {
     store.dispatch({
-      type: 'user_nav_change',
+      type: "user_nav_change",
       payload: state
     })
   }
@@ -59,7 +59,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     if (esp.config().notification == 1) {
       LibNotification.listen((notifObj: any) => { })
     }
-    var push_id = await AsyncStorage.getItem('push_id');
+    var push_id = await AsyncStorage.getItem("push_id");
     if (!push_id) {
       UserClass.pushToken();
     }
@@ -73,7 +73,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     }
     UserClass.isLogin(async (isLogin) => {
       var config: StackNavigatorConfig = {
-        headerMode: 'none',
+        headerMode: "none",
         initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public")
       }
       Router = await createAppContainer(createStackNavigator(navigations, config))
@@ -84,11 +84,11 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
 
 
   isClassComponent(component: any): boolean {
-    return (typeof component === 'function' && !!component.prototype.isReactComponent) ? true : false
+    return (typeof component === "function" && !!component.prototype.isReactComponent) ? true : false
   }
 
   isFunctionComponent(component: any): boolean {
-    return (typeof component === 'function' && String(component).includes('return React.createElement')) ? true : false;
+    return (typeof component === "function" && String(component).includes("return React.createElement")) ? true : false;
   }
 
   isReactComponent(component: any): boolean {
@@ -99,8 +99,8 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
   setFonts(): Promise<void> {
     return new Promise((r, j) => {
       Font.loadAsync({
-        'Roboto': require('native-base/Fonts/Roboto.ttf'),
-        'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf')
+        "Roboto": require("native-base/Fonts/Roboto.ttf"),
+        "Roboto_medium": require("native-base/Fonts/Roboto_medium.ttf")
       }).then(() => r())
     })
   }

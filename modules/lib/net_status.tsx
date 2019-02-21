@@ -1,8 +1,8 @@
-import React from 'react';
-import { LibComponent } from 'esoftplay';
-import { Animated, View, Text, NetInfo } from 'react-native';
-import { store } from '../../../../App';
-import { connect } from 'react-redux';
+import React from "react";
+import { LibComponent } from "esoftplay";
+import { Animated, View, Text, NetInfo } from "react-native";
+import { store } from "../../../../App";
+import { connect } from "react-redux";
 
 export interface LibNet_statusProps {
   isOnline?: boolean
@@ -21,12 +21,12 @@ class net_status extends LibComponent<LibNet_statusProps, LibNet_statusState> {
     }
 
     switch (action.type) {
-      case 'lib_net_status_online':
+      case "lib_net_status_online":
         return {
           isOnline: true
         }
         break;
-      case 'lib_net_status_offline':
+      case "lib_net_status_offline":
         return {
           isOnline: false
         }
@@ -37,7 +37,7 @@ class net_status extends LibComponent<LibNet_statusProps, LibNet_statusState> {
   }
 
   static setOnline(isOnline: boolean): void {
-    store.dispatch({ type: isOnline ? 'lib_net_status_online' : 'lib_net_status_offline' })
+    store.dispatch({ type: isOnline ? "lib_net_status_online" : "lib_net_status_offline" })
   }
 
   static mapStateToProps(state: any): any {
@@ -83,8 +83,8 @@ class net_status extends LibComponent<LibNet_statusProps, LibNet_statusState> {
     const text = isOnline ? "Device is Online" : "Device is Offline"
     const color = isOnline ? "green" : "red"
     return (
-      <Animated.View style={{ height: animHeight == 1 ? 0 : undefined, backgroundColor: color, width: '100%' }} >
-        <Text style={{ margin: 3, color: 'white', textAlign: 'center' }} >{text}</Text>
+      <Animated.View style={{ height: animHeight == 1 ? 0 : undefined, backgroundColor: color, width: "100%" }} >
+        <Text style={{ margin: 3, color: "white", textAlign: "center" }} >{text}</Text>
       </Animated.View>
     )
   }

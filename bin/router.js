@@ -44,7 +44,7 @@ checks.forEach(modules => {
                 "type": [],
                 "var": {},
                 "class": "",
-                "function": {}
+                "function": {},
               };
             }
             countLoop++;
@@ -226,6 +226,8 @@ function createIndex() {
     "    static mod(path: string): any;\n" +
     "    static reducer(): any;\n" +
     "    static navigations(): any;\n" +
+    "    static lang(...string:string[]): string;\n" +
+    "    static langId(): string;\n" +
     "    static home(): any;\n" +
     "    static log(message?: any, ...optionalParams: any[]): void;\n" +
     "    static routes(): any;\n" +

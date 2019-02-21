@@ -1,15 +1,15 @@
 // 
 
-import React from 'react'
-import { Component } from 'react';
-import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
-import { Dimensions, View } from 'react-native';
-import { LibComponent, LibContext } from 'esoftplay';
+import React from "react"
+import { Component } from "react";
+import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from "recyclerlistview";
+import { Dimensions, View } from "react-native";
+import { LibComponent, LibContext } from "esoftplay";
 
 /*
 Using ScrollView
 
-import { ScrollView } from 'react-native'
+import { ScrollView } from "react-native"
 
 <ScrollView>
   //scrollable item
@@ -29,7 +29,7 @@ var Escroll = esp.mod("lib/scroll")
   //scrollable item
 </Escroll>
 */
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 
 export interface LibScrollProps {
@@ -85,7 +85,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
         dim.height = props.defaultHeight || 100;
       }
     )
-    this.contextProvider = new LibContext('parent')
+    this.contextProvider = new LibContext("parent")
     this.rowRenderer = this.rowRenderer.bind(this)
     this.dataProvider = new DataProvider((a: any, b: any) => a !== b)
     this.state = { data: this.dataProvider.cloneWithRows(props.children), width: width }

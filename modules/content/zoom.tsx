@@ -1,15 +1,15 @@
 // 
-import React from 'react';
-import { Component } from 'react';
+import React from "react";
+import { Component } from "react";
 import {
   View,
   StyleSheet,
   Image,
   FlatList
-} from 'react-native';
-import { Left, Button, Icon, Text, ListItem } from 'native-base';
+} from "react-native";
+import { Left, Button, Icon, Text, ListItem } from "native-base";
 const { width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
-import { esp, LibUtils, LibComponent, LibStyle } from 'esoftplay';
+import { esp, LibUtils, LibComponent, LibStyle } from "esoftplay";
 
 
 export interface ContentZoomProps {
@@ -38,8 +38,8 @@ export default class ezoom extends LibComponent<ContentZoomProps, ContentZoomSta
     if (images.length == 0) {
       images.push({
         image: image,
-        title: '',
-        description: ''
+        title: "",
+        description: ""
       })
     }
 
@@ -64,11 +64,11 @@ export default class ezoom extends LibComponent<ContentZoomProps, ContentZoomSta
           }}
           showsHorizontalScrollIndicator={false} />
         <Button transparent
-          style={{ position: 'absolute', top: STATUSBAR_HEIGHT_MASTER, left: 0, alignSelf: 'center', justifyContent: 'center', height: 50 }}
+          style={{ position: "absolute", top: STATUSBAR_HEIGHT_MASTER, left: 0, alignSelf: "center", justifyContent: "center", height: 50 }}
           onPress={() => this.props.navigation.goBack(null)}>
           <Icon
-            style={{ color: 'white' }}
-            name='md-close' />
+            style={{ color: "white" }}
+            name="md-close" />
         </Button>
       </View>
     );
@@ -77,7 +77,7 @@ export default class ezoom extends LibComponent<ContentZoomProps, ContentZoomSta
 
 // define your styles
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black' },
-  footerOverlay: { position: 'absolute', padding: 16, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(255, 255, 255, .6)' },
-  image: { flex: 1, width: width, resizeMode: 'contain' }
+  container: { flex: 1, backgroundColor: "black" },
+  footerOverlay: { position: "absolute", padding: 16, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(255, 255, 255, .6)" },
+  image: { flex: 1, width: width, resizeMode: "contain" }
 });

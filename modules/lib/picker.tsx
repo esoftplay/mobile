@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from 'react-native';
-import { Permissions } from 'expo';
-import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
-import update from 'immutability-helper';
-import { Ionicons } from '@expo/vector-icons';
-const { width } = Dimensions.get('window')
-import { esp, LibComponent } from 'esoftplay';
+import React from "react";
+import { StyleSheet, Text, View, CameraRoll, Dimensions, TouchableHighlight, Image, Modal, ActivityIndicator } from "react-native";
+import { Permissions } from "expo";
+import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
+import update from "immutability-helper";
+import { Ionicons } from "@expo/vector-icons";
+const { width } = Dimensions.get("window")
+import { esp, LibComponent } from "esoftplay";
 
 
 export interface LibPickerProps {
@@ -48,19 +48,19 @@ export default class libPicker extends LibComponent<LibPickerProps, LibPickerSta
 
   async componentDidMount(): Promise<void> {
     super.componentDidMount()
-    const { existingStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
+    const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    let finalStatus = status;
+    if (status !== "granted") {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       finalStatus = status;
     }
-    if (finalStatus !== 'granted') return
+    if (finalStatus !== "granted") return
     this.getPhotos()
   }
 
 
   getPhotos(): void {
-    let params: any = { first: 50, mimeTypes: ['image/jpeg'] };
+    let params: any = { first: 50, mimeTypes: ["image/jpeg"] };
     if (this.state.after) params.after = this.state.after
     if (!this.state.has_next_page) return
     CameraRoll.getPhotos(params).then(this.processPhotos)
@@ -102,27 +102,27 @@ export default class libPicker extends LibComponent<LibPickerProps, LibPickerSta
     header: {
       height: 50,
       width: width,
-      justifyContent: 'space-between',
-      flexDirection: 'row',
-      alignItems: 'center',
+      justifyContent: "space-between",
+      flexDirection: "row",
+      alignItems: "center",
       padding: 10,
     },
   })
 
   ImageTile(props: any): any {
     let { item, index, selectImage } = props;
-    var color = this.props.color || 'blue'
+    var color = this.props.color || "blue"
     if (!item) return null;
     return (
       <TouchableHighlight
-        underlayColor='transparent'
+        underlayColor="transparent"
         onPress={() => selectImage(index)}>
         <View style={{ width: width / 3, height: width / 3 }} >
           <Image
             style={{ width: width / 3, height: width / 3 }}
             source={{ uri: item.image }}
           />
-          <Ionicons name={item.selected ? 'ios-checkmark-circle' : 'ios-radio-button-off-outline'} style={{ color: color, position: 'absolute', bottom: 5, right: 5, fontSize: 34, fontWeight: 'bold' }} />
+          <Ionicons name={item.selected ? "ios-checkmark-circle" : "ios-radio-button-off-outline"} style={{ color: color, position: "absolute", bottom: 5, right: 5, fontSize: 34, fontWeight: "bold" }} />
         </View>
       </TouchableHighlight>
     )
@@ -141,14 +141,14 @@ export default class libPicker extends LibComponent<LibPickerProps, LibPickerSta
   render(): any {
     var { max, show, dismiss, color, images } = this.props
     var { has_next_page, photos } = this.state
-    color = color ? color : 'blue'
+    color = color ? color : "blue"
     var selectedPhotos = this.state.photos.filter((item) => item.selected === true).map((item) => item.image)
     var selectedCount = selectedPhotos.length
-    let headerText = selectedCount + ' dipilih';
-    if (max && selectedCount === max) headerText = headerText + ' (max)';
+    let headerText = selectedCount + " dipilih";
+    if (max && selectedCount === max) headerText = headerText + " (max)";
     return (
       <Modal
-        animationType={'fade'}
+        animationType={"fade"}
         transparent={false}
         onRequestClose={() => dismiss()}
         visible={show}>
@@ -166,8 +166,8 @@ export default class libPicker extends LibComponent<LibPickerProps, LibPickerSta
             </TouchableHighlight>
           </View>
           {
-            has_next_page && photos.length == 0 ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={color} size="large" /></View>
-              : !has_next_page && photos.length == 0 ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><Text>Gambar Tidak ditemukan</Text></View>
+            has_next_page && photos.length == 0 ? <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }} ><ActivityIndicator color={color} size="large" /></View>
+              : !has_next_page && photos.length == 0 ? <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }} ><Text>Gambar Tidak ditemukan</Text></View>
                 :
                 <RecyclerListView
                   layoutProvider={this.layoutProvider}

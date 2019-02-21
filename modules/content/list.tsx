@@ -1,6 +1,6 @@
 // 
-import React from 'react';
-import { Component } from 'react';
+import React from "react";
+import { Component } from "react";
 import {
   View,
   StyleSheet,
@@ -8,10 +8,10 @@ import {
   BackHandler,
   Platform,
   RefreshControl
-} from 'react-native';
-import { Container, Button, Text, Icon } from 'native-base';
-import Drawer from 'react-native-drawer';
-import moment from 'moment/min/moment-with-locales'
+} from "react-native";
+import { Container, Button, Text, Icon } from "native-base";
+import Drawer from "react-native-drawer";
+import moment from "moment/min/moment-with-locales"
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 import {
   esp,
@@ -22,9 +22,10 @@ import {
   ContentItem,
   LibComponent,
   LibStyle
-} from 'esoftplay';
-import { StatusBar, Animated } from 'react-native';
-import { connect } from 'react-redux';
+} from "esoftplay";
+import { StatusBar, Animated } from "react-native";
+import { connect } from "react-redux";
+import { store } from "../../../../App";
 const { defaultStyle, colorPrimaryDark, colorAccent, width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 const config = esp.config();
 
@@ -60,7 +61,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
   dataProvider: any;
   _layoutProvider: any;
   drawer: any;
-  searchQuery: string = '';
+  searchQuery: string = "";
   ContentMenu: any;
   state: any;
   props: any;
@@ -73,7 +74,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
 
   constructor(props: ContentListProps) {
     super(props);
-    moment.locale('id')
+    moment.locale(esp.langId());
     this.dataProvider = new DataProvider((r1: any, r2: any) => { return r1 !== r2; });
     this._layoutProvider = new LayoutProvider(
       (index: number) => {
@@ -102,10 +103,10 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
     this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
       animSearch: new Animated.Value(0),
-      url: props.url ? props.url : LibUtils.getArgs(props, 'url', config.content),
-      urlori: props.url ? props.url : LibUtils.getArgs(props, 'url', config.content),
-      title: props.title ? props.title : LibUtils.getArgs(props, 'title', 'Home'),
-      titleori: props.title ? props.title : LibUtils.getArgs(props, 'title', 'Home'),
+      url: props.url ? props.url : LibUtils.getArgs(props, "url", config.content),
+      urlori: props.url ? props.url : LibUtils.getArgs(props, "url", config.content),
+      title: props.title ? props.title : LibUtils.getArgs(props, "title", "Home"),
+      titleori: props.title ? props.title : LibUtils.getArgs(props, "title", "Home"),
       data: [],
       page: 0,
       searchView: false,
@@ -131,7 +132,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
   doFetch(page?: number, isRefreshing?: boolean): void {
     if (!page) page = 0;
     if (isRefreshing) this.setState({ data: [], isStop: false })
-    new LibCurl(this.state.url + '?page=' + page, null,
+    new LibCurl(this.state.url + "?page=" + page, null,
       (result: any, msg: string) => {
         this.setState((state, props) => {
           return {
@@ -143,7 +144,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
         })
       },
       (msg: string) => {
-        // console.log('sampe sini', msg)
+        // console.log("sampe sini", msg)
       }, 1
     )
 
@@ -170,7 +171,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
     super.componentDidMount();
     this.loadData();
     setTimeout(() => {
-      BackHandler.addEventListener('hardwareBackPress', this.onBackPress)
+      BackHandler.addEventListener("hardwareBackPress", this.onBackPress)
       this.ContentMenu.loadMenu((m: any) => {
         menu = m
       })
@@ -187,10 +188,10 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
   onBackPress(): boolean {
     var routers = this.props.routes
     if (!this.state.isDrawerOpen) {
-      if (Platform.OS == 'ios') {
+      if (Platform.OS == "ios") {
         return false;
       } else if (!this.state.searchView && (!routers.index || routers.index == 0)) {
-        esp.log('url', this.state.url, this.state.urlori);
+        esp.log("url", this.state.url, this.state.urlori);
         try {
           if (this.state.url != this.state.urlori) {
             this.setState({ url: this.state.urlori, title: menu[0].title })
@@ -246,7 +247,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
     var searchOpacity = this.state.animSearch.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 1],
-      extrapolate: 'clamp'
+      extrapolate: "clamp"
     })
     return (
       <Drawer
@@ -256,20 +257,20 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
         onClose={() => this.setState({ isDrawerOpen: false })}
         tapToClose={true}
         disabled={!isRoot}
-        type={'overlay'}
+        type={"overlay"}
         tweenHandler={(ratio: number) => ({
           main: {
             opacity: 1,
           },
           mainOverlay: {
             opacity: ratio / 2,
-            backgroundColor: 'black',
+            backgroundColor: "black",
           },
         })}
         content={
           <ContentMenu
             ref={(e: any) => this.ContentMenu = e}
-            url={this.state.url + 'menu'}
+            url={this.state.url + "menu"}
             style={{ opacity: isRoot ? 1 : 0 }}
             closeDrawer={() => this.closeDrawer()}
             onItemSelected={(e: any) => { this.setState({ url: e.url, title: e.title }) }}
@@ -281,13 +282,13 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
           <View
             style={styles.statusBar}>
             <StatusBar translucent
-              barStyle='light-content' />
+              barStyle="light-content" />
           </View>
           <View style={{
             backgroundColor: colorPrimaryDark,
             height: 50,
-            alignItems: 'center',
-            flexDirection: 'row'
+            alignItems: "center",
+            flexDirection: "row"
           }} >
             <Button
               transparent={true}
@@ -297,7 +298,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
               }}
               onPress={() => isRoot ? this.openDrawer() : goBack()}>
               <Icon
-                name={isRoot ? 'md-menu' : 'md-arrow-back'}
+                name={isRoot ? "md-menu" : "md-arrow-back"}
                 style={{
                   fontSize: 24,
                   color: colorAccent
@@ -320,7 +321,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
               }}
               onPress={() => { this.openSearch() }}>
               <Icon
-                name='ios-search'
+                name="ios-search"
                 style={{
                   fontSize: 24,
                   color: colorAccent
@@ -339,25 +340,25 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
                   return this.state.isStop ? null :
                     <ActivityIndicator
                       color={colorPrimaryDark}
-                      style={{ padding: 20, alignSelf: 'center' }} />
+                      style={{ padding: 20, alignSelf: "center" }} />
                 }}
                 dataProvider={this.dataProvider.cloneWithRows(this.state.data)}
                 rowRenderer={this._rowRenderer} />
               : this.state.data.length == 0 && this.state.isStop ?
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} ><Text note >Berita masih kosong</Text></View>
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} ><Text note >{esp.lang("Berita masih kosong", "Article not found")}</Text></View>
                 :
                 <ActivityIndicator
                   color={colorPrimaryDark}
-                  style={{ padding: 20, alignSelf: 'center' }} />
+                  style={{ padding: 20, alignSelf: "center" }} />
           }
           {
             this.state.searchView ?
-              <Animated.View style={{ position: 'absolute', top: STATUSBAR_HEIGHT_MASTER, left: 0, right: 0, opacity: searchOpacity }} >
+              <Animated.View style={{ position: "absolute", top: STATUSBAR_HEIGHT_MASTER, left: 0, right: 0, opacity: searchOpacity }} >
                 <ContentSearch
                   close={() => this.closeSearch()}
                   defaultValue={this.searchQuery}
                   onSubmit={(e: any) => {
-                    this.props.navigation.push('content/list', { url: String(this.state.urlori).substr(0, String(this.state.urlori).lastIndexOf('/') + 1) + 'search.htm?id=' + e, title: decodeURI(e) })
+                    this.props.navigation.push("content/list", { url: String(this.state.urlori).substr(0, String(this.state.urlori).lastIndexOf("/") + 1) + "search.htm?id=" + e, title: decodeURI(e) })
                     this.searchQuery = decodeURI(e)
                   }}
                 />
@@ -373,17 +374,11 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
     switch (type) {
       case ViewTypes.HEADER:
         return (
-          <ContentItem
-            {...item}
-            index={0}
-            navigation={this.props.navigation} />
+          <ContentItem data={this.state.data} {...item} index={0} navigation={this.props.navigation} />
         );
       case ViewTypes.ITEM:
         return (
-          <ContentItem
-            {...item}
-            index={1}
-            navigation={this.props.navigation} />
+          <ContentItem data={this.state.data} {...item} index={1} navigation={this.props.navigation} />
         );
       default:
         return null;
@@ -396,13 +391,13 @@ const styles = StyleSheet.create({
   ...defaultStyle,
   overflow: {
     margin: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   containerRow: {
     marginBottom: 0.5,
     flex: 1,
-    backgroundColor: 'white',
-    flexDirection: 'row'
+    backgroundColor: "white",
+    flexDirection: "row"
   },
   text11: {
     fontSize: 11
@@ -410,7 +405,7 @@ const styles = StyleSheet.create({
   image: {
     width: 110,
     height: 110,
-    resizeMode: 'cover'
+    resizeMode: "cover"
   },
   wrapper: {
     flex: 1,

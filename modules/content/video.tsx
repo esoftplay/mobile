@@ -1,9 +1,9 @@
 // 
 
-import React from 'react'
-import { Component } from 'react';
-import { WebView, StyleSheet, View, ActivityIndicator } from 'react-native';
-import { esp, LibComponent, LibStyle } from 'esoftplay';
+import React from "react"
+import { Component } from "react";
+import { WebView, StyleSheet, View, ActivityIndicator } from "react-native";
+import { esp, LibComponent, LibStyle } from "esoftplay";
 const { colorPrimary } = LibStyle;
 
 export interface ContentVideoProps {
@@ -27,15 +27,15 @@ export default class evideo extends LibComponent<ContentVideoProps, ContentVideo
   render() : any {
     const code = this.props.code
     if (!code) {
-      return new Error('Missing Youtube Code in Props');
+      return new Error("Missing Youtube Code in Props");
     }
     return (
       <WebView
-        style={[{ position: 'absolute', top: 0, left: 0, right: 0, flex: 1 }, StyleSheet.flatten(this.props.style || {})]}
+        style={[{ position: "absolute", top: 0, left: 0, right: 0, flex: 1 }, StyleSheet.flatten(this.props.style || {})]}
         startInLoadingState
-        renderLoading={() => <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ><ActivityIndicator color={colorPrimary} /></View>}
+        renderLoading={() => <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }} ><ActivityIndicator color={colorPrimary} /></View>}
         javaScriptEnabled={true}
-        source={{ uri: 'https://www.youtube.com/embed/' + this.props.code + '?rel=0&autoplay=0&showinfo=0&controls=1&modestbranding=1' }}
+        source={{ uri: "https://www.youtube.com/embed/" + this.props.code + "?rel=0&autoplay=0&showinfo=0&controls=1&modestbranding=1" }}
       />
     )
   }

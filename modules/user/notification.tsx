@@ -1,8 +1,8 @@
 // 
 
-import React from 'react';
-import { Component } from 'react'
-import { TouchableOpacity, View, Alert, Linking, StatusBar } from 'react-native';
+import React from "react";
+import { Component } from "react"
+import { TouchableOpacity, View, Alert, Linking, StatusBar } from "react-native";
 import {
   esp,
   DbNotification,
@@ -12,12 +12,12 @@ import {
   LibList,
   LibComponent,
   LibStyle
-} from 'esoftplay';
-import { store } from '../../../../App';
-import { connect } from 'react-redux'
-import moment from 'moment/min/moment-with-locales'
-import update from 'immutability-helper'
-import { Text, Button, Icon } from 'native-base';
+} from "esoftplay";
+import { store } from "../../../../App";
+import { connect } from "react-redux"
+import moment from "moment/min/moment-with-locales"
+import update from "immutability-helper"
+import { Text, Button, Icon } from "native-base";
 
 export interface UserNotificationProps {
   navigation: any,
@@ -36,11 +36,11 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   static reducer(state: any, action: any): any {
     if (!state) state = { data: [] };
     switch (action.type) {
-      case 'user_notification_parseData':
+      case "user_notification_parseData":
         return {
           data: action.payload
         }
-      case 'user_notification_setRead':
+      case "user_notification_setRead":
         var data = state.data
         var itemData = data.filter((item: any) => item.id == action.payload)[0]
         var query = {
@@ -58,23 +58,23 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
 
   static user_notification_loadData(): void {
-    var uri = 'user/push-notif'
+    var uri = "user/push-notif"
     try { Enotification.user_notification_parseData() } catch (error) { }
     const db = new DbNotification();
-    db.execute('SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1', (res: any) => {
+    db.execute("SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1", (res: any) => {
       if (res.rows.length > 0) {
-        uri += '?last_id=' + res.rows._array[0].notif_id
+        uri += "?last_id=" + res.rows._array[0].notif_id
       }
       // esp.log(res);
 
-      const salt = esp.config('salt');
+      const salt = esp.config("salt");
       var post = {
-        user_id: '',
-        secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
+        user_id: "",
+        secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
       }
 
       UserClass.load((user: any) => {
-        if (user) post['user_id'] = user.id
+        if (user) post["user_id"] = user.id
         Enotification.user_notification_fetchData(uri, post, db);
       })
     })
@@ -86,7 +86,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
         list.map((row: any) => {
           db.insertOrUpdate(row)
         })
-        if (res.next != '') {
+        if (res.next != "") {
           Enotification.user_notification_fetchData(res.next, post, db)
         }
         if (list.length > 0) {
@@ -102,14 +102,14 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     const db = new DbNotification();
     db.getAll_().then((res) => {
       store.dispatch({
-        type: 'user_notification_parseData',
+        type: "user_notification_parseData",
         payload: res
       })
     })
   }
   static user_notification_setRead(id: string | number): void {
     store.dispatch({
-      type: 'user_notification_setRead',
+      type: "user_notification_setRead",
       payload: id
     })
   }
@@ -129,15 +129,15 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
   componentDidMount(): void {
     super.componentDidMount()
-    moment.locale('id')
+    moment.locale(esp.langId());
     Enotification.user_notification_loadData()
   }
 
   openNotif(data: any): void {
-    const salt = esp.config('salt');
-    new LibCurl('user/push-read', {
+    const salt = esp.config("salt");
+    new LibCurl("user/push-read", {
       notif_id: data.notif_id,
-      secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
+      secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
     }, (res: any, msg: string) => {
       // esp.log(res)
       const db = new DbNotification();
@@ -148,13 +148,13 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     }, 1)
     var param = JSON.parse(data.params)
     switch (param.action) {
-      case 'alert':
-        var hasLink = param.arguments.hasOwnProperty('url') && param.arguments.url != ''
+      case "alert":
+        var hasLink = param.arguments.hasOwnProperty("url") && param.arguments.url != ""
         var btns = []
         if (hasLink) {
-          btns.push({ text: 'OK', onPress: () => Linking.openURL(param.arguments.url) })
+          btns.push({ text: "OK", onPress: () => Linking.openURL(param.arguments.url) })
         } else {
-          btns.push({ text: 'OK', onPress: () => { }, style: 'cancel' })
+          btns.push({ text: "OK", onPress: () => { }, style: "cancel" })
         }
         Alert.alert(
           data.title,
@@ -163,9 +163,9 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
           { cancelable: false }
         )
         break;
-      case 'default':
-        if (param.module != '') {
-          if (!String(param.module).includes('/')) param.module = param.module + "/index"
+      case "default":
+        if (param.module != "") {
+          if (!String(param.module).includes("/")) param.module = param.module + "/index"
           this.props.navigation.navigate(param.module, param.arguments)
         }
         break;
@@ -177,7 +177,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   // emptyView = ({ image, msg }) => {
   //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
   //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} >
   //       <Typo colorPrimary />
   //     </View>
   //   )
@@ -188,22 +188,22 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
     return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <StatusBar barStyle={'light-content'} />
+      <View style={{ flex: 1, backgroundColor: "white" }}>
+        <StatusBar barStyle={"light-content"} />
         <View
-          style={{ flexDirection: 'row', height: (STATUSBAR_HEIGHT) + 50, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
+          style={{ flexDirection: "row", height: (STATUSBAR_HEIGHT) + 50, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: "center", backgroundColor: colorPrimary }}>
           <Button transparent
-            style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
+            style={{ width: 50, height: 50, alignItems: "center", margin: 0 }}
             onPress={() => goBack()}>
             <Icon
               style={{ color: colorAccent }}
-              name='md-arrow-back' />
+              name="md-arrow-back" />
           </Button>
           <Text
             style={{
               marginHorizontal: 10,
               fontSize: 18,
-              textAlign: 'left',
+              textAlign: "left",
               flex: 1,
               color: colorAccent
             }}>Notifikasi</Text>
@@ -212,9 +212,9 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
           data={this.props.data}
           renderItem={(item: any, index: number) => (
             <TouchableOpacity onPress={() => this.openNotif(item)} >
-              <View style={[{ padding: 16, flexDirection: 'row', backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
+              <View style={[{ padding: 16, flexDirection: "row", backgroundColor: "white", marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
                 <View style={{}} >
-                  <Text style={{ color: item.status == 2 ? '#999' : colorPrimary, fontFamily: item.status == 2 ? 'Roboto' : 'Roboto_medium', marginBottom: 8 }} >{item.title}</Text>
+                  <Text style={{ color: item.status == 2 ? "#999" : colorPrimary, fontFamily: item.status == 2 ? "Roboto" : "Roboto_medium", marginBottom: 8 }} >{item.title}</Text>
                   <Text note ellipsizeMode="tail" numberOfLines={2} >{item.message}</Text>
                   <Text note style={{ fontSize: 9, marginTop: 5 }} >{moment(item.updated).fromNow()}</Text>
                 </View>

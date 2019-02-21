@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component } from "react";
 
 export default class SaveComponent <K, S, U=any> extends Component<K, S, U>{
   _isMounted: boolean = false

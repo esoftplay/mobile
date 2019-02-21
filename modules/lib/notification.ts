@@ -1,8 +1,8 @@
 // 
-import react from 'react';
-import { Notifications, Permissions } from 'expo';
-import { AsyncStorage } from 'react-native';
-import { esp } from 'esoftplay';
+import react from "react";
+import { Notifications, Permissions } from "expo";
+import { AsyncStorage } from "react-native";
+import { esp } from "esoftplay";
 /*
 // https://github.com/dev-esoftplay/react-native-esoftplay-notification
 {
@@ -30,7 +30,7 @@ export default class enotification {
       Notifications.addListener(async (obj: any) => {
         if (obj) {
           if (obj.remote == true) {
-            AsyncStorage.setItem('enotification', JSON.stringify(obj));
+            AsyncStorage.setItem("enotification", JSON.stringify(obj));
           }
           if (callback) callback(obj);
           r(obj);
@@ -44,10 +44,10 @@ export default class enotification {
   static get(action?: (res: any) => void): Promise<any> {
     return new Promise((r, j) => {
       setTimeout(() => {
-        AsyncStorage.getItem('enotification').then((res: any) => {
+        AsyncStorage.getItem("enotification").then((res: any) => {
           if (res) {
             if (action) action(res);
-            AsyncStorage.removeItem('enotification');
+            AsyncStorage.removeItem("enotification");
             r(res)
           } else {
             j();
@@ -60,11 +60,11 @@ export default class enotification {
     return new Promise(async (r, j) => {
       const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
       let finalStatus = status;
-      if (status !== 'granted') {
+      if (status !== "granted") {
         const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
         finalStatus = status;
       }
-      if (finalStatus !== 'granted') {
+      if (finalStatus !== "granted") {
         j();
         return;
       }
