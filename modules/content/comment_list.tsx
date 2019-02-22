@@ -1,5 +1,4 @@
 import React from "react";
-import { Component } from "react";
 import { View, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
 import { Text, Button, Icon, Item, Input, Thumbnail } from "native-base";
 const { colorPrimary, width } = LibStyle;
@@ -44,6 +43,7 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
   contextProvider: any
   dataProvider: any
   input2: any
+  list: any
   state: ContentComment_listState
   props: ContentComment_listProps
   constructor(props: ContentComment_listProps) {
@@ -73,9 +73,11 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
       }
     )
     this.input2 = React.createRef()
+    this.list = React.createRef()
     this.loadData = this.loadData.bind(this);
     this.contextProvider = new LibContext("parent");
     this.dataProvider = new DataProvider((a: any, b: any) => a !== b);
+    this.postComment = this.postComment.bind(this)
   }
 
   componentDidUpdate(prevProps: ContentComment_listProps, prevState: ContentComment_listState): void {
@@ -104,6 +106,7 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
         esp.log(post)
         new LibCurl(this.state.url_post, post,
           (res: any, msg: string) => {
+            console.log(res, msg)
             this.setState({
               page: 0,
               isSend: false,
@@ -111,19 +114,33 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
               comment: ""
             }, () => {
               this.loadData()
+              if (this.list) {
+                try {
+                  this.list.scrollToTop(true)
+                } catch (error) {
+
+                }
+              }
               if (this.input2) this.input2._root.setNativeProps({ text: "" })
             })
           },
           (msg: string) => {
+            const success = msg.includes('<div class="alert alert-success" role="alert">')
+            let _msg = (/<\/span>(.*)<\/div>/g).exec(msg)
             this.setState({
               page: 0,
               isSend: false,
               isStop: false,
-              comment: ""
+              comment: success ? "" : this.state.comment
             }, () => {
               this.loadData()
-              if (this.input2) this.input2._root.setNativeProps({ text: "" })
+              if (success) {
+                if (this.list) try { this.list.scrollToTop(true) } catch (error) { }
+                if (this.input2) this.input2._root.setNativeProps({ text: "" })
+              }
             })
+            if (!success)
+              Alert.alert(esp.lang('Komentar gagal dikirim', "Comment failed to send"), _msg[1])
           }, 1
         )
       }
@@ -190,9 +207,10 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
         style={{ flex: 1, backgroundColor: "white" }} >
         {
           (this.state.total == 0 && !this.state.isLoading && this.state.data.length == 0) ?
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} ><Text note >{esp.lang("Belum ada", "")}{replyText}{esp.lang("Komentar","Comment not found")}</Text></View>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} ><Text note >{esp.lang("Belum ada", "")}{replyText}{esp.lang("Komentar", "Comment not found")}</Text></View>
             :
             <RecyclerListView
+              ref={(e => this.list = e)}
               layoutProvider={this.layoutProvider}
               dataProvider={this.dataProvider.cloneWithRows(this.state.data)}
               forceNonDeterministicRendering={true}
