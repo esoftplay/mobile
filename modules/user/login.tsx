@@ -4,18 +4,17 @@ import React from "react";
 import { Component } from "react"
 import { View, TextInput, ScrollView, Share, TouchableOpacity, StatusBar, Image, KeyboardAvoidingView } from "react-native";
 import { Text, Button } from "native-base";
-import Expo from "expo"
 import { Ionicons } from "@expo/vector-icons"
 import Modal from "react-native-modal";
 import { CameraRoll } from "react-native";
 import {
-    esp,
-    UserClass,
-    LibCrypt,
-    LibCurl,
-    LibSociallogin,
-    LibComponent,
-    LibStyle
+  esp,
+  UserClass,
+  LibCrypt,
+  LibCurl,
+  LibSociallogin,
+  LibComponent,
+  LibStyle
 } from "esoftplay";
 const config = esp.config();
 /* 
@@ -44,12 +43,18 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
   inputUsername: any;
   inputPassword: any;
 
-  state = {
-    sosmed: "",
-    username: "",
-    password: "",
-    email: "",
-    isLoading: false
+  constructor(props: UserLoginProps) {
+    super(props)
+    this.state = {
+      sosmed: "",
+      username: "",
+      password: "",
+      email: "",
+      isLoading: false
+    }
+    this.onSuccessLogin = this.onSuccessLogin.bind(this);
+    this.onFailedLogin = this.onFailedLogin.bind(this);
+    this.attemptLogin = this.attemptLogin.bind(this);
   }
 
   onSuccessLogin(user: any): void {
@@ -99,7 +104,7 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
     }
   }
 
-  render() : any {
+  render(): any {
     const { colorPrimary, STATUSBAR_HEIGHT, isIphoneX, width } = LibStyle
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20} >

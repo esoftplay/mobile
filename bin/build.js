@@ -6,9 +6,10 @@ const fs = require('fs');
 const DIR = "../../"
 const packjson = DIR + "package.json"
 const appjson = DIR + "app.json"
-const babelrc = DIR +".babelrc"
+const babelrc = DIR + ".babelrc"
 const tsconfig = DIR + "tsconfig.json"
-const appjs = DIR + "App.tsx"
+const appts = DIR + "App.tsx"
+const appjs = DIR + "App.js"
 const pathScript = DIR + "node_modules/react-native-scripts/build/bin/react-native-scripts.js"
 if (fs.existsSync(packjson)) {
 	var txt = fs.readFileSync(packjson, 'utf8');
@@ -174,32 +175,64 @@ if (fs.existsSync(packjson)) {
 
 			const AppJS = `import React from 'react';\n\
 import { applyMiddleware, createStore } from 'redux';\n\
+import { persistStore } from 'redux-persist'\n\
+import { PersistGate } from 'redux-persist/integration/react'\n\
 import thunk from 'redux-thunk';\n\
 import { Provider } from 'react-redux'\n\
 import { esp } from 'esoftplay';\n\
 \n\
 const middleware = applyMiddleware(thunk)\n\
 export const store = createStore(esp.reducer(), middleware)\n\
+const persistor = persistStore(store)\n\
 \n\
 export default class App extends React.Component {\n\
 	Home = esp.home()\n\
 	render() {\n\
 		return (\n\
 			<Provider store={store}>\n\
-				<this.Home />\n\
+				<PersistGate loading={null} persistor={persistor}>\n\
+					<this.Home />\n\
+				</PersistGate>\n\
 			</Provider>\n\
 		)\n\
 	}\n\
 }`;
-			fs.writeFile(appjs, AppJS, (err) => {
+			var bashScript = 'npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript && expo install ';
+			var expoLib = [
+				"expo-av",
+				"expo-linear-gradient",
+				"expo-blur",
+				"expo-image-manipulator",
+				"expo-camera",
+				"expo-image-picker",
+				"expo-permissions",
+				"expo-sqlite",
+				"expo-file-system",
+				"expo-constants",
+				"expo-font"
+			]
+			for (let i = 0; i < expoLib.length; i++) {
+				const element = expoLib[i];
+				bashScript += element + ' '
+			}
+			fs.writeFile(appts, AppJS, (err) => {
 				if (err) throw err;
-				console.log('App.tsx has been updated');
-				console.log('\n##### NOTE : Execute this command if this is the first time using TypeScript');
-				console.log('\nnpm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript\n')
-				console.log('##### END NOTE ');
-			});
-		}
+				fs.unlink(appjs, (err) => { })
+				const exec = require('child_process').exec;
+				var yourscript = exec(
+				  bashScript,
+				  (error, stdout, stderr) => {
+				    console.log(stdout);
+				    console.log(stderr);
+				    if (error !== null) {
+				      console.log(`exec error: ${error}`);
+				    }
+				  });
+
+			console.log('App.js has been replace to App.tsx');
+		});
 	}
+}
 } else {
 	console.log(packjson + " not found!!")
 }

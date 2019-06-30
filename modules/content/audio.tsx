@@ -1,7 +1,5 @@
-// 
 import React from "react"
-import { Component } from "react";
-import { Audio } from "expo";
+import { Audio } from "expo-av";
 import { LibComponent } from "esoftplay";
 
 export interface ContentAudioProps {
@@ -42,6 +40,9 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       isLoading: true,
       volume: 1.0,
     };
+    this._onPlaybackStatusUpdate = this._onPlaybackStatusUpdate.bind(this)
+    this._loadNewPlaybackInstance = this._loadNewPlaybackInstance.bind(this)
+    this._onPlayPausePressed = this._onPlayPausePressed.bind(this)
   }
 
   componentDidMount(): void {
@@ -52,8 +53,9 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
-      // playThroughEarpieceAndroid: ,
-      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      staysActiveInBackground: false,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+      playThroughEarpieceAndroid: false
     });
     this._loadNewPlaybackInstance(false);
   }
@@ -77,7 +79,7 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       volume: this.state.volume,
       isMuted: this.state.muted,
     };
-    const { sound, status } = await Audio.Sound.create(
+    const { sound, status } = await Audio.Sound.createAsync(
       source,
       initialStatus,
       this._onPlaybackStatusUpdate

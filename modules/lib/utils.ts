@@ -1,8 +1,9 @@
 import moment from "moment/min/moment-with-locales"
 import { Linking, Platform, Clipboard, CameraRoll, Share } from "react-native"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system';
 import { esp } from "esoftplay"
 import shorthash from "shorthash"
+import { StackActions, NavigationActions } from 'react-navigation';
 import { store } from "../../../../App";
 
 export default class eutils {
@@ -36,6 +37,15 @@ export default class eutils {
       }
     }
     return keyBack
+  }
+
+  static navReset(navigation: any, isLogin?: boolean): void {
+    const home = esp.config('home')
+    const resetAction = StackActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName: isLogin ? home.member : home.public })],
+    });
+    navigation.dispatch(resetAction);
   }
 
   static navReplace(store: any, navigation: any, routeName: string, params?: any): void {

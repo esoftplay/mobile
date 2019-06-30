@@ -12,7 +12,7 @@ import {
   Linking,
 } from "react-native";
 import { Left, Button, Icon, Text, ListItem } from "native-base";
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 import moment from "moment/min/moment-with-locales"
 import {
   esp,
@@ -130,11 +130,12 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
     }
 
     result = this.state.result
-    if (result.image == "") {
-      HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
-    } else {
-      HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT_MASTER;
-    }
+
+    //if (result.image == "") {
+    //HEADER_MAX_HEIGHT = HEADER_MIN_HEIGHT
+    //} else {
+    HEADER_MAX_HEIGHT = (width * 4 / 5) + STATUSBAR_HEIGHT_MASTER;
+    //}
     var isDownload = result.link != "" && result.type === "download"
     var isAudio = result.code != "" && result.type === "audio"
     var isVideo = result.code != "" && result.type === "video"
@@ -338,7 +339,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
               style={[styles.fab, { opacity: imageOpacity, transform: [{ translateY: headerTranslate }] }]}>
               <TouchableWithoutFeedback
                 style={styles.fab}
-                onPress={isAudio ? () => this.audioPlayer._onPlayPausePressed() : (result: any) => { Linking.openURL(result.link) }}>
+                onPress={isAudio ? () => this.audioPlayer._onPlayPausePressed() : () => Linking.openURL(result.link)}>
                 <Icon
                   name={isAudio ? (this.state.isPlayingAudio ? "md-pause" : "md-play") : "md-download"}
                   style={{ color: colorAccent, fontSize: 25 }} />

@@ -5,8 +5,20 @@ import navs from "../../cache/navigations";
 import { AsyncStorage, View } from "react-native";
 import { createStackNavigator, createAppContainer, StackNavigatorConfig } from "react-navigation";
 import { store } from "../../../../App";
-import { Font } from "expo";
-import { esp, LibNotification, UserClass, LibComponent, LibWorker, LibNet_status } from "esoftplay";
+import * as Font from "expo-font";
+import {
+  esp,
+  LibNotification,
+  UserClass,
+  LibComponent,
+  LibWorker,
+  LibNet_status,
+  LibTheme,
+  LibLocale,
+  LibDialog,
+  LibImage,
+  LibProgress
+} from 'esoftplay';
 
 export interface UserIndexProps {
 
@@ -56,6 +68,8 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
 
   async componentDidMount(): Promise<void> {
     super.componentDidMount()
+    LibTheme.getTheme()
+    LibLocale.getLocale()
     if (esp.config().notification == 1) {
       LibNotification.listen((notifObj: any) => { })
     }
@@ -97,11 +111,18 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
 
 
   setFonts(): Promise<void> {
+    let fonts: any = {
+      "Roboto": require("../../../native-base/Fonts/Roboto.ttf"),
+      "Roboto_medium": require("../../../native-base/Fonts/Roboto_medium.ttf")
+    }
+    let fontsConfig = esp.config("fonts")
+    if (fontsConfig) {
+      Object.keys(esp.config("fonts")).forEach((key) => {
+        fonts[key] = esp.assets('fonts/' + fontsConfig[key])
+      })
+    }
     return new Promise((r, j) => {
-      Font.loadAsync({
-        "Roboto": require("native-base/Fonts/Roboto.ttf"),
-        "Roboto_medium": require("native-base/Fonts/Roboto_medium.ttf")
-      }).then(() => r())
+      Font.loadAsync(fonts).then(() => r())
     })
   }
 
@@ -112,8 +133,12 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
         <LibWorker />
         <Router onNavigationStateChange={this.onNavigationStateChange} />
         <LibNet_status />
+        <LibDialog style={'default'} />
+        <LibImage />
+        <LibProgress />
       </View>
     );
   }
 }
+
 

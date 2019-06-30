@@ -6,6 +6,7 @@ import navs from './cache/navigations';
 import routers from './cache/routers';
 var app = require('../../app.json');
 import { store } from '../../App';
+import { connect } from 'react-redux';
 var notif: any = undefined
 var token: any = undefined
 
@@ -34,7 +35,7 @@ export default class esp {
 
   static lang(...strings: string[]): string {
     const _store: any = store.getState()
-    const _langId = _store.lib_local.lang_id
+    const _langId = _store.lib_locale.lang_id
     const _langIds: string[] = esp.config('langIds')
     const _langIndex = _langIds.indexOf(_langId)
     if (_langIndex <= _langIds.length - 1)
@@ -45,7 +46,7 @@ export default class esp {
 
   static langId(): string {
     const _store: any = store.getState()
-    return _store.lib_local.lang_id
+    return _store.lib_locale.lang_id
   }
 
   static _config(): string {
@@ -99,8 +100,11 @@ export default class esp {
     if (!config.hasOwnProperty('api') || config.api.length == 0) {
       config.api = "api";
     }
-    if (!config.hasOwnProperty('langIds') || config.api.length == 0) {
+    if (!config.hasOwnProperty('langIds')) {
       config.langIds = ["id", "en"];
+    }
+    if (!config.hasOwnProperty('theme')) {
+      config.theme = ['light', 'dark']
     }
     if (!config.hasOwnProperty('comment_login')) {
       config.comment_login = 1;
@@ -141,6 +145,10 @@ export default class esp {
     if (esp.config("isDebug") == 1) {
       console.log(message, ...optionalParams);
     }
+  }
+
+  static connect(mapStateToProps: any, cls: any): any {
+    return connect(mapStateToProps)(cls)
   }
 
   static routes(): any {

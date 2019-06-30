@@ -186,6 +186,7 @@ EXAMPLE\n\
 			app.watchTree(path, function (f, curr, prev) {
 				if (curr!=null || prev!=null) {
 					execution()
+					watcher()
 				}
 			})
 		}

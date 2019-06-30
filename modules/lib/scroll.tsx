@@ -1,9 +1,8 @@
 // 
 
 import React from "react"
-import { Component } from "react";
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from "recyclerlistview";
-import { Dimensions, View } from "react-native";
+import { Dimensions, View, ScrollView } from "react-native";
 import { LibComponent, LibContext } from "esoftplay";
 
 /*
@@ -29,12 +28,14 @@ var Escroll = esp.mod("lib/scroll")
   //scrollable item
 </Escroll>
 */
+
 const { width } = Dimensions.get("window");
 
 
 export interface LibScrollProps {
   numColumns?: number,
   defaultHeight?: number,
+  delay?: number,
   children?: any,
   onEndReached?: () => void,
   renderFooter?: () => any,
@@ -46,7 +47,7 @@ export interface LibScrollProps {
   renderAheadOffset?: number,
   isHorizontal?: boolean,
   onScroll?: (rawEvent: any, offsetX: number, offsetY: number) => void,
-  onRecreate?: Function,  
+  onRecreate?: Function,
   onEndReachedThreshold?: number,
   initialRenderIndex?: number,
   scrollThrottle?: number,
@@ -74,25 +75,34 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
   dataProvider: any;
   state: LibScrollState;
   props: LibScrollProps;
-
+  view: any;
   constructor(props: LibScrollProps) {
     super(props);
     this.props = props;
     this.layoutProvider = new LayoutProvider(
-      (index: number) => 0,
+      (index: number) => index,
       (type: any, dim: any) => {
         dim.width = width / (props.numColumns || 1);
         dim.height = props.defaultHeight || 100;
       }
     )
+    this.view = React.createRef()
     this.contextProvider = new LibContext("parent")
     this.rowRenderer = this.rowRenderer.bind(this)
     this.dataProvider = new DataProvider((a: any, b: any) => a !== b)
     this.state = { data: this.dataProvider.cloneWithRows(props.children), width: width }
   }
 
-  rowRenderer(type: any, data: any, width: number): any {
-    return <View style={[{ width: width }]} >{data}</View>
+  rowRenderer(index: any, data: any, width: number): any {
+    return <View key={index.toString()} style={[{ width: width }]} >{data}</View>
+  }
+
+  componentDidMount(): void {
+    super.componentDidMount()
+    this.setState({ data: this.dataProvider.cloneWithRows(this.props.children) })
+    setTimeout(() => {
+      this.view.setNativeProps({ opacity: 1 })
+    }, this.props.delay || 300);
   }
 
   componentDidUpdate(prevProps: any, prevState: any): void {
@@ -103,7 +113,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
   render(): any {
     const w = this.state.width / (this.props.numColumns || 1)
     return (
-      <View onLayout={(e: any) => this.setState({ width: e.nativeEvent.layout.width })} style={[{ flex: 1 }]} >
+      <View ref={(e) => this.view = e} onLayout={(e: any) => this.setState({ width: e.nativeEvent.layout.width })} style={[{ flex: 1, opacity: 0 }]} >
         <RecyclerListView
           layoutProvider={this.layoutProvider}
           itemAnimator={new BaseItemAnimator()}

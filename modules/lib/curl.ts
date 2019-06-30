@@ -2,7 +2,7 @@
 import react from "react";
 import momentTimeZone from "moment-timezone"
 import moment from "moment/min/moment-with-locales"
-import { esp, LibCrypt, LibWorker } from "esoftplay";
+import { esp, LibCrypt, LibWorker, LibProgress } from 'esoftplay';
 import { store } from "../../../../App";
 import { Alert } from "react-native";
 
@@ -22,7 +22,7 @@ export default class ecurl {
     const str: any = store.getState()
     if (uri && str.lib_net_status.isOnline) {
       this.init(uri, post, onDone, onFailed, debug);
-    } else if (!str.lib_net_status.isOnline) {
+    } else if (!str.lib_net_status.isOnline && onFailed) {
       onFailed("Failed to access");
     }
   }
@@ -53,6 +53,9 @@ export default class ecurl {
   upload(uri: string, postKey: string, fileUri: string, mimeType: string, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number): void {
     postKey = postKey || "image";
     var uName = fileUri.substring(fileUri.lastIndexOf("/") + 1, fileUri.length);
+    if (!uName.includes('.')) {
+      uName += '.jpg'
+    }
     var uType = mimeType || "image/jpeg"
     var post = { [postKey]: { uri: fileUri, type: uType, name: uName } }
     this.init(uri, post, onDone, onFailed, debug, true)
@@ -95,6 +98,7 @@ export default class ecurl {
         if (onDone) onDone(resJson)
         this.onDone(resJson)
       } else {
+        LibProgress.hide()
         if (debug == 1) this.onError(resText)
       }
     }
@@ -153,6 +157,7 @@ export default class ecurl {
 
   onError(msg: string): void {
     esp.log(msg)
+    LibProgress.hide()
   }
 
   getTimeByTimeZone(timeZone: string): number {

@@ -75,9 +75,9 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
     this.input2 = React.createRef()
     this.list = React.createRef()
     this.loadData = this.loadData.bind(this);
+    this.postComment = this.postComment.bind(this);
     this.contextProvider = new LibContext("parent");
     this.dataProvider = new DataProvider((a: any, b: any) => a !== b);
-    this.postComment = this.postComment.bind(this)
   }
 
   componentDidUpdate(prevProps: ContentComment_listProps, prevState: ContentComment_listState): void {
@@ -105,8 +105,7 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
         var post = { ...user, content: this.state.comment }
         esp.log(post)
         new LibCurl(this.state.url_post, post,
-          (res: any, msg: string) => {
-            console.log(res, msg)
+          (res: any, msg: string) => {            
             this.setState({
               page: 0,
               isSend: false,

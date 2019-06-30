@@ -1,7 +1,6 @@
 // 
 
 import React from "react";
-import { Component } from "react"
 import { TouchableOpacity, View, Alert, Linking, StatusBar } from "react-native";
 import {
   esp,
@@ -58,27 +57,26 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
 
   static user_notification_loadData(): void {
-    var uri = "user/push-notif"
+    const config = esp.config()
+    var uri = config.protocol + "://" + config.domain + config.uri + "user/push-notif"
     try { Enotification.user_notification_parseData() } catch (error) { }
     const db = new DbNotification();
     db.execute("SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1", (res: any) => {
       if (res.rows.length > 0) {
         uri += "?last_id=" + res.rows._array[0].notif_id
       }
-      // esp.log(res);
-
       const salt = esp.config("salt");
       var post = {
         user_id: "",
         secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
       }
-
       UserClass.load((user: any) => {
         if (user) post["user_id"] = user.id
         Enotification.user_notification_fetchData(uri, post, db);
       })
     })
   }
+
   static user_notification_fetchData(uri: string, post: any, db: any): void {
     new LibCurl(uri, post,
       (res: any, msg: string) => {
@@ -98,6 +96,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
       }
     )
   }
+
   static user_notification_parseData(): void {
     const db = new DbNotification();
     db.getAll_().then((res) => {
@@ -107,14 +106,13 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
       })
     })
   }
+
   static user_notification_setRead(id: string | number): void {
     store.dispatch({
       type: "user_notification_setRead",
       payload: id
     })
   }
-
-
 
   static mapStateToProps(state: any): Object {
     return {
@@ -125,6 +123,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   constructor(props: UserNotificationProps) {
     super(props)
     this.props = props
+    this.openNotif = this.openNotif.bind(this);
   }
 
   componentDidMount(): void {
@@ -133,20 +132,63 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     Enotification.user_notification_loadData()
   }
 
+  static openPushNotif(data: any, navigation:any): void {
+    if (!data) return
+    data = JSON.parse(data)
+    const crypt = new LibCrypt();
+    const salt = esp.config("salt");
+    const config = esp.config();
+    var uri = config.protocol + "://" + config.domain + config.uri + "user/push-read"
+    new LibCurl(uri, {
+      notif_id: data.data.id,
+      secretkey: crypt.encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
+    }, (res, msg) => {
+      Enotification.user_notification_loadData();
+    }, (msg) => {
+
+    })
+    var param = data.data;
+    switch (param.action) {
+      case "alert":
+        var hasLink = param.params.hasOwnProperty("url") && param.params.url != ""
+        var btns: any = []
+        if (hasLink) {
+          btns.push({ text: "OK", onPress: () => Linking.openURL(param.params.url) })
+        } else {
+          btns.push({ text: "OK", onPress: () => { }, style: "cancel" })
+        }
+        Alert.alert(
+          param.title,
+          param.message,
+          btns, { cancelable: false }
+        )
+        break;
+      case "default":
+        if (param.module != "") {
+          if (!String(param.module).includes("/")) param.module = param.module + "/index"
+          navigation.navigate(param.module, param.params)
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   openNotif(data: any): void {
     const salt = esp.config("salt");
-    new LibCurl("user/push-read", {
+    const config = esp.config();
+    var uri = config.protocol + "://" + config.domain + config.uri + "user/push-read"
+    new LibCurl(uri, {
       notif_id: data.notif_id,
       secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
     }, (res: any, msg: string) => {
-      // esp.log(res)
       const db = new DbNotification();
       db.setRead(data.id)
       Enotification.user_notification_setRead(data.id)
     }, (msg: string) => {
       // esp.log(msg)
     }, 1)
-    var param = JSON.parse(data.params)
+    var param = JSON.parse(data.params)    
     switch (param.action) {
       case "alert":
         var hasLink = param.arguments.hasOwnProperty("url") && param.arguments.url != ""
@@ -174,19 +216,10 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     }
   }
 
-  // emptyView = ({ image, msg }) => {
-  //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} >
-  //       <Typo colorPrimary />
-  //     </View>
-  //   )
-  // }
-
-
   render(): any {
     const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
+    const data = this.props.data.reverse()
     return (
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <StatusBar barStyle={"light-content"} />
@@ -209,7 +242,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
             }}>Notifikasi</Text>
         </View>
         <LibList
-          data={this.props.data}
+          data={data}
           renderItem={(item: any, index: number) => (
             <TouchableOpacity onPress={() => this.openNotif(item)} >
               <View style={[{ padding: 16, flexDirection: "row", backgroundColor: "white", marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >

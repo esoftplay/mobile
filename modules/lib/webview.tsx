@@ -138,7 +138,7 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
 
   /* work onli onIos */
   _updateWebViewHeight(event: any): void {
-    this.setState({ height: parseInt(event.jsEvaluationValue) + 50 }, () => {
+    this.setState({ height: parseInt(event.jsEvaluationValue || 0) + 50 }, () => {
       if (this.props.onFinishLoad !== undefined)
         setTimeout(() => {
           this.props.onFinishLoad()

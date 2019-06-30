@@ -4,7 +4,7 @@ import { AsyncStorage } from "react-native";
 import { store } from "../../../../App";
 import { LibNotification, esp, UserClass, LibCrypt, LibCurl } from "esoftplay";
 import moment from "moment";
-import { Constants } from "expo";
+import Constants from 'expo-constants';
 
 export default class eclass {
 

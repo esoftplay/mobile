@@ -1,6 +1,5 @@
 // 
 import React from "react";
-import { Component } from "react";
 import {
   View,
   StyleSheet,
@@ -25,7 +24,6 @@ import {
 } from "esoftplay";
 import { StatusBar, Animated } from "react-native";
 import { connect } from "react-redux";
-import { store } from "../../../../App";
 const { defaultStyle, colorPrimaryDark, colorAccent, width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 const config = esp.config();
 
@@ -119,6 +117,8 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
     this.openDrawer = this.openDrawer.bind(this)
     this.closeDrawer = this.closeDrawer.bind(this)
     this.onBackPress = this.onBackPress.bind(this)
+    this.openSearch = this.openSearch.bind(this);
+    this.closeSearch = this.closeSearch.bind(this);
   }
 
   loadData(isRefreshing?: boolean): void {

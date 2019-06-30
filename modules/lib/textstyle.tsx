@@ -5,9 +5,11 @@ import { Text, StyleSheet } from "react-native";
 import { LibComponent } from "esoftplay";
 
 export interface LibTextstyleProps {
-  textStyle: "largeTitle" | "title1" | "title2" | "title3" | "headline" | "body" | "callout" | "subhead" | "footnote" | "caption1" | "caption2",
+  textStyle: "largeTitle" | "title1" | "title2" | "title3" | "headline" | "body" | "callout" | "subhead" | "footnote" | "caption1" | "caption2" | "m_h1" | "m_h2" | "m_h3" | "m_h4" | "m_h5" | "m_h6" | "m_subtitle1" | "m_subtitle2" | "m_body1" | "m_body2" | "m_button" | "m_caption" | "m_overline",
   style?: any,
   children?: string | "",
+  numberOfLines?: number,
+  ellipsizeMode?: string,
   text: string | ""
 }
 
@@ -26,6 +28,73 @@ export default class etextstyle extends LibComponent<LibTextstyleProps, LibTexts
   scale: number = 1
 
   styles = {
+    m_h1: {
+      fontSize: 96,
+      fontWeight: '100',
+      letterSpacing: -1.5,
+    },
+    m_h2: {
+      fontSize: 60,
+      fontWeight: '100',
+      letterSpacing: -0.5,
+    },
+    m_h3: {
+      fontSize: 48,
+      fontWeight: '400',
+      letterSpacing: 0,
+    },
+    m_h4: {
+      fontSize: 34,
+      fontWeight: '400',
+      letterSpacing: 0.25,
+    },
+    m_h5: {
+      fontSize: 24,
+      fontWeight: '400',
+      letterSpacing: 0,
+    },
+    m_h6: {
+      fontSize: 20,
+      fontWeight: '600',
+      letterSpacing: 0.15,
+    },
+    m_subtitle1: {
+      fontSize: 16,
+      fontWeight: '400',
+      letterSpacing: 0.15,
+    },
+    m_subtitle2: {
+      fontSize: 14,
+      fontWeight: '600',
+      letterSpacing: 0.1,
+    },
+    m_body1: {
+      fontSize: 16,
+      fontWeight: '400',
+      letterSpacing: 0.5,
+    },
+    m_body2: {
+      fontSize: 14,
+      fontWeight: '400',
+      letterSpacing: 0.25,
+    },
+    m_button: {
+      fontSize: 14,
+      fontWeight: '600',
+      letterSpacing: 1.25,
+      textTransform: 'uppercase'
+    },
+    m_caption: {
+      fontSize: 12,
+      fontWeight: '400',
+      letterSpacing: 0.4,
+    },
+    m_overline: {
+      fontSize: 10,
+      fontWeight: '400',
+      letterSpacing: 1.5,
+      textTransform: 'uppercase'
+    },
     largeTitle: {
       fontSize: this.scale * 34,
       fontWeight: "400",
@@ -94,7 +163,7 @@ export default class etextstyle extends LibComponent<LibTextstyleProps, LibTexts
     }
   }
 
-  render() : any {
+  render(): any {
     var st;
     if (typeof this.props.style === "object") {
       st = Object.assign({}, this.styles[this.props.textStyle], this.props.style)
@@ -103,7 +172,7 @@ export default class etextstyle extends LibComponent<LibTextstyleProps, LibTexts
     }
     return (
       <Text {...this.props} style={st}>
-        {this.props.text || this.props.children}
+        {this.props.text ? String(this.props.text) : this.props.children ? String(this.props.children) : ''}
       </Text>
     );
   }

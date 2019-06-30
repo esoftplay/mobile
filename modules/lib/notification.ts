@@ -1,6 +1,7 @@
 // 
 import react from "react";
-import { Notifications, Permissions } from "expo";
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions'
 import { AsyncStorage } from "react-native";
 import { esp } from "esoftplay";
 /*
@@ -35,7 +36,7 @@ export default class enotification {
           if (callback) callback(obj);
           r(obj);
         } else {
-          j();
+          // j();
         }
       })
     })
@@ -50,12 +51,13 @@ export default class enotification {
             AsyncStorage.removeItem("enotification");
             r(res)
           } else {
-            j();
+            // j();
           }
         })
       }, 1500);
     })
   }
+
   static requestPermission(callback?: (token: any) => void): Promise<any> {
     return new Promise(async (r, j) => {
       const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
@@ -65,7 +67,7 @@ export default class enotification {
         finalStatus = status;
       }
       if (finalStatus !== "granted") {
-        j();
+        // j();
         return;
       }
       r(await Notifications.getExpoPushTokenAsync());

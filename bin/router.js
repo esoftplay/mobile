@@ -15,6 +15,7 @@ if (!fs.existsSync(tmpDir)) {
 /* FETCH ALL SCRIPTS */
 var Modules = {}; // Object semua module/task yang bisa dipanggil
 var Reducers = {}; // Object semua reducer yang akan dikumpulkan
+var Persistor = {};
 var Extender = {};
 var grabClass = null;
 var delReducer = true;
@@ -94,7 +95,7 @@ checks.forEach(modules => {
                   }
                 }
 
-                if (isIndexed) {                  
+                if (isIndexed) {
                   var r = /\n{0,}(\s+)(static\s[a-zA-Z0-9_]+:\s{0,}.*)=.*;{0,}\n/g
                   if (s = r.exec(data)) {
                     if (m = data.match(r)) {
@@ -140,6 +141,9 @@ checks.forEach(modules => {
                 var key = module + "_" + name;
                 if ((new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g)).test(data)) { // is contains 'reducer'
                   Reducers[key] = path;
+                  if ((new RegExp(/\n\s+static\s+persist\s{0,}=\s{0,}true/g)).test(data)) {
+                    Persistor[key] = path
+                  }
                 } else { // not contained 'reducer'
                   grabClass = data.match(new RegExp(/\n\s{0,}export\s+default\s+connect\\([^\\)]+\\)\\(\s{0,}(.*?)\s{0,}\\)/g));
                   delReducer = true;
@@ -228,6 +232,7 @@ function createIndex() {
     "    static navigations(): any;\n" +
     "    static lang(...string:string[]): string;\n" +
     "    static langId(): string;\n" +
+    "    static connect(mapStateToProps:any,cls:any): any;\n" +
     "    static home(): any;\n" +
     "    static log(message?: any, ...optionalParams: any[]): void;\n" +
     "    static routes(): any;\n" +
@@ -277,16 +282,24 @@ function createReducer() {
     if (CodeReducer != "") {
       CodeReducer = CodeReducer.substr(0, CodeReducer.length - 1);
     }
-    Text = "import { combineReducers } from 'redux'" + CodeImporter +
+    Text = "import { combineReducers } from 'redux'"+
+      "\nimport { persistReducer } from 'redux-persist'" +
+      "\nimport storage from 'redux-persist/lib/storage'" + CodeImporter +
       "\n\nconst combiner = combineReducers({" + CodeReducer +
       "\n})\n\n" +
-      "const reducers = (state, action) => {" +
-      "\n\tif (action.type === 'USER_LOGOUT') {" +
+      "\nconst persistConfig = {" +
+      "\n\tkey: 'root'," +
+      "\n\tstorage," +
+      "\n\twhitelist: ['" + Object.keys(Persistor).join('\',\'') + "']" +
+      "\n}" +
+      "\n\nconst reducers = (state, action) => {" +
+      "\n\tif (action.type === 'user_class_delete') {" +
       "\n\t\tstate = undefined" +
       "\n\t}" +
       "\n\treturn combiner(state, action)" +
       "\n}" +
-      "\nexport default reducers";
+      "\nexport default persistReducer(persistConfig, reducers)";
+
     fs.writeFile(tmpDir + "reducers.js", Text, { flag: 'w' }, function (err) {
       if (err) {
         return console.log(err);

@@ -2,7 +2,7 @@
 import React from "react"
 import { Component } from "react";
 import { View, AsyncStorage, ScrollView, Image, Platform } from "react-native";
-import { BlurView } from "expo";
+import { BlurView } from "expo-blur";
 import { esp, LibComponent, LibStyle } from "esoftplay";
 const Curl = esp.mod("lib/curl")
 const { STATUSBAR_HEIGHT_MASTER } = LibStyle;
@@ -33,6 +33,10 @@ export default class emenu extends LibComponent<ContentMenuProps, ContentMenuSta
       menu: [],
       selectedId: 999999999
     }
+    this.saveMenu = this.saveMenu.bind(this);
+    this.loadMenu = this.loadMenu.bind(this);
+    this.setSelectedId = this.setSelectedId.bind(this);
+    this.newData = this.newData.bind(this);
   }
 
   saveMenu(menu: any): void {

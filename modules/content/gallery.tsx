@@ -1,6 +1,6 @@
 import React from "react";
 import { Component } from "react";
-import { View, StyleSheet, Image, FlatList } from "react-native";
+import { View, StyleSheet, Image, FlatList, StatusBar } from "react-native";
 import { Button, Icon } from "native-base";
 const { width, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 import { esp, LibUtils, LibComponent, LibStyle } from "esoftplay";
@@ -38,6 +38,7 @@ export default class ezoom extends LibComponent<ContentGalleryProps, ContentGall
     return (
       <View
         style={styles.container}>
+        <StatusBar barStyle="light-content" />
         <FlatList
           data={images}
           horizontal
