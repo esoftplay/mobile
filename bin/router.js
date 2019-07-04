@@ -263,7 +263,7 @@ function createIndex() {
       Text += "}";
     }
   }
-  fs.writeFile(tmpDir + "index.d.ts", Text, { flag: 'w' }, function (err) {
+  fs.writeFile("index.d.ts", Text, { flag: 'w' }, function (err) {
     if (err) {
       return console.log(err);
     }

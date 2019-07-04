@@ -7,6 +7,7 @@ const DIR = "../../"
 const packjson = DIR + "package.json"
 const appjson = DIR + "app.json"
 const babelrc = DIR + ".babelrc"
+const gitignore = DIR + ".gitignore"
 const tsconfig = DIR + "tsconfig.json"
 const appts = DIR + "App.tsx"
 const appjs = DIR + "App.js"
@@ -173,6 +174,20 @@ if (fs.existsSync(packjson)) {
 				console.log('tsconfig has been created');
 			});
 
+			const GitIgnore = `
+.expo/\n\
+index.d.ts\n\
+node_modules/\n\
+npm-debug.*\n\
+package-lock.json\n\
+yarn.lock\n\
+			`
+
+			fs.writeFile(gitignore, GitIgnore, (err) => {
+				if (err) throw err;
+				console.log('.gitignore has been created');
+			});
+
 			const AppJS = `import React from 'react';\n\
 import { applyMiddleware, createStore } from 'redux';\n\
 import { persistStore } from 'redux-persist'\n\
@@ -197,7 +212,7 @@ export default class App extends React.Component {\n\
 		)\n\
 	}\n\
 }`;
-			var bashScript = 'npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript && expo install ';
+			var bashScript = 'cd ../../ && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript && expo install ';
 			var expoLib = [
 				"expo-av",
 				"expo-linear-gradient",
