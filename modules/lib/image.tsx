@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Platform,
-  ImageEditor
 } from 'react-native';
 import { Icon } from 'native-base';
 import { LibStyle, LibComponent, LibCurl, esp, LibProgress } from 'esoftplay';
@@ -73,7 +72,7 @@ class m extends LibComponent<LibImageProps, LibImageState> {
   }
 
   static setResult(image: string): void {
-    console.log(image)
+    // console.log(image)/
     store.dispatch({
       type: 'lib_image_result',
       payload: image
@@ -112,50 +111,71 @@ class m extends LibComponent<LibImageProps, LibImageState> {
     }
   }
 
-  static fromCamera(): void {
-    setTimeout(async () => {
-      const cameraPermission = await Permissions.getAsync(Permissions.CAMERA);
-      var finalStatus = cameraPermission.status
-      if (finalStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA);
-        finalStatus = status
-      }
-      const rollPermission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-      finalStatus = rollPermission.status
-      if (finalStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        finalStatus = status
-      }
-      if (finalStatus != 'granted') {
-        esp.log('PERMISSION DENIED')
-      }
-      if (Platform.OS == 'android') {
-        m.show()
-      } else {
-        ImagePicker.launchCameraAsync().then(async (result: any) => {
-          let imageUri = await m.processImage(result)
-          m.setResult(imageUri)
-        })
-      }
-    }, 1);
+  static fromCamera(): Promise<string> {
+    return new Promise((_r) => {
+      setTimeout(async () => {
+        const cameraPermission = await Permissions.getAsync(Permissions.CAMERA);
+        var finalStatus = cameraPermission.status
+        if (finalStatus !== 'granted') {
+          const { status } = await Permissions.askAsync(Permissions.CAMERA);
+          finalStatus = status
+        }
+        const rollPermission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+        finalStatus = rollPermission.status
+        if (finalStatus !== 'granted') {
+          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+          finalStatus = status
+        }
+        if (finalStatus != 'granted') {
+          esp.log('PERMISSION DENIED')
+        }
+        if (Platform.OS == 'android') {
+          m.show()
+          async function checkImage(): Promise<string> {
+            return new Promise(async (__r) => {
+              setTimeout(async () => {
+                const state: any = store.getState()
+                const image = state.lib_image.image
+                const show = state.lib_image.show
+                if (image) {
+                  __r(image)
+                } else if (show) {
+                  __r(await checkImage())
+                }
+              }, 300);
+            })
+          }
+          _r(checkImage())
+        } else {
+          ImagePicker.launchCameraAsync().then(async (result: any) => {
+            let imageUri = await m.processImage(result)
+            m.setResult(imageUri)
+            _r(imageUri)
+          })
+        }
+      }, 1);
+    })
   }
 
-  static fromGallery(): void {
-    setTimeout(async () => {
-      const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-      var finalStatus = status
-      if (finalStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        finalStatus = status
-      }
-      if (finalStatus != 'granted') {
-        esp.log('PERMISSION DENIED')
-      }
-      ImagePicker.launchImageLibraryAsync().then(async (result: any) => {
-        let imageUri = await m.processImage(result)
-        m.setResult(imageUri)
-      })
-    }, 1)
+  static fromGallery(): Promise<string> {
+    return new Promise((_r) => {
+      setTimeout(async () => {
+        const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+        var finalStatus = status
+        if (finalStatus !== 'granted') {
+          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+          finalStatus = status
+        }
+        if (finalStatus != 'granted') {
+          esp.log('PERMISSION DENIED')
+        }
+        ImagePicker.launchImageLibraryAsync().then(async (result: any) => {
+          let imageUri = await m.processImage(result)
+          m.setResult(imageUri)
+          _r(imageUri)
+        })
+      }, 1)
+    })
   }
 
   static processImage(result: any): Promise<string> {
@@ -190,37 +210,6 @@ class m extends LibComponent<LibImageProps, LibImageState> {
               r(msg);
             }, 1)
         }, 1);
-
-        // new Promise(async (resolve, reject) => {
-        //   ImageEditor.cropImage(result.uri, {
-        //     offset: {
-        //       x: 0,
-        //       y: 0
-        //     },
-        //     size: {
-        //       width: result.width,
-        //       height: result.height
-        //     },
-        //     displaySize: {
-        //       width: wantedwidth,
-        //       height: wantedheight
-        //     },
-        //     resizeMode: 'contain',
-        //   },
-        //     (uri) => resolve(uri),
-        //     () => reject(),
-        //   )
-        // }).then((resizedUri) => {
-        //   new LibCurl().upload('image_upload', "image", String(resizedUri), 'image/jpeg',
-        //     (res: any, msg: string) => {
-        //       r(res);
-        //       LibProgress.hide()
-        //     },
-        //     (msg: string) => {
-        //       LibProgress.hide()
-        //       r(msg);
-        //     }, 1)
-        // })
       }
     })
   }

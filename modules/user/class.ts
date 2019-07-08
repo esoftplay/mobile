@@ -95,11 +95,9 @@ export default class eclass {
               (res, msg) => {
                 AsyncStorage.setItem("push_id", String(Number.isInteger(parseInt(res)) ? res : push_id));
                 AsyncStorage.setItem("token", String(token))
-                esp.log(res, "JOJOJOJJO")
                 resolve(res)
               }, (msg) => {
-                reject(msg)
-                esp.log(msg, "JOJOJOJJO")
+                resolve(msg)
               }, 1)
           })
         }

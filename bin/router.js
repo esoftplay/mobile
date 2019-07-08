@@ -4,12 +4,16 @@ const fs = require('fs');
 var checks = ['./node_modules/esoftplay/modules/', './modules/', './templates/'];
 var pathAsset = "./assets";
 var tmpDir = "./node_modules/esoftplay/cache/";
+var typesDir = "./node_modules/@types/esoftplay/"
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js|ts|tsx)$/);
 var Text = "";
 
-/* CREATE DIRECTORY CACHE IF NOT EXISTS */
+/* CREATE DIRECTORY CACHE && types IF NOT EXISTS */
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
+}
+if (!fs.existsSync(typesDir)) {
+  fs.mkdirSync(typesDir);
 }
 
 /* FETCH ALL SCRIPTS */
@@ -263,7 +267,7 @@ function createIndex() {
       Text += "}";
     }
   }
-  fs.writeFile("index.d.ts", Text, { flag: 'w' }, function (err) {
+  fs.writeFile(typesDir + "index.d.ts", Text, { flag: 'w' }, function (err) {
     if (err) {
       return console.log(err);
     }
@@ -282,7 +286,7 @@ function createReducer() {
     if (CodeReducer != "") {
       CodeReducer = CodeReducer.substr(0, CodeReducer.length - 1);
     }
-    Text = "import { combineReducers } from 'redux'"+
+    Text = "import { combineReducers } from 'redux'" +
       "\nimport { persistReducer } from 'redux-persist'" +
       "\nimport storage from 'redux-persist/lib/storage'" + CodeImporter +
       "\n\nconst combiner = combineReducers({" + CodeReducer +

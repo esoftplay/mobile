@@ -7,6 +7,7 @@ import { store } from '../../../../App';
 export interface LibDialogProps {
   visible?: boolean,
   style: 'default' | 'danger',
+  view?: any,
   icon?: LibIconStyle,
   title?: string,
   msg?: string,
@@ -25,6 +26,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   static initState = {
     visible: false,
     style: 'default',
+    view: undefined,
     title: undefined,
     msg: undefined,
     ok: undefined,
@@ -41,6 +43,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
           ...state,
           visible: true,
           style: action.payload.style,
+          view: action.payload.view,
           icon: action.payload.icon,
           title: action.payload.title,
           msg: action.payload.msg,
@@ -55,6 +58,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
           ...state,
           visible: false,
           style: 'default',
+          view: undefined,
           title: undefined,
           icon: undefined,
           msg: undefined,
@@ -73,6 +77,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
     return {
       visible: state.lib_dialog.visible,
       style: state.lib_dialog.style,
+      view: state.lib_dialog.view,
       icon: state.lib_dialog.icon,
       title: state.lib_dialog.title,
       msg: state.lib_dialog.msg,
@@ -117,12 +122,21 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
     })
   }
 
+  static custom(view: any): void {
+    store.dispatch({
+      type: "lib_dialog_show",
+      payload: {
+        view: view,
+      }
+    })
+  }
+
   constructor(props: LibDialogProps) {
     super(props);
   }
 
   render(): any {
-    const { visible, icon, style, title, msg, ok, cancel, onPressOK, onPressCancel } = this.props
+    const { visible, icon, view, style, title, msg, ok, cancel, onPressOK, onPressCancel } = this.props
 
     if (!visible) return null
     var color = LibTheme.colors(...LibStyle._colorPrimary)
@@ -132,25 +146,32 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
     return (
       <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', flex: 1 }} >
         <View style={{ backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundCardPrimary), padding: 10, borderRadius: 4, width: LibStyle.width - 80 }} >
-          <View style={{ marginTop: 16, marginHorizontal: 10 }} >
-            <View style={{ alignItems: 'center', justifyContent: 'center' }} >
-              {icon && <View style={{ marginBottom: 10 }} ><LibIcon name={icon} size={48} color={color} /></View>}
-              {title && <LibTextstyle textStyle={"body"} text={title} style={{ marginBottom: 10, color: color, fontWeight: 'bold', textAlign: 'center' }} />}
-              {msg && <LibTextstyle textStyle="callout" text={msg || ''} style={{ textAlign: 'center', lineHeight: 20 }} />}
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', marginBottom: -5, marginHorizontal: -5, borderRadius: 4, overflow: 'hidden', marginTop: 24 }} >
-            {onPressCancel &&
-              <TouchableOpacity onPress={() => { onPressCancel(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, marginRight: 2, borderRadius: 4, backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundPrimary) }} >
-                <LibTextstyle textStyle={"body"} text={cancel || ''} />
-              </TouchableOpacity>
-            }
-            {onPressOK &&
-              <TouchableOpacity onPress={() => { onPressOK(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, borderRadius: 4, backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundPrimary) }} >
-                <LibTextstyle textStyle={"body"} text={ok || ''} style={{ color: color, fontWeight: 'bold', }} />
-              </TouchableOpacity>
-            }
-          </View>
+          {
+            view ?
+              view
+              :
+              <View>
+                <View style={{ marginTop: 16, marginHorizontal: 10 }} >
+                  <View style={{ alignItems: 'center', justifyContent: 'center' }} >
+                    {icon && <View style={{ marginBottom: 10 }} ><LibIcon name={icon} size={48} color={color} /></View>}
+                    {title && <LibTextstyle textStyle={"body"} text={title} style={{ marginBottom: 10, color: color, fontWeight: 'bold', textAlign: 'center' }} />}
+                    {msg && <LibTextstyle textStyle="callout" text={msg || ''} style={{ textAlign: 'center', lineHeight: 20 }} />}
+                  </View>
+                </View>
+                <View style={{ flexDirection: 'row', marginBottom: -5, marginHorizontal: -5, borderRadius: 4, overflow: 'hidden', marginTop: 24 }} >
+                  {onPressCancel &&
+                    <TouchableOpacity onPress={() => { onPressCancel(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, marginRight: 2, borderRadius: 4, backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundPrimary) }} >
+                      <LibTextstyle textStyle={"body"} text={cancel || ''} />
+                    </TouchableOpacity>
+                  }
+                  {onPressOK &&
+                    <TouchableOpacity onPress={() => { onPressOK(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, borderRadius: 4, backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundPrimary) }} >
+                      <LibTextstyle textStyle={"body"} text={ok || ''} style={{ color: color }} />
+                    </TouchableOpacity>
+                  }
+                </View>
+              </View>
+          }
         </View>
       </View>
     )
