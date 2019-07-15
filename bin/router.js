@@ -4,7 +4,7 @@ const fs = require('fs');
 var checks = ['./node_modules/esoftplay/modules/', './modules/', './templates/'];
 var pathAsset = "./assets";
 var tmpDir = "./node_modules/esoftplay/cache/";
-var typesDir = "./node_modules/@types/esoftplay/"
+var typesDir = "./"
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js|ts|tsx)$/);
 var Text = "";
 
@@ -66,9 +66,9 @@ checks.forEach(modules => {
                       tmpTask[clsName]["interface"] = [];
                     }
                   }
-                  if (m = data.match(/\n\s{0,}(export\s+interface\s+[a-zA-Z0-9_]+\s{0,}\{[^\}]+\})/g)) {
+                  if (m = data.match(/\n\s{0,}export\s+(interface\s+[a-zA-Z0-9_]+\s{0,}\{[^\}]+\})/g)) {
                     for (var i = 0; i < m.length; i++) {
-                      tmpTask[clsName]["interface"].push(m[i].trim());
+                      tmpTask[clsName]["interface"].push(m[i].replace('export ', '').trim());
                     }
                   }
                 }
@@ -80,9 +80,9 @@ checks.forEach(modules => {
                       tmpTask[clsName]["type"] = [];
                     }
                   }
-                  if (m = data.match(/\n{0,}\s{0,}(export\s+type\s+[a-zA-Z0-9_]+\s\=.*\n)/g)) {
+                  if (m = data.match(/\n{0,}\s{0,}export\s+(type\s+[a-zA-Z0-9_]+\s\=.*\n)/g)) {
                     for (let i = 0; i < m.length; i++) {
-                      tmpTask[clsName]["type"].push(m[i].trim());
+                      tmpTask[clsName]["type"].push(m[i].replace('export ', '').trim());
                     }
                   }
                 }
@@ -90,7 +90,7 @@ checks.forEach(modules => {
                 /* REGEX CLASS NAME */
                 if (m = /\n\s{0,}(?:export\s+default\s+)?(class\s+([^\s]+)[^\{]+)/.exec(data)) {
                   if (tmpTask[clsName]["class"] == "") {
-                    tmpTask[clsName]["class"] = 'export ' + m[1].replace(m[2], clsName).trim();
+                    tmpTask[clsName]["class"] = m[1].replace(m[2], clsName).trim();
                     /* tambahkan fungsi Crypt */
                     if (clsName == 'LibCrypt') {
                       tmpTask[clsName]["function"]['encode'] = 'encode(text: string): string;';
@@ -140,7 +140,6 @@ checks.forEach(modules => {
                     }
                   }
                 }
-
 
                 var key = module + "_" + name;
                 if ((new RegExp(/\n\s+static\s+reducer\s{0,}[\=\(]/g)).test(data)) { // is contains 'reducer'
@@ -227,7 +226,8 @@ function createIndex() {
   var Text = "import { Component, ComponentClass, Ref, ComponentType } from 'react';\n" +
     "import { ContextProvider } from 'recyclerlistview';\n" +
     "\n" +
-    "  export class esp {\n" +
+    "declare module \"esoftplay\" {\n" +
+    "  class esp {\n" +
     "    static assets(path: string): any;\n" +
     "    static config(param?: string, ...params: string[]): any;\n" +
     "    static _config(): string | number | boolean;\n" +
@@ -264,9 +264,10 @@ function createIndex() {
       if (isFilled) {
         Text += "\n  ";
       }
-      Text += "}";
+      Text += "}\n";
     }
   }
+  Text += "}"
   fs.writeFile(typesDir + "index.d.ts", Text, { flag: 'w' }, function (err) {
     if (err) {
       return console.log(err);

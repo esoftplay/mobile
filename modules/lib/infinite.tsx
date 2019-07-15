@@ -45,6 +45,7 @@ export interface LibInfiniteState {
 
 export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
 
+  pages: number[]
   constructor(props: LibInfiniteProps) {
     super(props);
     this.loadData = this.loadData.bind(this);
@@ -55,6 +56,7 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
       page: 0,
       error: ''
     }
+    this.pages = []
   }
 
   componentDidMount(): void {
@@ -78,21 +80,22 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
       url += url.includes('?') ? '&' : '?'
       url += 'page=' + page
     }
-    new LibCurl(url, post,
-      (res, msg) => {
-        esp.log(res, res.list);
-        this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
-          return {
-            data: page == 0 ? res.list : [...state.data, ...res.list],
-            page: page,
-            isStop: (page || 0) >= res.pages - 1
-          }
-        })
-      },
-      (msg) => {
-        this.setState({ error: msg, isStop: true })
-      }, 1
-    )
+    if (!this.pages.includes(page))
+      new LibCurl(url, post,
+        (res, msg) => {
+          this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
+            return {
+              data: page == 0 ? res.list : [...state.data, ...res.list],
+              page: page,
+              isStop: (page || 0) >= res.pages - 1
+            }
+          })
+        },
+        (msg) => {
+          this.setState({ error: msg, isStop: true })
+        }, 1
+      )
+    this.pages.push(page)
   }
 
   componentDidUpdate(prevProps: LibInfiniteProps, prevState: LibInfiniteState): void {

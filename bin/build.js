@@ -176,6 +176,7 @@ if (fs.existsSync(packjson)) {
 
 			const GitIgnore = `
 .expo/\n\
+index.d.ts\n\
 node_modules/\n\
 npm-debug.*\n\
 package-lock.json\n\
