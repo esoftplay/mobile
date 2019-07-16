@@ -212,7 +212,7 @@ export default class App extends React.Component {\n\
 		)\n\
 	}\n\
 }`;
-			var bashScript = 'cd ../../ && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript && expo install ';
+			var bashScript = 'cd ../../ && expo install ';
 			var expoLib = [
 				"expo-av",
 				"expo-linear-gradient",
@@ -230,24 +230,25 @@ export default class App extends React.Component {\n\
 				const element = expoLib[i];
 				bashScript += element + ' '
 			}
+			bashScript += ' && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
 			fs.writeFile(appts, AppJS, (err) => {
 				if (err) throw err;
 				fs.unlink(appjs, (err) => { })
 				const exec = require('child_process').exec;
 				var yourscript = exec(
-				  bashScript,
-				  (error, stdout, stderr) => {
-				    console.log(stdout);
-				    console.log(stderr);
-				    if (error !== null) {
-				      console.log(`exec error: ${error}`);
-				    }
-				  });
+					bashScript,
+					(error, stdout, stderr) => {
+						console.log(stdout);
+						console.log(stderr);
+						if (error !== null) {
+							console.log(`exec error: ${error}`);
+						}
+					});
 
-			console.log('App.js has been replace to App.tsx');
-		});
+				console.log('App.js has been replace to App.tsx');
+			});
+		}
 	}
-}
 } else {
 	console.log(packjson + " not found!!")
 }

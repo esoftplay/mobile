@@ -4,7 +4,6 @@ import momentTimeZone from "moment-timezone"
 import moment from "moment/min/moment-with-locales"
 import { esp, LibCrypt, LibWorker, LibProgress } from 'esoftplay';
 import { store } from "../../../../App";
-import { Alert } from "react-native";
 
 export default class ecurl {
   isDebug = esp.config("isDebug");
@@ -35,12 +34,14 @@ export default class ecurl {
     this.uri = uri
   }
 
-  setHeader(): void {
-    if ((/:\/\/data.*?\/(.*)/g).test(this.url)) {
-      this.header["masterkey"] = new LibCrypt().encode(this.url)
-    }
+  async setHeader(): Promise<void> {
+    return new Promise((r) => {
+      if ((/:\/\/data.*?\/(.*)/g).test(this.url)) {
+        this.header["masterkey"] = new LibCrypt().encode(this.url)
+      }
+      r()
+    })
   }
-
 
   onDone(result: any, msg?: string): void {
 

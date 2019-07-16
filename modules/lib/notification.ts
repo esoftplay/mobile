@@ -2,15 +2,14 @@
 import react from "react";
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions'
-import { AsyncStorage } from "react-native";
-import { esp } from "esoftplay";
+import { AsyncStorage, Platform, Alert } from "react-native";
+import { esp, UserNotification, LibDialog } from "esoftplay";
 /*
-// https://github.com/dev-esoftplay/react-native-esoftplay-notification
 {
   to: // exp token
   data:{
     action: // [route, dialog,  ]
-    route_name: // routeName of ReactNavigation
+    module: // routeName of ReactNavigation
     params:
     title:
     message:
@@ -30,8 +29,26 @@ export default class enotification {
     return new Promise((r, j) => {
       Notifications.addListener(async (obj: any) => {
         if (obj) {
-          if (obj.remote == true) {
-            AsyncStorage.setItem("enotification", JSON.stringify(obj));
+          if (obj.remote == true && obj.origin == 'received') {
+            UserNotification.user_notification_loadData()
+            if (Platform.OS == 'ios') {
+              Alert.alert(obj && obj.data && obj.data.data && obj.data.data.title || 'Notification', obj && obj.data && obj.data.data && obj.data.data.message || 'New notification has been received', [
+                {
+                  text: 'Open',
+                  onPress: () => UserNotification.openPushNotif(obj.data),
+                  style: 'default'
+                },
+                {
+                  text: 'Close',
+                  onPress: () => { },
+                  style: 'cancel'
+                }
+              ])
+            }
+            // AsyncStorage.setItem("enotification", JSON.stringify(obj));
+          } else if (obj.remote == true && obj.origin == 'selected') {
+            UserNotification.openPushNotif(obj.data)
+            UserNotification.user_notification_loadData()
           }
           if (callback) callback(obj);
           r(obj);
@@ -39,22 +56,6 @@ export default class enotification {
           // j();
         }
       })
-    })
-  }
-
-  static get(action?: (res: any) => void): Promise<any> {
-    return new Promise((r, j) => {
-      setTimeout(() => {
-        AsyncStorage.getItem("enotification").then((res: any) => {
-          if (res) {
-            if (action) action(res);
-            AsyncStorage.removeItem("enotification");
-            r(res)
-          } else {
-            // j();
-          }
-        })
-      }, 1500);
     })
   }
 

@@ -96,79 +96,85 @@ export default class etextstyle extends LibComponent<LibTextstyleProps, LibTexts
       textTransform: 'uppercase'
     },
     largeTitle: {
-      fontSize: this.scale * 34,
+      fontSize: 34,
       fontWeight: "400",
-      lineHeight: this.scale * 41,
-      letterSpacing: this.scale * 34 * 11 / 1000,
+      lineHeight: 41,
+      letterSpacing: 34 * 11 / 1000,
     },
     title1: {
-      fontSize: this.scale * 28,
+      fontSize: 28,
       fontWeight: "400",
-      lineHeight: this.scale * 34,
-      letterSpacing: this.scale * 28 * 13 / 1000,
+      lineHeight: 34,
+      letterSpacing: 28 * 13 / 1000,
     },
     title2: {
-      fontSize: this.scale * 22,
+      fontSize: 22,
       fontWeight: "400",
-      lineHeight: this.scale * 28,
-      letterSpacing: this.scale * 22 * 16 / 1000,
+      lineHeight: 28,
+      letterSpacing: 22 * 16 / 1000,
     },
     title3: {
-      fontSize: this.scale * 20,
+      fontSize: 20,
       fontWeight: "400",
-      lineHeight: this.scale * 25,
-      letterSpacing: this.scale * 20 * 19 / 1000,
+      lineHeight: 25,
+      letterSpacing: 20 * 19 / 1000,
     },
     headline: {
-      fontSize: this.scale * 17,
+      fontSize: 17,
       fontWeight: "600",
-      lineHeight: this.scale * 22,
-      letterSpacing: this.scale * 17 * -24 / 1000,
+      lineHeight: 22,
+      letterSpacing: 17 * -24 / 1000,
     },
     body: {
-      fontSize: this.scale * 17,
+      fontSize: 17,
       fontWeight: "400",
-      lineHeight: this.scale * 22,
-      letterSpacing: this.scale * 17 * -24 / 1000,
+      lineHeight: 22,
+      letterSpacing: 17 * -24 / 1000,
     },
     callout: {
-      fontSize: this.scale * 16,
+      fontSize: 16,
       fontWeight: "400",
-      lineHeight: this.scale * 21,
-      letterSpacing: this.scale * 16 * -20 / 1000,
+      lineHeight: 21,
+      letterSpacing: 16 * -20 / 1000,
     },
     subhead: {
-      fontSize: this.scale * 15,
+      fontSize: 15,
       fontWeight: "400",
-      lineHeight: this.scale * 20,
-      letterSpacing: this.scale * 15 * -16 / 1000,
+      lineHeight: 20,
+      letterSpacing: 15 * -16 / 1000,
     },
     footnote: {
-      fontSize: this.scale * 13,
+      fontSize: 13,
       fontWeight: "400",
-      lineHeight: this.scale * 18,
-      letterSpacing: this.scale * 13 * -6 / 1000,
+      lineHeight: 18,
+      letterSpacing: 13 * -6 / 1000,
     },
     caption1: {
-      fontSize: this.scale * 12,
+      fontSize: 12,
       fontWeight: "400",
-      lineHeight: this.scale * 16,
-      letterSpacing: this.scale * 12 * 0 / 1000,
+      lineHeight: 16,
+      letterSpacing: 12 * 0 / 1000,
     },
     caption2: {
-      fontSize: this.scale * 11,
+      fontSize: 11,
       fontWeight: "400",
-      lineHeight: this.scale * 13,
-      letterSpacing: this.scale * 11 * 6 / 1000,
+      lineHeight: 13,
+      letterSpacing: 11 * 6 / 1000,
     }
   }
 
   render(): any {
     var st;
     if (typeof this.props.style === "object") {
-      st = Object.assign({}, this.styles[this.props.textStyle], this.props.style)
+      st = Object.assign({}, this.styles[this.props.textStyle], {
+        fontSize: this.styles[this.props.textStyle].fontSize * this.scale,
+        letterSpacing: this.styles[this.props.textStyle].letterSpacing * this.scale
+      }, this.props.style)
     } else {
-      st = StyleSheet.flatten([this.styles[this.props.textStyle], this.props.style])
+      st = StyleSheet.flatten([this.styles[this.props.textStyle], {
+        fontSize: this.styles[this.props.textStyle].fontSize * this.scale,
+        letterSpacing: this.styles[this.props.textStyle].letterSpacing * this.scale
+      }, this.props.style])
     }
     return (
       <Text {...this.props} style={st}>

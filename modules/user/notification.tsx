@@ -10,7 +10,8 @@ import {
   UserClass,
   LibList,
   LibComponent,
-  LibStyle
+  LibStyle,
+  LibNavigation
 } from "esoftplay";
 import { store } from "../../../../App";
 import { connect } from "react-redux"
@@ -123,7 +124,6 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   constructor(props: UserNotificationProps) {
     super(props)
     this.props = props
-    this.openNotif = this.openNotif.bind(this);
   }
 
   componentDidMount(): void {
@@ -132,9 +132,10 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     Enotification.user_notification_loadData()
   }
 
-  static openPushNotif(data: any, navigation:any): void {
+  static openPushNotif(data: any): void {
     if (!data) return
-    data = JSON.parse(data)
+    if (typeof data == 'string')
+      data = JSON.parse(data)
     const crypt = new LibCrypt();
     const salt = esp.config("salt");
     const config = esp.config();
@@ -148,33 +149,34 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
     })
     var param = data.data;
-    switch (param.action) {
-      case "alert":
-        var hasLink = param.params.hasOwnProperty("url") && param.params.url != ""
-        var btns: any = []
-        if (hasLink) {
-          btns.push({ text: "OK", onPress: () => Linking.openURL(param.params.url) })
-        } else {
-          btns.push({ text: "OK", onPress: () => { }, style: "cancel" })
-        }
-        Alert.alert(
-          param.title,
-          param.message,
-          btns, { cancelable: false }
-        )
-        break;
-      case "default":
-        if (param.module != "") {
-          if (!String(param.module).includes("/")) param.module = param.module + "/index"
-          navigation.navigate(param.module, param.params)
-        }
-        break;
-      default:
-        break;
-    }
+    if (param.action)
+      switch (param.action) {
+        case "alert":
+          var hasLink = param.params && param.params.hasOwnProperty("url") && param.params.url != ""
+          var btns: any = []
+          if (hasLink) {
+            btns.push({ text: "OK", onPress: () => Linking.openURL(param.params.url) })
+          } else {
+            btns.push({ text: "OK", onPress: () => { }, style: "cancel" })
+          }
+          Alert.alert(
+            param.title,
+            param.message,
+            btns, { cancelable: false }
+          )
+          break;
+        case "default":
+          if (param.module && param.module != "") {
+            if (!String(param.module).includes("/")) param.module = param.module + "/index"
+            LibNavigation.navigate(param.module, param.params)
+          }
+          break;
+        default:
+          break;
+      }
   }
 
-  openNotif(data: any): void {
+  static openNotif(data: any): void {
     const salt = esp.config("salt");
     const config = esp.config();
     var uri = config.protocol + "://" + config.domain + config.uri + "user/push-read"
@@ -188,7 +190,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     }, (msg: string) => {
       // esp.log(msg)
     }, 1)
-    var param = JSON.parse(data.params)    
+    var param = JSON.parse(data.params)
     switch (param.action) {
       case "alert":
         var hasLink = param.arguments.hasOwnProperty("url") && param.arguments.url != ""
@@ -208,7 +210,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
       case "default":
         if (param.module != "") {
           if (!String(param.module).includes("/")) param.module = param.module + "/index"
-          this.props.navigation.navigate(param.module, param.arguments)
+          LibNavigation.navigate(param.module, param.arguments)
         }
         break;
       default:
@@ -244,7 +246,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
         <LibList
           data={data}
           renderItem={(item: any, index: number) => (
-            <TouchableOpacity onPress={() => this.openNotif(item)} >
+            <TouchableOpacity onPress={() => Enotification.openNotif(item)} >
               <View style={[{ padding: 16, flexDirection: "row", backgroundColor: "white", marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
                 <View style={{}} >
                   <Text style={{ color: item.status == 2 ? "#999" : colorPrimary, fontFamily: item.status == 2 ? "Roboto" : "Roboto_medium", marginBottom: 8 }} >{item.title}</Text>

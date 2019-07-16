@@ -16,8 +16,10 @@ import {
   LibTheme,
   LibLocale,
   LibDialog,
+  LibStyle,
   LibImage,
-  LibProgress
+  LibProgress,
+  LibNavigation
 } from 'esoftplay';
 
 export interface UserIndexProps {
@@ -69,9 +71,11 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
   async componentDidMount(): Promise<void> {
     super.componentDidMount()
     LibTheme.getTheme()
-    LibLocale.getLocale()
+    LibLocale.getLanguage()
     if (esp.config().notification == 1) {
-      LibNotification.listen((notifObj: any) => { })
+      LibNotification.listen((notifObj: any) => {
+        esp.log(notifObj);
+      })
     }
     var push_id = await AsyncStorage.getItem("push_id");
     if (!push_id) {
@@ -129,9 +133,9 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
   render(): any {
     if (this.state.loading) return null
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingBottom: LibStyle.isIphoneX ? 30 : 0 }}>
         <LibWorker />
-        <Router onNavigationStateChange={this.onNavigationStateChange} />
+        <Router ref={(r) => LibNavigation.setRef(r)} onNavigationStateChange={this.onNavigationStateChange} />
         <LibNet_status />
         <LibDialog style={'default'} />
         <LibImage />

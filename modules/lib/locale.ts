@@ -1,8 +1,7 @@
 import React from "react";
-import { esp, LibUtils } from 'esoftplay';
+import { LibUtils } from 'esoftplay';
 import { store } from "../../../../App";
-import { Updates } from 'expo';
-import { Alert, AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
 
 export default class local {
@@ -21,16 +20,16 @@ export default class local {
     }
   }
 
-  static setLocale(localeId: string, navigation: any, isLogin?: boolean): void {
+  static setLanguage(langId: string, navigation: any, isLogin?: boolean): void {
     store.dispatch({
       type: 'lib_locale_set_id',
-      payload: localeId
+      payload: langId
     })
     LibUtils.navReset(navigation, isLogin)
-    AsyncStorage.setItem('locale', localeId)
+    AsyncStorage.setItem('locale', langId)
   }
 
-  static getLocale(): void {
+  static getLanguage(): void {
     AsyncStorage.getItem('locale').then((locale) => {
       if (locale) {
         store.dispatch({

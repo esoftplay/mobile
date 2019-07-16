@@ -170,7 +170,7 @@ export default class m extends LibComponent<LibInputProps, LibInputState>{
     const { label, placeholder, defaultValue, helper, editable, inactive, mask, suffix, icon, onPress } = this.props
     const { hasFocus, error } = this.state
     const stateHelper = this.state.helper
-    let errorFocusOrIdle = error ? LibStyle.colorRed : hasFocus ? LibTheme.colors(...LibStyle._colorPrimary) : LibTheme.colors(...LibStyle._colorTextTertiary)
+    let errorFocusOrIdle = error ? 'red' : hasFocus ? LibTheme.colors(...LibStyle._colorPrimary) : LibTheme.colors(...LibStyle._colorTextTertiary)
     let inputView = () => (
       <View style={{ marginTop: 3, paddingHorizontal: 16, paddingVertical: 1 }} >
         <LibTextstyle text={label || ''} textStyle={'caption1'} style={{ color: errorFocusOrIdle }} />
@@ -194,7 +194,7 @@ export default class m extends LibComponent<LibInputProps, LibInputState>{
               fontSize: 17.5,
               fontFamily: 'Roboto',
               color: error
-                ? LibStyle.colorRed
+                ? 'red'
                 : inactive == true
                   ? LibTheme.colors(...LibStyle._colorTextTertiary)
                   : hasFocus
@@ -218,22 +218,22 @@ export default class m extends LibComponent<LibInputProps, LibInputState>{
         <View style={{ flexDirection: 'row', borderTopColor: errorFocusOrIdle, borderTopWidth: 1 }} >
           {
             error ?
-              <LibTextstyle text={error} textStyle={'caption1'} style={{ color: LibStyle.colorRed, fontSize: 11 }} />
+              <LibTextstyle text={error} textStyle={'caption1'} style={{ color: 'red', fontSize: 11 }} />
               :
-              <LibTextstyle text={' '} textStyle={'caption1'} style={{ color: LibStyle.colorRed, opacity: 0, }} />
+              <LibTextstyle text={' '} textStyle={'caption1'} style={{ color: 'red', opacity: 0, }} />
           }
           <View style={{ flex: 1 }} />
           {
             stateHelper ?
               <LibTextstyle text={stateHelper} textStyle={'caption1'} style={{ color: errorFocusOrIdle, textAlign: 'right', marginLeft: 100, fontSize: 11 }} />
               :
-              <LibTextstyle text={' '} textStyle={'caption1'} style={{ color: LibStyle.colorRed, opacity: 0 }} />
+              <LibTextstyle text={' '} textStyle={'caption1'} style={{ color: 'red', opacity: 0 }} />
           }
           {
             helper ?
               <LibTextstyle text={helper} textStyle={'caption1'} style={{ color: errorFocusOrIdle, textAlign: 'right', marginLeft: 100, fontSize: 11 }} />
               :
-              <LibTextstyle text={' '} textStyle={'caption1'} style={{ color: LibStyle.colorRed, opacity: 0 }} />
+              <LibTextstyle text={' '} textStyle={'caption1'} style={{ color: 'red', opacity: 0 }} />
           }
         </View>
       </View>

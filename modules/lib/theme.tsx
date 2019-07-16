@@ -3,6 +3,8 @@ import { AsyncStorage } from 'react-native';
 import { esp, LibUtils, LibStyle } from 'esoftplay';
 import { store } from '../../../../App';
 
+const { colorPrimary, colorAccent } = LibStyle
+
 export default class m {
 
   static initState = {
@@ -42,70 +44,71 @@ export default class m {
       }
     })
   }
+
   static _barStyle(): string {
-    return m.colors(...LibStyle._barStyle)
+    return m.colors(['dark', 'light'])
   }
 
   static _colorPrimary(): string {
-    return m.colors(...LibStyle._colorPrimary)
-  }
-  
-  static _colorAccent(): string {
-    return m.colors(...LibStyle._colorAccent)
-  }
-  static _colorHeader(): string {
-    return m.colors(...LibStyle._colorHeader)
-  }
-  static _colorHeaderText(): string {
-    return m.colors(...LibStyle._colorHeaderText)
-  }
-  static _colorButtonPrimary(): string {
-    return m.colors(...LibStyle._colorButtonPrimary)
-  }
-  static _colorButtonTextPrimary(): string {
-    return m.colors(...LibStyle._colorButtonTextPrimary)
-  }
-  static _colorButtonSecondary(): string {
-    return m.colors(...LibStyle._colorButtonSecondary)
-  }
-  static _colorButtonTextSecondary(): string {
-    return m.colors(...LibStyle._colorButtonTextSecondary)
-  }
-  static _colorButtonTertiary(): string {
-    return m.colors(...LibStyle._colorButtonTertiary)
-  }
-  static _colorButtonTextTertiary(): string {
-    return m.colors(...LibStyle._colorButtonTextTertiary)
-  }
-  static _colorBackgroundPrimary(): string {
-    return m.colors(...LibStyle._colorBackgroundPrimary)
-  }
-  static _colorBackgroundSecondary(): string {
-    return m.colors(...LibStyle._colorBackgroundSecondary)
-  }
-  static _colorBackgroundTertiary(): string {
-    return m.colors(...LibStyle._colorBackgroundTertiary)
-  }
-  static _colorBackgroundCardPrimary(): string {
-    return m.colors(...LibStyle._colorBackgroundCardPrimary)
-  }
-  static _colorBackgroundCardSecondary(): string {
-    return m.colors(...LibStyle._colorBackgroundCardSecondary)
-  }
-  static _colorBackgroundCardTertiary(): string {
-    return m.colors(...LibStyle._colorBackgroundCardTertiary)
-  }
-  static _colorTextPrimary(): string {
-    return m.colors(...LibStyle._colorTextPrimary)
-  }
-  static _colorTextSecondary(): string {
-    return m.colors(...LibStyle._colorTextSecondary)
-  }
-  static _colorTextTertiary(): string {
-    return m.colors(...LibStyle._colorTextTertiary)
+    return m.colors([colorPrimary, colorPrimary])
   }
 
-  static colors(...colors: string[]): string {
+  static _colorAccent(): string {
+    return m.colors([colorAccent, colorAccent])
+  }
+  static _colorHeader(): string {
+    return m.colors(['#3E50B4', '#292B37'])
+  }
+  static _colorHeaderText(): string {
+    return m.colors(['white', 'white'])
+  }
+  static _colorButtonPrimary(): string {
+    return m.colors(['#3E50B4', '#3E50B4'])
+  }
+  static _colorButtonTextPrimary(): string {
+    return m.colors(['white', 'white'])
+  }
+  static _colorButtonSecondary(): string {
+    return m.colors(['#3E50B4', '#3E50B4'])
+  }
+  static _colorButtonTextSecondary(): string {
+    return m.colors(['white', 'white'])
+  }
+  static _colorButtonTertiary(): string {
+    return m.colors(['#3E50B4', '#3E50B4'])
+  }
+  static _colorButtonTextTertiary(): string {
+    return m.colors(['white', 'white'])
+  }
+  static _colorBackgroundPrimary(): string {
+    return m.colors(['white', '#202529'])
+  }
+  static _colorBackgroundSecondary(): string {
+    return m.colors(['white', '#202529'])
+  }
+  static _colorBackgroundTertiary(): string {
+    return m.colors(['white', '#202529'])
+  }
+  static _colorBackgroundCardPrimary(): string {
+    return m.colors(['white', '#2B2F38'])
+  }
+  static _colorBackgroundCardSecondary(): string {
+    return m.colors(['white', '#2B2F38'])
+  }
+  static _colorBackgroundCardTertiary(): string {
+    return m.colors(['white', '#2B2F38'])
+  }
+  static _colorTextPrimary(): string {
+    return m.colors(['#353535', 'white'])
+  }
+  static _colorTextSecondary(): string {
+    return m.colors(['#666666', 'white'])
+  }
+  static _colorTextTertiary(): string {
+    return m.colors(['#999999', 'white'])
+  }
+
+  static colors(colors: string[]): string {
     const _store: any = store.getState();
     const _themeName = _store.lib_theme.theme;
     const _themes: string[] = esp.config('theme');
@@ -115,5 +118,4 @@ export default class m {
     else
       return colors[0];
   }
-
 }

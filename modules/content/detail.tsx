@@ -23,7 +23,8 @@ import {
   LibStyle,
   LibWebview,
   ContentVideo,
-  LibComponent
+  LibComponent,
+  LibNavigation
 } from "esoftplay";
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = LibStyle;
 const config = esp.config();
@@ -289,7 +290,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                     return <TouchableWithoutFeedback
                       key={image + i}
                       style={{ flex: 1, width: width, height: HEADER_MAX_HEIGHT }}
-                      onPress={() => this.props.navigation.navigate("content/zoom", { images: images, position: this.state.images_page - 1 })} >
+                      onPress={() => LibNavigation.navigate("content/zoom", { images: images, position: this.state.images_page - 1 })} >
                       <View>
                         <Image
                           style={styles.backgroundImage}
