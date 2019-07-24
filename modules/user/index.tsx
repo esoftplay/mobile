@@ -85,9 +85,9 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     for (let i = 0; i < navs.length; i++) {
       const nav = navs[i];
       navigations[nav] = esp.mod(nav);
-      if (!this.isReactComponent(navigations[nav])) {
-        delete navigations[nav]
-      }
+      // if (!this.isReactComponent(navigations[nav])) {
+      //   delete navigations[nav]
+      // }
     }
     UserClass.isLogin(async (isLogin) => {
       var config: StackNavigatorConfig = {

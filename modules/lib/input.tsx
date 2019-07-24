@@ -170,7 +170,7 @@ export default class m extends LibComponent<LibInputProps, LibInputState>{
     const { label, placeholder, defaultValue, helper, editable, inactive, mask, suffix, icon, onPress } = this.props
     const { hasFocus, error } = this.state
     const stateHelper = this.state.helper
-    let errorFocusOrIdle = error ? 'red' : hasFocus ? LibTheme.colors(...LibStyle._colorPrimary) : LibTheme.colors(...LibStyle._colorTextTertiary)
+    let errorFocusOrIdle = error ? 'red' : hasFocus ? LibTheme._colorPrimary() : LibTheme._colorTextTertiary()
     let inputView = () => (
       <View style={{ marginTop: 3, paddingHorizontal: 16, paddingVertical: 1 }} >
         <LibTextstyle text={label || ''} textStyle={'caption1'} style={{ color: errorFocusOrIdle }} />
@@ -181,8 +181,8 @@ export default class m extends LibComponent<LibInputProps, LibInputState>{
             onTouchEnd={() => editable == false && onPress ? onPress() : {}}
             onBlur={() => this.setState({ hasFocus: false })}
             placeholder={placeholder || ''}
-            selectionColor={LibUtils.hexToRgba(LibTheme.colors(...LibStyle._colorPrimary), 0.5)}
-            placeholderTextColor={LibTheme.colors(...LibStyle._colorTextTertiary)}
+            selectionColor={LibUtils.hexToRgba(LibTheme._colorPrimary(), 0.5)}
+            placeholderTextColor={LibTheme._colorTextTertiary()}
             underlineColorAndroid={'transparent'}
             maxLength={mask ? mask.length : undefined}
             allowFontScaling={false}
@@ -196,10 +196,10 @@ export default class m extends LibComponent<LibInputProps, LibInputState>{
               color: error
                 ? 'red'
                 : inactive == true
-                  ? LibTheme.colors(...LibStyle._colorTextTertiary)
+                  ? LibTheme._colorTextTertiary()
                   : hasFocus
-                    ? LibTheme.colors(...LibStyle._colorPrimary)
-                    : LibTheme.colors(...LibStyle._colorTextPrimary),
+                    ? LibTheme._colorPrimary()
+                    : LibTheme._colorTextPrimary(),
             }, { ...this.props.style }]}
             onChangeText={(e) => {
               this.text = this.mask(e)

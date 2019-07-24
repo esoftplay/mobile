@@ -192,12 +192,10 @@ yarn.lock\n\
 import { applyMiddleware, createStore } from 'redux';\n\
 import { persistStore } from 'redux-persist'\n\
 import { PersistGate } from 'redux-persist/integration/react'\n\
-import thunk from 'redux-thunk';\n\
 import { Provider } from 'react-redux'\n\
 import { esp } from 'esoftplay';\n\
 \n\
-const middleware = applyMiddleware(thunk)\n\
-export const store = createStore(esp.reducer(), middleware)\n\
+export const store = createStore(esp.reducer())\n\
 const persistor = persistStore(store)\n\
 \n\
 export default class App extends React.Component {\n\

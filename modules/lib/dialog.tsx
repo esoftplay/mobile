@@ -139,13 +139,13 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
     const { visible, icon, view, style, title, msg, ok, cancel, onPressOK, onPressCancel } = this.props
 
     if (!visible) return null
-    var color = LibTheme.colors(...LibStyle._colorPrimary)
+    var color = LibTheme._colorPrimary()
     if (style == 'danger') {
       color = '#DE204C'
     }
     return (
       <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', flex: 1 }} >
-        <View style={{ backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundCardPrimary), padding: 10, borderRadius: 4, width: LibStyle.width - 80 }} >
+        <View style={{ backgroundColor: LibTheme._colorBackgroundCardPrimary(), padding: 10, borderRadius: 4, width: LibStyle.width - 80 }} >
           {
             view ?
               view
@@ -160,12 +160,12 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
                 </View>
                 <View style={{ flexDirection: 'row', marginBottom: -5, marginHorizontal: -5, borderRadius: 4, overflow: 'hidden', marginTop: 24 }} >
                   {onPressCancel &&
-                    <TouchableOpacity onPress={() => { onPressCancel(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, marginRight: 2, borderRadius: 4, backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundPrimary) }} >
+                    <TouchableOpacity onPress={() => { onPressCancel(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, marginRight: 2, borderRadius: 4, backgroundColor: LibTheme._colorBackgroundPrimary() }} >
                       <LibTextstyle textStyle={"body"} text={cancel || ''} />
                     </TouchableOpacity>
                   }
                   {onPressOK &&
-                    <TouchableOpacity onPress={() => { onPressOK(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, borderRadius: 4, backgroundColor: LibTheme.colors(...LibStyle._colorBackgroundPrimary) }} >
+                    <TouchableOpacity onPress={() => { onPressOK(); m.hide() }} style={{ alignItems: "center", justifyContent: "center", padding: 10, flex: 1, borderRadius: 4, backgroundColor: LibTheme._colorBackgroundPrimary() }} >
                       <LibTextstyle textStyle={"body"} text={ok || ''} style={{ color: color }} />
                     </TouchableOpacity>
                   }

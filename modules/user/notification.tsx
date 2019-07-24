@@ -1,7 +1,7 @@
 // 
 
 import React from "react";
-import { TouchableOpacity, View, Alert, Linking, StatusBar } from "react-native";
+import { TouchableOpacity, View, StatusBar } from "react-native";
 import {
   esp,
   DbNotification,
@@ -10,8 +10,8 @@ import {
   UserClass,
   LibList,
   LibComponent,
+  LibNotification,
   LibStyle,
-  LibNavigation
 } from "esoftplay";
 import { store } from "../../../../App";
 import { connect } from "react-redux"
@@ -132,92 +132,6 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     Enotification.user_notification_loadData()
   }
 
-  static openPushNotif(data: any): void {
-    if (!data) return
-    if (typeof data == 'string')
-      data = JSON.parse(data)
-    const crypt = new LibCrypt();
-    const salt = esp.config("salt");
-    const config = esp.config();
-    var uri = config.protocol + "://" + config.domain + config.uri + "user/push-read"
-    new LibCurl(uri, {
-      notif_id: data.data.id,
-      secretkey: crypt.encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
-    }, (res, msg) => {
-      Enotification.user_notification_loadData();
-    }, (msg) => {
-
-    })
-    var param = data.data;
-    if (param.action)
-      switch (param.action) {
-        case "alert":
-          var hasLink = param.params && param.params.hasOwnProperty("url") && param.params.url != ""
-          var btns: any = []
-          if (hasLink) {
-            btns.push({ text: "OK", onPress: () => Linking.openURL(param.params.url) })
-          } else {
-            btns.push({ text: "OK", onPress: () => { }, style: "cancel" })
-          }
-          Alert.alert(
-            param.title,
-            param.message,
-            btns, { cancelable: false }
-          )
-          break;
-        case "default":
-          if (param.module && param.module != "") {
-            if (!String(param.module).includes("/")) param.module = param.module + "/index"
-            LibNavigation.navigate(param.module, param.params)
-          }
-          break;
-        default:
-          break;
-      }
-  }
-
-  static openNotif(data: any): void {
-    const salt = esp.config("salt");
-    const config = esp.config();
-    var uri = config.protocol + "://" + config.domain + config.uri + "user/push-read"
-    new LibCurl(uri, {
-      notif_id: data.notif_id,
-      secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
-    }, (res: any, msg: string) => {
-      const db = new DbNotification();
-      db.setRead(data.id)
-      Enotification.user_notification_setRead(data.id)
-    }, (msg: string) => {
-      // esp.log(msg)
-    }, 1)
-    var param = JSON.parse(data.params)
-    switch (param.action) {
-      case "alert":
-        var hasLink = param.arguments.hasOwnProperty("url") && param.arguments.url != ""
-        var btns = []
-        if (hasLink) {
-          btns.push({ text: "OK", onPress: () => Linking.openURL(param.arguments.url) })
-        } else {
-          btns.push({ text: "OK", onPress: () => { }, style: "cancel" })
-        }
-        Alert.alert(
-          data.title,
-          data.message,
-          btns,
-          { cancelable: false }
-        )
-        break;
-      case "default":
-        if (param.module != "") {
-          if (!String(param.module).includes("/")) param.module = param.module + "/index"
-          LibNavigation.navigate(param.module, param.arguments)
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
   render(): any {
     const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
@@ -246,7 +160,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
         <LibList
           data={data}
           renderItem={(item: any, index: number) => (
-            <TouchableOpacity onPress={() => Enotification.openNotif(item)} >
+            <TouchableOpacity onPress={() => LibNotification.openNotif(item)} >
               <View style={[{ padding: 16, flexDirection: "row", backgroundColor: "white", marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
                 <View style={{}} >
                   <Text style={{ color: item.status == 2 ? "#999" : colorPrimary, fontFamily: item.status == 2 ? "Roboto" : "Roboto_medium", marginBottom: 8 }} >{item.title}</Text>
