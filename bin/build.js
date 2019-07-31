@@ -9,8 +9,8 @@ const appjson = DIR + "app.json"
 const babelrc = DIR + ".babelrc"
 const gitignore = DIR + ".gitignore"
 const tsconfig = DIR + "tsconfig.json"
-const appts = DIR + "App.tsx"
 const appjs = DIR + "App.js"
+const appts = DIR + "App.tsx"
 const pathScript = DIR + "node_modules/react-native-scripts/build/bin/react-native-scripts.js"
 if (fs.existsSync(packjson)) {
 	var txt = fs.readFileSync(packjson, 'utf8');
@@ -55,6 +55,8 @@ if (fs.existsSync(packjson)) {
 		}
 	} else {
 		/* Update package.json for latest expo */
+		let stringExist = ''
+		let stringToBe = ''
 		rewrite = false
 		if (!$package.hasOwnProperty("scripts")) {
 			rewrite = true
@@ -68,22 +70,38 @@ if (fs.existsSync(packjson)) {
 		if (args[0] == "install") {
 			if (!$package.scripts.hasOwnProperty("start")) {
 				rewrite = true;
-				$package.scripts.start = "esp start && expo start"
+				stringExist = `"start": "expo start"`
+				stringToBe = `"start": "esp start && expo start"`
+				// $package.scripts.start = "esp start && expo start"
 			} else {
 				if (!$package.scripts.start.match(/esp start/)) {
 					rewrite = true
-					$package.scripts.start = "esp start && " + $package.scripts.start
+					stringExist = `"start": "expo start"`
+					stringToBe = `"start": "esp start && expo start"`
+					// $package.scripts.start = "esp start && " + $package.scripts.start
 				}
 			}
 		} else
 			if (args[0] == "uninstall") {
 				if ($package.scripts.start.match(/esp start/)) {
 					rewrite = true
-					$package.scripts.start = $package.scripts.start.replace(/esp start(\s+&&\s+)/ig, "");
+					stringExist = `"start": "esp start && expo start"`
+					stringToBe = `"start": "expo start"`
+					// $package.scripts.start = $package.scripts.start.replace(/esp start(\s+&&\s+)/ig, "");
 				}
 			}
 		if (rewrite) {
-			console.log("Please change scripts.start in package.json into '" + $package.scripts.start + "'")
+			fs.readFile(packjson, 'utf8', function (err, data) {
+				if (err) {
+					return console.log(err);
+				}
+				var result = data.replace(stringExist, stringToBe);
+
+				fs.writeFile(packjson, result, 'utf8', function (err) {
+					if (err) return console.log(err);
+				});
+			});
+			// console.log("Please change scripts.start in package.json into '" + $package.scripts.start + "'")
 			// spawn('node', ['./packager.js', args[0], packjson], { stdio: 'inherit' })
 			// fs.writeFile(packjson, JSON.stringify($package, null, 2), (err) => {
 			//   if (err) throw err;
@@ -189,7 +207,7 @@ yarn.lock\n\
 			});
 
 			const AppJS = `import React from 'react';\n\
-import { applyMiddleware, createStore } from 'redux';\n\
+import { createStore } from 'redux';\n\
 import { persistStore } from 'redux-persist'\n\
 import { PersistGate } from 'redux-persist/integration/react'\n\
 import { Provider } from 'react-redux'\n\
@@ -222,12 +240,15 @@ export default class App extends React.Component {\n\
 				"expo-sqlite",
 				"expo-file-system",
 				"expo-constants",
-				"expo-font"
+				"expo-font",
+				"react-native-reanimated"
 			]
+			// "react-native-gesture-handler",
 			for (let i = 0; i < expoLib.length; i++) {
 				const element = expoLib[i];
 				bashScript += element + ' '
 			}
+			bashScript += ' && npm install react-native-gesture-handler@1.0.14'
 			bashScript += ' && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
 			fs.writeFile(appts, AppJS, (err) => {
 				if (err) throw err;
@@ -244,6 +265,7 @@ export default class App extends React.Component {\n\
 					});
 
 				console.log('App.js has been replace to App.tsx');
+				console.log('Please wait until process finished...');
 			});
 		}
 	}

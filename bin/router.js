@@ -242,10 +242,10 @@ function createIndex() {
     "    static routes(): any;\n" +
     "    static getTokenAsync(callback: (token: string) => void): void;\n" +
     "    static notif(): any;\n" +
-    "  }\n";
+    "  }";
   for (clsName in tmpTask) {
     if (tmpTask[clsName]["class"]) {
-      Text += "\n";
+      // Text += "\n";
       for (var i = 0; i < tmpTask[clsName]["type"].length; i++) {
         Text += "\n  " + tmpTask[clsName]["type"][i].replace(/\n/g, "\n  ");
       }
@@ -264,7 +264,8 @@ function createIndex() {
       if (isFilled) {
         Text += "\n  ";
       }
-      Text += "}\n";
+      // Text += "}\n";
+      Text += "}";
     }
   }
   Text += "}"

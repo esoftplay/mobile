@@ -1,4 +1,4 @@
-// 
+//
 
 import React from "react";
 import { TouchableOpacity, View, StatusBar } from "react-native";
@@ -72,7 +72,10 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
         secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
       }
       UserClass.load((user: any) => {
-        if (user) post["user_id"] = user.id
+        if (user) {
+          post["user_id"] = user.id
+          post["group_id"] = esp.config('group_id')
+        }
         Enotification.user_notification_fetchData(uri, post, db);
       })
     })

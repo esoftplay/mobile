@@ -100,6 +100,9 @@ export default class esp {
     if (!config.hasOwnProperty('api') || config.api.length == 0) {
       config.api = "api";
     }
+    if (!config.hasOwnProperty('group_id')) {
+      config.group_id = '0'
+    }
     if (!config.hasOwnProperty('langIds')) {
       config.langIds = ["id", "en"];
     }

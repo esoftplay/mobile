@@ -2,57 +2,33 @@
 
 const { spawn } = require('child_process');
 const fs = require('fs');
-var app = require('../watch')
 var modpath = ["templates/", "modules/", "node_modules/esoftplay/modules/"];
 var syspath = ["./assets/", "./modules/", "./templates/"]
 var cacheDir = "./node_modules/esoftplay/cache/";
-var cachePID = cacheDir+"pid.txt";
+var watcherConf = "./node_modules/esoftplay/bin/watchman.json";
 var args = process.argv.slice(2);
 var action = args[0];
 
 // console.log(modpath, "sdofsjdofjsd")
-function execution()
-{
-	var ret = spawn('node', ['node_modules/esoftplay/bin/router.js'])
-	ret.stdout.on('data', function (data) {
-	  console.log(data.toString());
-	});
-	ret.stderr.on('data', function (data) {
-	  console.log('stderr: ' + data.toString());
-	});
-}
-function watcher()
-{
-	watchstop()
-	var watch  = spawn('node', ['node_modules/.bin/esoftplay', 'watch'], {stdio: 'ignore', detached: true });
-	const newPID = watch.pid;
-	watch.unref();
-	if (newPID) {
-		if (!fs.existsSync(cacheDir)) {
-			fs.mkdirSync(cacheDir);
-		}
-		fs.writeFile(cachePID, newPID, (err) => {
-		  if (err) throw err;
-		  // console.log('new PID has been cached');
+function execution() {
+	const exec = require('child_process').exec;
+	var yourscript = exec(
+		'watchman -j < ' + watcherConf,
+		(error, stdout, stderr) => {
+			console.log(stdout);
+			console.log(stderr);
+			if (error !== null) {
+				console.log(`exec error: ${error}`);
+			}
 		});
-	}
 }
-function watchstop() {
-	if (fs.existsSync(cachePID)) {
-		var oldPID = fs.readFileSync(cachePID, 'utf8').trim();
-		if (oldPID) {
-			spawn("kill", [oldPID], {stdio: 'ignore', detached: true }, function(stat){
-				fs.unlink(cachePID);
-			});
-		}
-	}
-}
+
 function getFile(module) {
 	var out = '';
 	var file;
 	for (var i = 0; i < modpath.length; i++) {
-		file = modpath[i]+module+'.js';
-		if (fs.existsSync('./'+file)) {
+		file = modpath[i] + module + '.js';
+		if (fs.existsSync('./' + file)) {
 			out = file;
 			break;
 		}
@@ -63,8 +39,8 @@ function getFiles(module) {
 	var out = [];
 	var file;
 	for (var i = 0; i < modpath.length; i++) {
-		file = modpath[i]+module+'.js';
-		if (fs.existsSync('./'+file)) {
+		file = modpath[i] + module + '.js';
+		if (fs.existsSync('./' + file)) {
 			out.push(file);
 		}
 	}
@@ -135,7 +111,7 @@ class {$ClassName$} extends {$ClassUpper$} {\n\
 export default connect({$ClassName$}.mapStateToProps)({$ClassName$});"
 	return Template.replace(/\{\$ClassName\$\}/g, ClassName).replace(/\{\$ClassUpper\$\}/g, ClassUpper).replace(/\{\$ClassImport\$\}/g, ClassImport)
 }
-switch(action) {
+switch (action) {
 	// esoftplay help
 	case 'help':
 		var Help = "esp(1)                    BSD General Commands Manual                    esp(1)\n\
@@ -174,7 +150,6 @@ EXAMPLE\n\
 	case "test":
 	case "start":
 		execution();
-		watcher();
 		break;
 	// esoftplay watch
 	case "watch":
@@ -183,29 +158,19 @@ EXAMPLE\n\
 			if (!fs.existsSync(path)) {
 				fs.mkdirSync(path);
 			}
-			app.watchTree(path, function (f, curr, prev) {
-				if (curr!=null || prev!=null) {
-					execution()
-					watcher()
-				}
-			})
+			execution()
 		}
 		break;
 	// esoftplay stop
 	case "stop":
-		watchstop();
-		for (var i = 0; i < syspath.length; i++) {
-			var path = syspath[i]
-			app.unwatchTree(path)
-		}
 		break;
 	default:
 		var mods = [];
 		if (fs.existsSync(cacheDir)) {
-			if (fs.existsSync(cacheDir+'navigations.js')) {
-				var navs = fs.readFileSync(cacheDir+'navigations.js', 'utf8').trim();
+			if (fs.existsSync(cacheDir + 'navigations.js')) {
+				var navs = fs.readFileSync(cacheDir + 'navigations.js', 'utf8').trim();
 				var m = navs.match(/\[(.*?)\]/)
-				var mods = m[1].substr(1, m[1].length-2).split('", "')
+				var mods = m[1].substr(1, m[1].length - 2).split('", "')
 			}
 		}
 		if (!action) {
@@ -213,22 +178,22 @@ EXAMPLE\n\
 				var rmods = [];
 				for (var i = 0; i < mods.length; i++) {
 					mod = mods[i];
-					var r1 = new RegExp("/modules/"+mod+".js");
-					var r2 = new RegExp("/"+mod+".js");
+					var r1 = new RegExp("/modules/" + mod + ".js");
+					var r2 = new RegExp("/" + mod + ".js");
 					file = getFile(mod)
 						.replace(/node_modules\//, '')
 						.replace(r1, '')
 						.replace(r2, '');
-					rmods.push(file.substr(0, 1) + ': ' +  mod);
+					rmods.push(file.substr(0, 1) + ': ' + mod);
 				}
-				console.log("Available Modules :\n  "+rmods.join("\n  "))
-			}else{
+				console.log("Available Modules :\n  " + rmods.join("\n  "))
+			} else {
 				console.log('the available modules is not rendered yet. please try `esp start` before executing your last command!')
 			}
-		}else{
+		} else {
 			if (action.length == 1 || ['create', 'edit', 'list', 'new', 'info', 'view'].indexOf(action) > -1) {
 				var module = args[1];
-			}else{
+			} else {
 				var module = args[0];
 			}
 			var modules = module.split('/');
@@ -237,15 +202,15 @@ EXAMPLE\n\
 				module = modules.join('/')
 			}
 			var output = '';
-			switch(action) {
+			switch (action) {
 				case 'e':
 				case 'edit':
 					if (mods.indexOf(module) === -1) {
-						output = 'SORRY, "'+module+'" is not available';
-					}else{
+						output = 'SORRY, "' + module + '" is not available';
+					} else {
 						var file = getFile(module);
 						spawn("code", [file])
-						output = 'you can edit "'+file+'" in your editor now'
+						output = 'you can edit "' + file + '" in your editor now'
 					}
 					break;
 				case 'l':
@@ -254,25 +219,25 @@ EXAMPLE\n\
 					var listmods = [];
 					for (var i = 0; i < mods.length; i++) {
 						mod = mods[i];
-						var r = new RegExp("^"+modules[0]);
+						var r = new RegExp("^" + modules[0]);
 						if (mod.match(r)) {
 							listmods.push(mod);
 						}
 					}
 					for (var i = 0; i < listmods.length; i++) {
 						mod = listmods[i];
-						var r1 = new RegExp("/modules/"+mod+".js");
-						var r2 = new RegExp("/"+mod+".js");
+						var r1 = new RegExp("/modules/" + mod + ".js");
+						var r2 = new RegExp("/" + mod + ".js");
 						file = getFile(mod)
 							.replace(/node_modules\//, '')
 							.replace(r1, '')
 							.replace(r2, '');
-						out.push(file.substr(0, 1) + ': ' +  mod);
+						out.push(file.substr(0, 1) + ': ' + mod);
 					}
 					if (out.length > 0) {
-						output = "The following modules are available in '"+modules[0]+"':\n  "+out.join("\n  ");
-					}else{
-						output = "SORRY, module '"+modules[0]+"' is not available";
+						output = "The following modules are available in '" + modules[0] + "':\n  " + out.join("\n  ");
+					} else {
+						output = "SORRY, module '" + modules[0] + "' is not available";
 					}
 					break;
 				case 'c':
@@ -281,46 +246,46 @@ EXAMPLE\n\
 				case 'new':
 					var files = getFiles(module);
 					var newFile = '';
-					var Cls = (modules[1]=='index') ? modules[0] : modules[1];
+					var Cls = (modules[1] == 'index') ? modules[0] : modules[1];
 
 					if (files.length > 0) {
-							switch(files[0].substr(0, 7)) {
-								case "templat":
-									spawn("code", [files[0]])
-									output = '"'+files[0]+'" is already exists, you can edit now'
-									break;
-								case "modules":
-									newFile = 'templates/'+module+'.js'
-									ClassName = 'T'+Cls;
-									ClassUpper = 'M'+Cls;
-									ClassImport = 'import '+ClassUpper+' from "../../modules/'+module+'";'+"\n";
-									break;
-								case "node_mo":
-									newFile = 'modules/'+module+'.js'
-									ClassName = 'M'+Cls;
-									ClassUpper = 'E'+Cls;
-									ClassImport = 'import '+ClassUpper+' from "esoftplay/modules/'+module+'";'+"\n";
-									break;
-							}
-					}else{
-						newFile = 'modules/'+module+'.js'
-						ClassName = 'M'+Cls;
+						switch (files[0].substr(0, 7)) {
+							case "templat":
+								spawn("code", [files[0]])
+								output = '"' + files[0] + '" is already exists, you can edit now'
+								break;
+							case "modules":
+								newFile = 'templates/' + module + '.js'
+								ClassName = 'T' + Cls;
+								ClassUpper = 'M' + Cls;
+								ClassImport = 'import ' + ClassUpper + ' from "../../modules/' + module + '";' + "\n";
+								break;
+							case "node_mo":
+								newFile = 'modules/' + module + '.js'
+								ClassName = 'M' + Cls;
+								ClassUpper = 'E' + Cls;
+								ClassImport = 'import ' + ClassUpper + ' from "esoftplay/modules/' + module + '";' + "\n";
+								break;
+						}
+					} else {
+						newFile = 'modules/' + module + '.js'
+						ClassName = 'M' + Cls;
 						ClassUpper = 'Component';
-						ClassImport = 'import React, { Component } from \'react\';'+"\n";
+						ClassImport = 'import React, { Component } from \'react\';' + "\n";
 					}
 					if (newFile) {
-						output = '"'+newFile+'" has been created, please make changes!'
+						output = '"' + newFile + '" has been created, please make changes!'
 						var content = '';
-						if (action=='n' || action=='new') {
+						if (action == 'n' || action == 'new') {
 							content = codeReducer(ClassName, ClassUpper, ClassImport);
-						}else{
+						} else {
 							content = codeTemplate(ClassName, ClassUpper, ClassImport);
 						}
 						var dirs = newFile.split('/');
 						var dir = '';
-						var j = dirs.length-1; // index terakhir adalah nama file jd jgn dibuat folder nya
+						var j = dirs.length - 1; // index terakhir adalah nama file jd jgn dibuat folder nya
 						for (var i = 0; i < j; i++) {
-							dir += dirs[i]+'/'
+							dir += dirs[i] + '/'
 							if (!fs.existsSync(dir)) {
 								fs.mkdirSync(dir);
 							}
@@ -335,9 +300,9 @@ EXAMPLE\n\
 				case 'info':
 					var files = getFiles(module);
 					if (files.length > 0) {
-						output = "Priority file in '"+module+"':\n- "+files.join("\n- ");
-					}else{
-						output = "SORRY, '"+module+"' is not available!";
+						output = "Priority file in '" + module + "':\n- " + files.join("\n- ");
+					} else {
+						output = "SORRY, '" + module + "' is not available!";
 					}
 					break;
 				case 'v':
@@ -345,9 +310,9 @@ EXAMPLE\n\
 				default:
 					var file = getFile(module);
 					if (file.length > 0) {
-						output = fs.readFileSync('./'+file).toString()+"\n\n## "+file+"\n";
-					}else{
-						output = "SORRY, '"+module+"' is not available!";
+						output = fs.readFileSync('./' + file).toString() + "\n\n## " + file + "\n";
+					} else {
+						output = "SORRY, '" + module + "' is not available!";
 					}
 					break;
 			}

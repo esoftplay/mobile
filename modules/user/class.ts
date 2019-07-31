@@ -1,4 +1,4 @@
-// 
+//
 import React from "react"
 import { AsyncStorage } from "react-native";
 import { store } from "../../../../App";
@@ -72,6 +72,7 @@ export default class eclass {
           const config = esp.config();
           var post: any = {
             user_id: 0,
+            group_id: esp.config('group_id'),
             username: "",
             token: token,
             push_id: "",
@@ -83,7 +84,7 @@ export default class eclass {
               user["user_id"] = user.id
               Object.keys(user).forEach((userfield) => {
                 Object.keys(post).forEach((postfield) => {
-                  if (postfield == userfield && postfield != "token" && postfield != "secretkey" && postfield != "push_id" && postfield != "device") {
+                  if (postfield == userfield && postfield != "token" && postfield != "secretkey" && postfield != "push_id" && postfield != "device" && postfield != 'group_id') {
                     post[postfield] = user[userfield]
                   }
                 })
