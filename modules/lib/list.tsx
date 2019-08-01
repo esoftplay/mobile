@@ -1,4 +1,4 @@
-// 
+//
 import React from "react"
 import { Component } from "react";
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider } from "recyclerlistview";
@@ -83,7 +83,7 @@ export default class EList extends LibComponent<LibListProps, LibListState> {
     super.componentDidMount()
     this.setState({ data: this.props.data })
     setTimeout(() => {
-      this.view.setNativeProps({ opacity: 1 })
+      this.view && this.view.setNativeProps && this.view.setNativeProps({ opacity: 1 })
     }, this.props.delay || 300);
   }
 

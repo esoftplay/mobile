@@ -68,15 +68,15 @@ export default class eutils {
       currency = "Rp"
     }
     if (typeof val === "number") {
-      return currency.replace(/\./g, "") + " " + String(val).replace(/,/g, ".")
+      return currency.replace(/\./g, "") + " " + String(val).replace(/,/g, ".");
     } else {
-      return currency.replace(/\./g, "") + " " + val.replace(/,/g, ".")
+      return currency.replace(/\./g, "") + " " + val.replace(/,/g, ".");
     }
   }
 
   static number(toNumber: string | number): string {
     var toNumb = typeof toNumber === "number" ? toNumber.toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,") : parseInt(toNumber).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,")
-    return String(toNumb).replace(/,/g, ".")
+    return String(toNumb).replace(/,/g, ".");
   }
 
   static countDays(start: string | Date, end: string | Date): number {

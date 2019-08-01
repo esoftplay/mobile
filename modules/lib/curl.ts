@@ -40,7 +40,7 @@ export default class ecurl {
         this.header["masterkey"] = new LibCrypt().encode(this.url)
       }
       r()
-    })
+    });
   }
 
   onDone(result: any, msg?: string): void {

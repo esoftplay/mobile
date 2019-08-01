@@ -1,4 +1,4 @@
-// 
+//
 
 import React from "react"
 import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from "recyclerlistview";
@@ -101,7 +101,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
     super.componentDidMount()
     this.setState({ data: this.dataProvider.cloneWithRows(this.props.children) })
     setTimeout(() => {
-      this.view.setNativeProps({ opacity: 1 })
+      this.view && this.view.setNativeProps && this.view.setNativeProps({ opacity: 1 })
     }, this.props.delay || 300);
   }
 

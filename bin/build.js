@@ -241,14 +241,14 @@ export default class App extends React.Component {\n\
 				"expo-file-system",
 				"expo-constants",
 				"expo-font",
+				"react-native-gesture-handler",
 				"react-native-reanimated"
 			]
-			// "react-native-gesture-handler",
 			for (let i = 0; i < expoLib.length; i++) {
 				const element = expoLib[i];
 				bashScript += element + ' '
 			}
-			bashScript += ' && npm install react-native-gesture-handler@1.0.14'
+			// bashScript += ' && npm install react-native-gesture-handler@1.0.14'
 			bashScript += ' && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
 			fs.writeFile(appts, AppJS, (err) => {
 				if (err) throw err;
