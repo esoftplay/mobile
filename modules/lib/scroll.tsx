@@ -76,6 +76,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
   state: LibScrollState;
   props: LibScrollProps;
   view: any;
+  fastScroll: any;
   constructor(props: LibScrollProps) {
     super(props);
     this.props = props;
@@ -97,6 +98,12 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
     return <View key={index.toString()} style={[{ width: width }]} >{data}</View>
   }
 
+  scrollToIndex(x: number, anim?: boolean): void {
+    if (!anim) anim = true;
+    this.fastScroll.scrollToIndex(x, anim)
+  }
+
+
   componentDidMount(): void {
     super.componentDidMount()
     this.setState({ data: this.dataProvider.cloneWithRows(this.props.children) })
@@ -115,6 +122,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
     return (
       <View ref={(e) => this.view = e} onLayout={(e: any) => this.setState({ width: e.nativeEvent.layout.width })} style={[{ flex: 1, opacity: 0 }]} >
         <RecyclerListView
+          ref={(e) => this.fastScroll = e}
           layoutProvider={this.layoutProvider}
           itemAnimator={new BaseItemAnimator()}
           dataProvider={this.state.data}

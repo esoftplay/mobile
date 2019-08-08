@@ -13,7 +13,7 @@ var action = args[0];
 function execution() {
 	const exec = require('child_process').exec;
 	var yourscript = exec(
-		'watchman -j < ' + watcherConf,
+		'node ./node_modules/esoftplay/bin/router.js && watchman -j < ' + watcherConf,
 		(error, stdout, stderr) => {
 			console.log(stdout);
 			console.log(stderr);

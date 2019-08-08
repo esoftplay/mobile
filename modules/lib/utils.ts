@@ -11,23 +11,34 @@ export default class eutils {
     if (!defOutput) {
       defOutput = "";
     }
-    var out = defOutput
-    if (props) {
-      if (props.navigation) {
-        if (props.navigation.state) {
-          if (props.navigation.state.params) {
-            if (props.navigation.state.params[key]) {
-              out = props.navigation.state.params[key];
-            }
-          }
-        }
-      }
-    }
-    return out;
+    return props
+      && props.navigation
+      && props.navigation.state
+      && props.navigation.state.params
+      && props.navigation.state.params[key]
+      || defOutput;
   }
 
-  static getKeyBackOf(routeName: string, store: any): string {
-    var routes = store.getState().user_index.routes
+  static getReduxState(key: string, ...keys: string[]): any {
+    let state: any = store.getState()
+    if (key) {
+      var _params = [key, ...keys]
+      if (_params.length > 0)
+        for (let i = 0; i < _params.length; i++) {
+          const key = _params[i];
+          if (state.hasOwnProperty(key)) {
+            state = state[key];
+          } else {
+            state = {};
+          }
+        }
+    }
+    return state;
+  }
+
+  static getKeyBackOf(routeName: string, store?: any): string {
+    console.warn('LibUtils.getKeyBackOf is deprecated, use LibUtils.navGetKey instead')
+    var routes = eutils.getReduxState('user_index', 'routes')
     var keyBack = ""
     for (let i = 0; i < routes.length; i++) {
       const item = routes[i];
@@ -37,6 +48,19 @@ export default class eutils {
       }
     }
     return keyBack
+  }
+
+  static navGetKey(routeName: string): string {
+    var routes = eutils.getReduxState('user_index', 'routes')
+    var keyNav = ""
+    for (let i = 0; i < routes.length; i++) {
+      const item = routes[i];
+      if (item.routeName == routeName) {
+        keyNav = item.key
+        break
+      }
+    }
+    return keyNav
   }
 
   static navReset(navigation: any, isLogin?: boolean): void {
@@ -49,7 +73,7 @@ export default class eutils {
   }
 
   static navReplace(store: any, navigation: any, routeName: string, params?: any): void {
-    (store.getState().user_index.routes).some((item: any) => item.routeName == routeName) && navigation.goBack(eutils.getKeyBackOf(routeName, store))
+    (store.getState().user_index.routes).some((item: any) => item.routeName == routeName) && navigation.goBack(eutils.navGetKey(routeName))
     navigation.navigate(routeName, params)
   }
 
