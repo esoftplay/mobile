@@ -1,4 +1,4 @@
-// 
+//
 import react from "react";
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions'
@@ -72,6 +72,9 @@ export default class enotification {
         // j();
         return;
       }
+      setTimeout(() => {
+        callback('undetermined')
+      }, 15000);
       r(await Notifications.getExpoPushTokenAsync());
       if (callback) callback(await Notifications.getExpoPushTokenAsync());
     })

@@ -414,7 +414,7 @@ function createRouter() {
       if (HookModules.includes(nav)) {
         item += "" +
           "import * as " + ucword(module) + ucword(task) + SuffixHooksProperty + " from '../../." + Modules[module][task] + "';\n" +
-          "delete " + ucword(module) + ucword(task) + SuffixHooksProperty + ".default;\n" +
+          // "delete " + ucword(module) + ucword(task) + SuffixHooksProperty + ".default;\n" +
           "export { " + ucword(module) + ucword(task) + SuffixHooksProperty + " };\n"
       }
       if (module == 'lib' && task == 'component') {

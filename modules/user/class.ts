@@ -26,6 +26,9 @@ export default class eclass {
     return new Promise((r, j) => {
       store.dispatch({ type: "user_class_create", payload: user });
       AsyncStorage.setItem("user", JSON.stringify(user))
+      if (esp.config('notification') == 1) {
+        UserClass.pushToken()
+      }
       r();
     })
   }
@@ -61,6 +64,9 @@ export default class eclass {
     return new Promise((r) => {
       store.dispatch({ type: "user_class_delete" });
       AsyncStorage.removeItem("user");
+      if (esp.config('notification') == 1) {
+        UserClass.pushToken()
+      }
       r()
     })
   }

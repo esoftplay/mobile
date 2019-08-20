@@ -102,6 +102,14 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
     m.show("default", 'help-circle', title, msg, ok, cancel, onPressOK, onPressCancel)
   }
 
+  static warningConfirm(title: string, msg: string, ok: string, onPressOK: () => void, cancel: string, onPressCancel: () => void): void {
+    m.show("danger", 'help-circle', title, msg, ok, cancel, onPressOK, onPressCancel)
+  }
+
+  static failed(title: string, msg: string): void {
+    m.show("danger", 'alert-circle', title, msg, "OK", undefined, () => m.hide(), undefined)
+  }
+
   static warning(title: string, msg: string): void {
     m.show("danger", 'alert-circle', title, msg, "OK", undefined, () => m.hide(), undefined)
   }
