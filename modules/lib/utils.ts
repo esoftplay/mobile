@@ -6,7 +6,15 @@ import shorthash from "shorthash"
 import { StackActions, NavigationActions } from 'react-navigation';
 import { store } from "../../../../App";
 
+
+var inDebounce
 export default class eutils {
+
+  static debounce(func: () => any, delay: number): void {
+    clearTimeout(inDebounce)
+    inDebounce = setTimeout(() => func(), delay)
+  }
+
   static getArgs(props: any, key: string, defOutput?: any): any {
     if (!defOutput) {
       defOutput = "";
@@ -72,12 +80,12 @@ export default class eutils {
     navigation.dispatch(resetAction);
   }
 
-  static navResetCustom(routeName:string): void {
+  static navResetCustom(navigation: any, routeName: string): void {
     const resetAction = StackActions.reset({
       index: 0,
       actions: [NavigationActions.navigate({ routeName })],
     });
-    LibNavigation.navigation().dispatch(resetAction);
+    navigation.dispatch(resetAction);
   }
 
   static navReplace(store: any, navigation: any, routeName: string, params?: any): void {

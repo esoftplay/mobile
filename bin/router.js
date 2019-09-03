@@ -71,6 +71,8 @@ checks.forEach(modules => {
                   if (n = (/\n?(?:(?:\/\/\s{0,})|(?:\/\*\s{0,}))withHooks/).exec(data)) {
                     // console.log('masmun');
                     isHooks = true
+                    tmpTask[clsName]['class'] = ""
+                    tmpTask[clsName]['function'] = {}
                     HookModules.push(module + "/" + name) /* get export default */
                     if (m = (/\nexport\sdefault\sfunction\s(([a-zA-Z0-9]+).*)\{\n/).exec(data)) {
                       tmpTask[clsName]['hooks'] = ' function ' + m[1].replace(m[2], clsName).trim() + ";"

@@ -105,7 +105,7 @@ export default class eclass {
                 resolve(res)
               }, (msg) => {
                 resolve(msg)
-              }, 1)
+              })
           })
         }
       })

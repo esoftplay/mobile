@@ -1,40 +1,4 @@
 {
-  "expo": {
-    "name": "Esoftplay",
-    "icon": "./assets/logo.png",
-    "version": "1.0",
-    "orientation": "portrait",
-    "splash": {
-      "image": "./assets/background.jpg",
-      "resizeMode": "cover"
-    },
-    "loading": {
-      "hideExponentText": true
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "slug": "esoftplay",
-    "sdkVersion": "27.0.0",
-    "ios": {
-      "icon": "./assets/logo_white.png",
-      "bundleIdentifier": "com.esoftplay",
-      "buildNumber": "1"
-    },
-    "android": {
-      "icon": "./assets/logo.png",
-      "package": "com.esoftplay",
-      "versionCode": 1,
-      "config": {
-        "googleSignIn": {
-          "apiKey": "AIzaSyDbtDdPxLS1TU4HgfP5oyQQcEf42WljH3M"
-        },
-        "googleMaps": {
-          "apiKey": "AIzaSyDbtDdPxLS1TU4HgfP5oyQQcEf42WljH3M"
-        }
-      }
-    }
-  },
   "config": {
     "timezone": "Asia/Jakarta",
     "protocol": "http",                       // http or https
@@ -56,6 +20,8 @@
       "databaseURL": "FIREBASE_Database_URL", // Eg. https://project-6495177974885932998.firebaseio.com/
       "storageBucket": "FIREBASE_Storage_URL" // Eg. test://project-6495177974885932998.appspot.com/
     },
+    "iosClientId":"Ios Client id untuk keperluan google login",
+    "facebookAppId":"APP ID dari Aplikasi yang didaftarkan di Facebook Developer",
     "theme":[],                                // untuk custom theme jika diperlukan,silahkan lihat module LibTheme untuk cara peggunaannya
     "langIds":[],                              // untuk custom language jika diperlukan, silahkan lihatmodule LibLocale untuk cara penggunaanya
     "fonts":{

@@ -6,6 +6,7 @@ const fs = require('fs');
 const DIR = "../../"
 const packjson = DIR + "package.json"
 const appjson = DIR + "app.json"
+const confjson = DIR + "config.json"
 const babelrc = DIR + ".babelrc"
 const gitignore = DIR + ".gitignore"
 const tsconfig = DIR + "tsconfig.json"
@@ -133,20 +134,14 @@ if (fs.existsSync(packjson)) {
 
 	/* Update app.json */
 	if (args[0] == "install") {
-		var $app = JSON.parse(fs.readFileSync(appjson, 'utf8'));
+		var $config = {}
+		if (fs.existsSync(confjson))
+			$config = JSON.parse(fs.readFileSync(confjson, 'utf8')) || {};
 		rewrite = false;
-		if (!$package.hasOwnProperty("name")) {
-			$package.name = "esoftplay"
-		}
-		var $name = $package.name.toLowerCase().replace(/[^a-z0-9\-]+/g, "");
-		if (!$app.expo.hasOwnProperty("name")) {
-			$app.expo.name = $name;
+		if (!$config.hasOwnProperty('config')) {
 			rewrite = true;
-		}
-		if (!$app.hasOwnProperty('config')) {
-			rewrite = true;
-			$app.config = {
-				"domain": $name + ".com",
+			$config.config = {
+				"domain": "domain.com",
 				"salt": "CHANGE_INTO_YOUR_OWN_SALT",
 				"home": {
 					"public": "content/index",
@@ -155,9 +150,9 @@ if (fs.existsSync(packjson)) {
 			}
 		}
 		if (rewrite) {
-			fs.writeFile(appjson, JSON.stringify($app, null, 2), (err) => {
+			fs.writeFile(confjson, JSON.stringify($config, null, 2), (err) => {
 				if (err) throw err;
-				console.log('app.json has been updated');
+				console.log('config.json has been created');
 			});
 		}
 
@@ -195,6 +190,7 @@ if (fs.existsSync(packjson)) {
 			const GitIgnore = `
 .expo/\n\
 index.d.ts\n\
+config.json\n\
 node_modules/\n\
 npm-debug.*\n\
 package-lock.json\n\
@@ -242,7 +238,8 @@ export default class App extends React.Component {\n\
 				"expo-constants",
 				"expo-font",
 				"react-native-gesture-handler",
-				"react-native-reanimated"
+				"react-native-reanimated",
+				"expo-document-picker",
 			]
 			for (let i = 0; i < expoLib.length; i++) {
 				const element = expoLib[i];

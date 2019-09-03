@@ -1,4 +1,4 @@
-// 
+//
 
 import React from "react";
 import { Component } from "react"
@@ -17,7 +17,7 @@ import {
   LibStyle
 } from "esoftplay";
 const config = esp.config();
-/* 
+/*
 
   <euserLogin
     setUser={(user)=>{}}
@@ -69,7 +69,7 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
     this.setState({ isLoading: true })
     const uri = "user/mlogin"
     const config = esp.config();
-    var post = {}
+    var post: any = {}
     const { username, password, email } = this.state
     if (username != "" && password != "") {
       post = {
@@ -81,6 +81,8 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
       post = {
         email: new LibCrypt().encode(email)
       }
+      delete post.username
+      delete post.password
     }
     if (post.hasOwnProperty("email") || post.hasOwnProperty("username") || post.hasOwnProperty("password")) {
       new LibCurl(config.content + uri, post,

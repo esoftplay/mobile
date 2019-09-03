@@ -72,11 +72,15 @@ export default class enotification {
         // j();
         return;
       }
-      setTimeout(() => {
+      let defaultToken = setTimeout(() => {
         callback('undetermined')
       }, 15000);
-      r(await Notifications.getExpoPushTokenAsync());
-      if (callback) callback(await Notifications.getExpoPushTokenAsync());
+      let expoToken = await Notifications.getExpoPushTokenAsync()
+      if (expoToken) {
+        clearTimeout(defaultToken)
+      }
+      r(expoToken);
+      if (callback) callback(expoToken);
     })
   }
 

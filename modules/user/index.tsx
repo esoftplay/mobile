@@ -1,4 +1,4 @@
-// 
+//
 
 import React from "react";
 import navs from "../../cache/navigations";
@@ -19,7 +19,8 @@ import {
   LibStyle,
   LibImage,
   LibProgress,
-  LibNavigation
+  LibNavigation,
+  UserMain
 } from 'esoftplay';
 
 export interface UserIndexProps {
@@ -140,6 +141,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
         <LibDialog style={'default'} />
         <LibImage />
         <LibProgress />
+        <UserMain />
       </View>
     );
   }

@@ -157,7 +157,7 @@ export default class ecurl {
 
 
   onError(msg: string): void {
-    esp.log(msg)
+    esp.log("\x1b[31m", msg)
     LibProgress.hide()
   }
 
