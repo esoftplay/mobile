@@ -10,6 +10,11 @@
       "member": "content/member",             // when user has been logged in
       "public": "content"                     // when user not login yet
     },
+    "errorReport": {                          // add telegram ids to listenReport Error
+      "telegramIds": [
+        "111111111"
+      ]
+    },
     "group_id":'1,2'                          // string separated comma
     "isDebug": 1,                             // optional: display console on esp.log('any message'), don't use it for automatic detect the environment (production / development)
     "salt": "CHANGE_INTO_YOUR_OWN_SALT",      // SALT form config.php in your website

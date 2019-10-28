@@ -363,12 +363,12 @@ function createReducer() {
     }
     Text = "import { combineReducers } from 'redux'" +
       "\nimport { persistReducer } from 'redux-persist'" +
-      "\nimport storage from 'redux-persist/lib/storage'" + CodeImporter +
+      "\nimport { AsyncStorage } from 'react-native'" + CodeImporter +
       "\n\nconst combiner = combineReducers({" + CodeReducer +
       "\n})\n\n" +
       "\nconst persistConfig = {" +
       "\n\tkey: 'root'," +
-      "\n\tstorage," +
+      "\n\tstorage: AsyncStorage," +
       "\n\twhitelist: ['" + Object.keys(Persistor).join('\',\'') + "']" +
       "\n}" +
       "\n\nconst reducers = (state, action) => {" +

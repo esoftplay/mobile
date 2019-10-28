@@ -188,7 +188,7 @@ if (fs.existsSync(packjson)) {
 			});
 
 			const GitIgnore = `
-.expo/\n\
+.expo*/\n\
 index.d.ts\n\
 config.json\n\
 node_modules/\n\
@@ -208,12 +208,21 @@ import { persistStore } from 'redux-persist'\n\
 import { PersistGate } from 'redux-persist/integration/react'\n\
 import { Provider } from 'react-redux'\n\
 import { esp } from 'esoftplay';\n\
+import * as ErrorReport from 'esoftplay/error'\n\
+import { ErrorRecovery } from 'expo';\n\
 \n\
 export const store = createStore(esp.reducer())\n\
 const persistor = persistStore(store)\n\
 \n\
 export default class App extends React.Component {\n\
 	Home = esp.home()\n\
+\n\
+	constructor(props: any) {\n\
+		super(props)\n\
+		ErrorRecovery.setRecoveryProps(props)\n\
+		ErrorReport.getError(props.exp.errorRecovery)\n\
+	}\n\
+\n\
 	render() {\n\
 		return (\n\
 			<Provider store={store}>\n\
@@ -240,6 +249,7 @@ export default class App extends React.Component {\n\
 				"react-native-gesture-handler",
 				"react-native-reanimated",
 				"expo-document-picker",
+				'react-native-webview'
 			]
 			for (let i = 0; i < expoLib.length; i++) {
 				const element = expoLib[i];

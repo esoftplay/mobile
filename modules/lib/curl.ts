@@ -4,6 +4,7 @@ import momentTimeZone from "moment-timezone"
 import moment from "moment/min/moment-with-locales"
 import { esp, LibCrypt, LibWorker, LibProgress } from 'esoftplay';
 import { store } from "../../../../App";
+import { reportApiError } from "../../error";
 
 export default class ecurl {
   isDebug = esp.config("isDebug");
@@ -11,6 +12,7 @@ export default class ecurl {
   header: any;
   url: any;
   uri: any;
+  fetchConf: any = ''
 
   constructor(uri?: string, post?: any, onDone?: (res: any, msg: string) => void, onFailed?: (msg: string) => void, debug?: number) {
     this.setUri = this.setUri.bind(this);
@@ -69,8 +71,7 @@ export default class ecurl {
         let fd = new FormData();
         Object.keys(post).map((key) => {
           if (key !== undefined) {
-            fd.append(encodeURI(key), encodeURI(post[key]))
-
+            fd.append(key, post[key])
           }
         })
         this.post = fd
@@ -92,6 +93,7 @@ export default class ecurl {
       if (debug == 1)
         esp.log(this.url + this.uri, options)
       var res
+      this.fetchConf = this.url + this.uri, options
       res = await fetch(this.url + this.uri, options)
       var resText = await res.text()
       var resJson = (resText.startsWith("{") || resText.startsWith("[")) ? JSON.parse(resText) : null
@@ -129,6 +131,7 @@ export default class ecurl {
       body: this.post
     }
     if (debug == 1) esp.log(this.url + this.uri, options)
+    this.fetchConf = this.url + this.uri, options
     // if (!upload) {
     //   LibWorker.curl(this.url + this.uri, options, async (resText) => {
     //     this.onFetched(resText, onDone, onFailed, debug)
@@ -158,6 +161,8 @@ export default class ecurl {
 
   onError(msg: string): void {
     esp.log("\x1b[31m", msg)
+    esp.log("\x1b[0m")
+    reportApiError(this.fetchConf, msg)
     LibProgress.hide()
   }
 
@@ -188,7 +193,7 @@ export default class ecurl {
   getDayOfYear(d: string): number {
     var date = new Date(d);
     var start = new Date(date.getFullYear(), 0, 0);
-    var diff = date.getMilliseconds() - start.getMilliseconds();
+    var diff = date.getTime() - start.getTime();
     var oneDay = 1000 * 60 * 60 * 24;
     var day = Math.floor(diff / oneDay);
     return day

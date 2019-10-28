@@ -1,6 +1,7 @@
 import React from "react";
 import { Component } from "react"
-import { WebView, View } from "react-native";
+import { View } from "react-native";
+import { WebView } from 'react-native-webview'
 import { store } from "../../../../App";
 import { connect } from "react-redux";
 
@@ -123,7 +124,7 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
               key={item.taskName + i}
               style={{ width: 0, height: 0 }}
               javaScriptEnabled={true}
-              useWebKit
+              useWebKit={true}
               originWhitelist={["*"]}
               injectedJavaScript={item.task || `alert("wow")`}
               source={item.isCurl ? { uri: item.taskName } : { html: "<html><body></body></html>" }}

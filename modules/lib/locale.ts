@@ -4,6 +4,7 @@ import { store } from "../../../../App";
 import { AsyncStorage } from 'react-native';
 
 
+
 export default class local {
 
   static initState = {

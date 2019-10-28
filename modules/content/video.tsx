@@ -1,8 +1,9 @@
-// 
+//
 
 import React from "react"
 import { Component } from "react";
-import { WebView, StyleSheet, View, ActivityIndicator } from "react-native";
+import {  StyleSheet, View, ActivityIndicator } from "react-native";
+import { WebView } from 'react-native-webview'
 import { esp, LibComponent, LibStyle } from "esoftplay";
 const { colorPrimary } = LibStyle;
 
@@ -33,6 +34,7 @@ export default class evideo extends LibComponent<ContentVideoProps, ContentVideo
       <WebView
         style={[{ position: "absolute", top: 0, left: 0, right: 0, flex: 1 }, StyleSheet.flatten(this.props.style || {})]}
         startInLoadingState
+        useWebKit={true}
         renderLoading={() => <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }} ><ActivityIndicator color={colorPrimary} /></View>}
         javaScriptEnabled={true}
         source={{ uri: "https://www.youtube.com/embed/" + this.props.code + "?rel=0&autoplay=0&showinfo=0&controls=1&modestbranding=1" }}

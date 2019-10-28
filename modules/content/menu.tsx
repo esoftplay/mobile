@@ -1,7 +1,8 @@
-// 
+//
 import React from "react"
 import { Component } from "react";
-import { View, AsyncStorage, ScrollView, Image, Platform } from "react-native";
+import { View, ScrollView, Image, Platform } from "react-native";
+import { AsyncStorage } from 'react-native';
 import { BlurView } from "expo-blur";
 import { esp, LibComponent, LibStyle } from "esoftplay";
 const Curl = esp.mod("lib/curl")

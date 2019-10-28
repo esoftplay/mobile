@@ -2,10 +2,12 @@
 
 import React from "react";
 import navs from "../../cache/navigations";
-import { AsyncStorage, View } from "react-native";
-import { createStackNavigator, createAppContainer, StackNavigatorConfig } from "react-navigation";
+import { View } from "react-native";
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from 'react-navigation-stack';
 import { store } from "../../../../App";
 import * as Font from "expo-font";
+import { AsyncStorage } from 'react-native';
 import {
   esp,
   LibNotification,
@@ -20,7 +22,8 @@ import {
   LibImage,
   LibProgress,
   LibNavigation,
-  UserMain
+  UserMain,
+  LibToast
 } from 'esoftplay';
 
 export interface UserIndexProps {
@@ -91,9 +94,12 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
       // }
     }
     UserClass.isLogin(async (isLogin) => {
-      var config: StackNavigatorConfig = {
+      let econf = esp.config()
+      const initRoute = isLogin ? econf.home.member : econf.home.public
+      esp.log(initRoute);
+      var config: any = {
         headerMode: "none",
-        initialRouteName: isLogin ? esp.config("home", "member") : esp.config("home", "public")
+        initialRouteName: initRoute
       }
       Router = await createAppContainer(createStackNavigator(navigations, config))
       await this.setFonts()
@@ -117,8 +123,8 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
 
   setFonts(): Promise<void> {
     let fonts: any = {
-      "Roboto": require("../../../native-base/Fonts/Roboto.ttf"),
-      "Roboto_medium": require("../../../native-base/Fonts/Roboto_medium.ttf")
+      "Roboto": require("../../assets/Roboto.ttf"),
+      "Roboto_medium": require("../../assets/Roboto_medium.ttf")
     }
     let fontsConfig = esp.config("fonts")
     if (fontsConfig) {
@@ -142,6 +148,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
         <LibImage />
         <LibProgress />
         <UserMain />
+        <LibToast />
       </View>
     );
   }

@@ -1,11 +1,19 @@
 import moment from "moment/min/moment-with-locales"
 import { Linking, Platform, Clipboard, CameraRoll, Share } from "react-native"
 import * as FileSystem from 'expo-file-system';
-import { esp, LibNavigation } from "esoftplay"
+import { esp, LibNavigation, LibToastProperty } from "esoftplay"
 import shorthash from "shorthash"
 import { StackActions, NavigationActions } from 'react-navigation';
 import { store } from "../../../../App";
 
+
+export interface LibUtilsDate {
+  year: string,
+  month: string,
+  date: string,
+}
+
+export type LibUtilsTravelMode = 'driving' | 'walking'
 
 var inDebounce
 export default class eutils {
@@ -19,12 +27,13 @@ export default class eutils {
     if (!defOutput) {
       defOutput = "";
     }
-    return props
-      && props.navigation
-      && props.navigation.state
-      && props.navigation.state.params
-      && props.navigation.state.params[key]
-      || defOutput;
+    return props && props.navigation && props.navigation.state && props.navigation.state.params && props.navigation.state.params[key] || defOutput;
+  }
+  static getArgsAll(props: any, defOutput?: any): any {
+    if (!defOutput) {
+      defOutput = "";
+    }
+    return props && props.navigation && props.navigation.state && props.navigation.state.params || defOutput;
   }
 
   static getReduxState(key: string, ...keys: string[]): any {
@@ -42,6 +51,16 @@ export default class eutils {
         }
     }
     return state;
+  }
+
+  static getUrlParams(url: string): any {
+    let hashes = url.slice(url.indexOf('?') + 1).split('&')
+    let params = {}
+    hashes.map(hash => {
+      let [key, val] = hash.split('=')
+      params[key] = decodeURI(val)
+    })
+    return params
   }
 
   static getKeyBackOf(routeName: string, store?: any): string {
@@ -102,7 +121,7 @@ export default class eutils {
       val = parseInt(value).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,")
     }
     if ((typeof value == "string" ? parseInt(value) : value) < 0) {
-      return "-"
+      return "0"
     }
     if (!currency) {
       currency = "Rp"
@@ -152,6 +171,37 @@ export default class eutils {
     moment.locale(esp.langId());
     return String(moment(new Date()).format(format))
   }
+
+  static getDateRange(start_date: string, end_date: string, separator?: string, format?: LibUtilsDate): string {
+    if (!separator) {
+      separator = ' - '
+    }
+    let _format: any = format || {}
+    if (!format) {
+      _format.year = ' YYYY'
+      _format.month = ' MMMM'
+      _format.date = 'DD'
+    }
+    let out = ''
+    if (start_date == end_date) {
+      out = moment(start_date).format(_format.date + _format.month + _format.year)
+    } else {
+      var ds = moment(start_date).toDate()
+      var de = moment(end_date).toDate()
+      if (ds.getFullYear() == de.getFullYear()) {
+        if (ds.getMonth() == de.getMonth()) {
+          out = moment(start_date).format(_format.date) + separator + moment(end_date).format(_format.date) + moment(start_date).format(_format.month + _format.year)
+        } else {
+          out = moment(start_date).format(_format.date + _format.month) + separator + moment(end_date).format(_format.date + _format.month) + moment(start_date).format(_format.year)
+        }
+      } else {
+        out = moment(start_date).format(_format.date + _format.month + _format.year) + separator + moment(end_date).format(_format.date + _format.month + _format.year)
+      }
+    }
+    return out
+  }
+
+
   static getDateAsFormat(input: string, format?: string): string {
     if (!format) {
       format = "dddd, DD MMMM YYYY";
@@ -185,8 +235,39 @@ export default class eutils {
     Linking.openURL("https://api.whatsapp.com/send?phone=" + number + "&text=" + encodeURI(message))
   }
   static mapTo(title: string, latlong: string): void {
-    Linking.openURL((Platform.OS === "ios" ? "http://maps.apple.com/?q=" + title + "&ll=" : "http://maps.google.com/maps?q=loc:") + latlong + "(" + title + ")")
+    Linking.openURL("http://maps.google.com/maps?q=loc:" + latlong + "(" + title + ")")
   }
+
+  static isValidLatLong(latlong: string): boolean {
+    let _latlong: any = latlong
+    let valid = true
+    if (valid && !_latlong.includes(',')) {
+      valid = false
+    }
+    if (valid && Math.abs(_latlong.split(',')[0] * 1) > 90) {
+      valid = false
+    }
+    if (valid && Math.abs(_latlong.split(',')[1] * 1) > 180) {
+      valid = false
+    }
+    return valid
+  }
+
+  static mapDirectionTo(latlongFrom: string, latlongTo: string, travelmode: LibUtilsTravelMode): void {
+    if (!eutils.isValidLatLong(latlongFrom)) {
+      return LibToastProperty.show('LatLongFrom tidak valid')
+    }
+    if (!eutils.isValidLatLong(latlongTo)) {
+      return LibToastProperty.show('LatlongTo tidak valid')
+    }
+    Linking.openURL("https://www.google.com/maps/dir/?api=1&travelmode="
+      + travelmode
+      + "&dir_action=navigate&destination="
+      + encodeURI(latlongTo)
+      + "&origin="
+      + encodeURI(latlongFrom))
+  }
+
   static copyToClipboard(string: string): Promise<any> {
     return new Promise((r, j) => {
       Clipboard.setString(string)
@@ -220,18 +301,24 @@ export default class eutils {
     return "rgba(" + parseInt(result[1], 16) + "," + parseInt(result[2], 16) + "," + parseInt(result[3], 16) + "," + alpha + ")"
   }
 
-  static async download(url: string, onDownloaded: (file: string) => void): Promise<any> {
-    const config = esp.config();
-    try { await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + config.domain, { intermediates: true }) } catch (error) { }
-    var fileExtentions = url.split(".").pop();
-    var fileName = shorthash.unique(url)
-    FileSystem.downloadAsync(
-      url,
-      FileSystem.documentDirectory + config.domain + "/" + fileName + "." + fileExtentions)
-      .then(({ uri }) => {
-        CameraRoll.saveToCameraRoll(uri, "photo")
-        onDownloaded(fileName + fileExtentions)
-      }).catch((error: any) => { });
+  static download(url: string, onDownloaded: (file: string) => void): Promise<any> {
+    return new Promise(async (r) => {
+      const config = esp.config();
+      try {
+        await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + config.domain, { intermediates: true })
+      } catch (error) {
+
+      }
+      var fileExtentions = url.split(".").pop();
+      var fileName = shorthash.unique(url)
+      FileSystem.downloadAsync(
+        url,
+        FileSystem.documentDirectory + config.domain + "/" + fileName + "." + fileExtentions)
+        .then(({ uri }) => {
+          CameraRoll.saveToCameraRoll(uri, "photo")
+          onDownloaded(fileName + fileExtentions)
+        }).catch((error: any) => { });
+    })
   }
 
   static share(message: string): void {

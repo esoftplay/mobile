@@ -2,7 +2,8 @@
 
 import React from "react";
 import { Component } from "react";
-import { StyleSheet, View, WebView, Animated, Dimensions, Platform } from "react-native";
+import { StyleSheet, View, Animated, Dimensions, Platform } from "react-native";
+import { WebView } from 'react-native-webview'
 import { esp, LibComponent } from "esoftplay";
 let { width, height } = Dimensions.get("window");
 const config = esp.config();
@@ -59,7 +60,6 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
     this._animatedValue = new Animated.Value(1);
     this.gotoShow = this.gotoShow.bind(this)
     this.webview = React.createRef()
-    this.WebViewResetHeightFunctionJSInsert = this.WebViewResetHeightFunctionJSInsert.bind(this)
     this.getMessageFromWebView = this.getMessageFromWebView.bind(this)
     this.resetHeight = this.resetHeight.bind(this)
     this.resetSmallHeight = this.resetSmallHeight.bind(this)
@@ -75,7 +75,6 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
           :
           this.props.source
       });
-      this.WebViewResetHeightFunctionJSInsert();
     }
   }
 
@@ -90,28 +89,15 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
   componentDidMount(): void {
     super.componentDidMount()
   }
-
-  //insert ResizeHeight JS
-  WebViewResetHeightFunctionJSInsert(): void {
-    let jsstr = `
-        window.location.hash = 1;
-        window.postMessage("height:"+document.body.scrollHeight.toString());`;
-
-    setTimeout(() => {
-      if (this.webview) this.webview.injectJavaScript(jsstr);
-    }, 500);
-  }
-
   getMessageFromWebView(event: any): void {
     let message = event.nativeEvent.data;
-    if (message.indexOf("height") === 0) {
-      if (this.heightMessage === undefined || this.heightMessage === null || this.heightMessage === "") {
-        this.heightMessage = message;
-        if (this.props.needAutoResetHeight) {
-          this.resetHeight();
-        }
+    if (this.heightMessage === undefined || this.heightMessage === null || this.heightMessage === "") {
+      this.heightMessage = message;
+      if (this.props.needAutoResetHeight) {
+        this.resetHeight();
       }
-    } else if (this.props.onMessage !== undefined) {
+    }
+    if (this.props.onMessage !== undefined) {
       this.props.onMessage(event);
     }
   }
@@ -121,8 +107,7 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
       return;
     }
     let message = this.heightMessage;
-    // console.log(message)
-    let height = message.substr(7);
+    let height = message;
     this.setState({
       height: (parseInt(height) + 50)
     });
@@ -138,7 +123,8 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
 
   /* work onli onIos */
   _updateWebViewHeight(event: any): void {
-    this.setState({ height: parseInt(event.jsEvaluationValue || 0) + 50 }, () => {
+    console.log(event);
+    this.setState({ height: parseInt(event.jsEvaluationValue || event.target || 0) + 50 }, () => {
       if (this.props.onFinishLoad !== undefined)
         setTimeout(() => {
           this.props.onFinishLoad()
@@ -169,19 +155,6 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
   }
 
   render(): any {
-    const patchPostMessageJsCode = `
-        (${String(function () {
-      var originalPostMessage = window.postMessage
-      var patchedPostMessage = function (message, targetOrigin, transfer) {
-        originalPostMessage(message, targetOrigin, transfer)
-      }
-      patchedPostMessage = function () {
-        return String(Object.hasOwnProperty).replace("hasOwnProperty", "postMessage")
-      }
-      window.postMessage = patchedPostMessage
-    })})();
-    `;
-
     let isIos = Platform.OS == "ios"
     let { bounces, onLoadEnd, style, scrollEnabled, automaticallyAdjustContentInsets, scalesPageToFit, onMessage, ...otherprops } = this.props;
     return (
@@ -192,10 +165,10 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
           source={this.state.source}
           bounces={bounces !== undefined ? bounces : true}
           javaScriptEnabled
-          injectedJavaScript={isIos ? "document.body.scrollHeight;" : patchPostMessageJsCode}
+          useWebKit={true}
+          injectedJavaScript={isIos ? "document.body.scrollHeight;" : 'window.ReactNativeWebView.postMessage(document.body.scrollHeight)'}
           onLoadEnd={() => {
             if (!isIos) {
-              this.WebViewResetHeightFunctionJSInsert();
               if (this.props.onFinishLoad !== undefined)
                 setTimeout(() => {
                   this.props.onFinishLoad()
@@ -207,7 +180,7 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
           scrollEnabled={scrollEnabled !== undefined ? scrollEnabled : false}
           automaticallyAdjustContentInsets={automaticallyAdjustContentInsets !== undefined ? automaticallyAdjustContentInsets : true}
           scalesPageToFit={scalesPageToFit !== undefined ? scalesPageToFit : true}
-          onMessage={this.getMessageFromWebView.bind(this)}>
+          onMessage={!isIos && this.getMessageFromWebView.bind(this)}>
         </WebView>
       </Animated.View>
     );

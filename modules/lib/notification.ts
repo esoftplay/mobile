@@ -1,10 +1,10 @@
 //
-import react from "react";
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions'
-import { AsyncStorage, Platform, Alert, Linking } from "react-native";
-import { esp, UserNotification, LibDialog, LibCurl, LibCrypt, DbNotification, LibNavigation } from "esoftplay";
+import { Platform, Alert, Linking } from "react-native";
+import { esp, UserNotification, LibCurl, LibCrypt, DbNotification, LibNavigation } from "esoftplay";
 import moment from 'moment';
+import Constants from 'expo-constants';
 /*
 {
   to: // exp token
@@ -27,7 +27,7 @@ import moment from 'moment';
 
 export default class enotification {
   static listen(callback?: (obj: any) => void): Promise<any> {
-    return new Promise((r, j) => {
+    return new Promise((r) => {
       Notifications.addListener(async (obj: any) => {
         if (obj) {
           if (obj.remote == true && obj.origin == 'received') {
@@ -61,7 +61,7 @@ export default class enotification {
   }
 
   static requestPermission(callback?: (token: any) => void): Promise<any> {
-    return new Promise(async (r, j) => {
+    return new Promise(async (r) => {
       const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
       let finalStatus = status;
       if (status !== "granted") {
@@ -75,7 +75,10 @@ export default class enotification {
       let defaultToken = setTimeout(() => {
         callback('undetermined')
       }, 15000);
-      let expoToken = await Notifications.getExpoPushTokenAsync()
+
+      let expoToken
+      if (Constants.isDevice)
+        expoToken = await Notifications.getExpoPushTokenAsync()
       if (expoToken) {
         clearTimeout(defaultToken)
       }
@@ -96,9 +99,9 @@ export default class enotification {
     new LibCurl(uri, {
       notif_id: data.id,
       secretkey: crypt.encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
-    }, (res, msg) => {
+    }, () => {
       UserNotification.user_notification_loadData();
-    }, (msg) => {
+    }, () => {
 
     })
     var param = data;
@@ -136,11 +139,11 @@ export default class enotification {
     new LibCurl(uri, {
       notif_id: data.notif_id,
       secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
-    }, (res: any, msg: string) => {
+    }, () => {
       const db = new DbNotification();
       db.setRead(data.id)
       UserNotification.user_notification_setRead(data.id)
-    }, (msg: string) => {
+    }, () => {
       // esp.log(msg)
     }, 1)
     var param = JSON.parse(data.params)

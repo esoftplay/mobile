@@ -1,6 +1,6 @@
 //
 import React from "react"
-import { AsyncStorage } from "react-native";
+import { AsyncStorage } from 'react-native';
 import { store } from "../../../../App";
 import { LibNotification, esp, UserClass, LibCrypt, LibCurl } from "esoftplay";
 import moment from "moment";
