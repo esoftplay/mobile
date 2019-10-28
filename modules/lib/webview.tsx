@@ -123,13 +123,14 @@ class ewebview extends LibComponent<LibWebviewProps, LibWebviewState> {
 
   /* work onli onIos */
   _updateWebViewHeight(event: any): void {
-    console.log(event);
-    this.setState({ height: parseInt(event.jsEvaluationValue || event.target || 0) + 50 }, () => {
-      if (this.props.onFinishLoad !== undefined)
-        setTimeout(() => {
-          this.props.onFinishLoad()
-        }, 1000)
-    });
+    if (event.hasOwnProperty('jsEvaluationValue')) {
+      this.setState({ height: parseInt(event.jsEvaluationValue || 0) + 50 }, () => {
+        if (this.props.onFinishLoad !== undefined)
+          setTimeout(() => {
+            this.props.onFinishLoad()
+          }, 1000)
+      });
+    }
   }
   /*change hex to rgb, hex not supported in latest android system webview [v72.0.3626.76 28-Jan-2019] in playstore*/
   static fixHtml(html: string): string {
