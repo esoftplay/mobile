@@ -1,4 +1,4 @@
-// 
+//
 import React from "react";
 import {
   View,
@@ -19,6 +19,7 @@ import {
   ContentMenu,
   ContentSearch,
   ContentItem,
+  ContentConfig,
   LibComponent,
   LibStyle
 } from "esoftplay";
@@ -142,6 +143,7 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
             isRefreshing: false
           }
         })
+        ContentConfig.setList(result.config)
       },
       (msg: string) => {
         // console.log("sampe sini", msg)

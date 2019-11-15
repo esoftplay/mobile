@@ -108,7 +108,7 @@ export default class EList extends LibComponent<LibListProps, LibListState> {
           rowRenderer={this.rowRenderer}
           renderAheadOffset={1000}
           {...this.props}
-
+          scrollViewProps={{ showsVerticalScrollIndicator: false, showsHorizontalScrollIndicator: false, ...this.props.scrollViewProps }}
         />
       </View>
     )

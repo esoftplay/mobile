@@ -155,11 +155,58 @@ if (fs.existsSync(packjson)) {
 				console.log('config.json has been created');
 			});
 		}
-
-
+		var $appjson = {}
+		if (fs.existsSync(appjson))
+			$appjson = JSON.parse(fs.readFileSync(appjson, 'utf8')) || {};
+		rewrite = false;
+		if (!$appjson.expo.hasOwnProperty('android')) {
+			rewrite = true;
+			$appjson.expo.android = {
+				"package": "com.domain",
+				"versionCode": 1,
+				"intentFilters": [
+					{
+						"action": "VIEW",
+						"data": {
+							"scheme": "http",
+							"host": "*.domain.com"
+						},
+						"category": [
+							"BROWSABLE",
+							"DEFAULT"
+						]
+					},
+					{
+						"action": "VIEW",
+						"data": {
+							"scheme": "http",
+							"host": "domain.com"
+						},
+						"category": [
+							"BROWSABLE",
+							"DEFAULT"
+						]
+					}
+				]
+			}
+			$appjson.expo.ios = {
+				"bundleIdentifier": "com.domain",
+				"buildNumber": "1",
+				"supportsTablet": true,
+				"associatedDomains": [
+					"applinks:*.domain.com",
+					"applinks:domain.com"
+				]
+			}
+			if (rewrite) {
+				fs.writeFile(appjson, JSON.stringify($appjson, null, 2), (err) => {
+					if (err) throw err;
+					console.log('app.json has been updated');
+				});
+			}
+		}
 		/* Update App.js */
-		if (args[0] == "install") {
-			const TSconfig = `{\n\
+		const TSconfig = `{\n\
 	"compilerOptions": {\n\
 		"allowSyntheticDefaultImports": true,\n\
 		"experimentalDecorators": true,\n\
@@ -182,12 +229,12 @@ if (fs.existsSync(packjson)) {
 		"node_modules"\n\
 	]\n\
 }`
-			fs.writeFile(tsconfig, TSconfig, (err) => {
-				if (err) throw err;
-				console.log('tsconfig has been created');
-			});
+		fs.writeFile(tsconfig, TSconfig, (err) => {
+			if (err) throw err;
+			console.log('tsconfig has been created');
+		});
 
-			const GitIgnore = `
+		const GitIgnore = `
 .expo*/\n\
 index.d.ts\n\
 config.json\n\
@@ -197,12 +244,12 @@ package-lock.json\n\
 yarn.lock\n\
 			`
 
-			fs.writeFile(gitignore, GitIgnore, (err) => {
-				if (err) throw err;
-				console.log('.gitignore has been created');
-			});
+		fs.writeFile(gitignore, GitIgnore, (err) => {
+			if (err) throw err;
+			console.log('.gitignore has been created');
+		});
 
-			const AppJS = `import React from 'react';\n\
+		const AppJS = `import React from 'react';\n\
 import { createStore } from 'redux';\n\
 import { persistStore } from 'redux-persist'\n\
 import { PersistGate } from 'redux-persist/integration/react'\n\
@@ -233,48 +280,47 @@ export default class App extends React.Component {\n\
 		)\n\
 	}\n\
 }`;
-			var bashScript = 'cd ../../ && expo install ';
-			var expoLib = [
-				"expo-av",
-				"expo-linear-gradient",
-				"expo-blur",
-				"expo-image-manipulator",
-				"expo-camera",
-				"expo-image-picker",
-				"expo-permissions",
-				"expo-sqlite",
-				"expo-file-system",
-				"expo-constants",
-				"expo-font",
-				"react-native-gesture-handler",
-				"react-native-reanimated",
-				"expo-document-picker",
-				'react-native-webview'
-			]
-			for (let i = 0; i < expoLib.length; i++) {
-				const element = expoLib[i];
-				bashScript += element + ' '
-			}
-			// bashScript += ' && npm install react-native-gesture-handler@1.0.14'
-			bashScript += ' && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
-			fs.writeFile(appts, AppJS, (err) => {
-				if (err) throw err;
-				fs.unlink(appjs, (err) => { })
-				const exec = require('child_process').exec;
-				var yourscript = exec(
-					bashScript,
-					(error, stdout, stderr) => {
-						console.log(stdout);
-						console.log(stderr);
-						if (error !== null) {
-							console.log(`exec error: ${error}`);
-						}
-					});
-
-				console.log('App.js has been replace to App.tsx');
-				console.log('Please wait until process finished...');
-			});
+		var bashScript = 'cd ../../ && expo install ';
+		var expoLib = [
+			"expo-av",
+			"expo-linear-gradient",
+			"expo-blur",
+			"expo-image-manipulator",
+			"expo-camera",
+			"expo-image-picker",
+			"expo-permissions",
+			"expo-sqlite",
+			"expo-file-system",
+			"expo-constants",
+			"expo-font",
+			"react-native-gesture-handler",
+			"react-native-reanimated",
+			"expo-document-picker",
+			'react-native-webview'
+		]
+		for (let i = 0; i < expoLib.length; i++) {
+			const element = expoLib[i];
+			bashScript += element + ' '
 		}
+		// bashScript += ' && npm install react-native-gesture-handler@1.0.14'
+		bashScript += ' && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-navigation @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
+		fs.writeFile(appts, AppJS, (err) => {
+			if (err) throw err;
+			fs.unlink(appjs, (err) => { })
+			const exec = require('child_process').exec;
+			var yourscript = exec(
+				bashScript,
+				(error, stdout, stderr) => {
+					console.log(stdout);
+					console.log(stderr);
+					if (error !== null) {
+						console.log(`exec error: ${error}`);
+					}
+				});
+
+			console.log('App.js has been replace to App.tsx');
+			console.log('Please wait until process finished...');
+		});
 	}
 } else {
 	console.log(packjson + " not found!!")

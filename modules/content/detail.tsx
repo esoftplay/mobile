@@ -24,7 +24,8 @@ import {
   LibWebview,
   ContentVideo,
   LibComponent,
-  LibNavigation
+  LibNavigation,
+  ContentConfig
 } from "esoftplay";
 const { colorPrimary, width, colorAccent, colorPrimaryDark } = LibStyle;
 const config = esp.config();
@@ -53,6 +54,30 @@ export interface ContentDetailState {
   view: any,
   isPageReady: boolean,
 }
+
+/**
+"template": "detail.html.php",
+"title": "1",
+"created": "1",
+"modified": 0,
+"author": "1",
+"tag": "1",
+"tag_link": "1",
+"rating": "1",
+"rating_vote": "1",
+"thumbsize": "250",
+"comment": 1,
+"comment_auto": "1",
+"comment_list": "9",
+"comment_form": "1",
+"comment_emoticons": "1",
+"comment_spam": "0",
+"comment_email": "1",
+"pdf": "1",
+"print": "1",
+"email": "1",
+"share": "1"
+*/
 
 export default class edetail extends LibComponent<ContentDetailProps, ContentDetailState> {
   audioPlayer: any;
@@ -84,6 +109,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
         setTimeout(() => {
           this.setState({ result: result })
         }, 500)
+        ContentConfig.setDetail(result.config)
       },
       (msg: string) => { }
     )
@@ -102,11 +128,12 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
     result.title = LibUtils.getArgs(this.props, "title", this.props.title);
     result.image = LibUtils.getArgs(this.props, "image", this.props.image);
     result.created = LibUtils.getArgs(this.props, "created", this.props.created);
+    let config = LibUtils.getReduxState('content_config', 'detail')
 
     if (!this.state.result.content) {
       return <View style={{ flex: 1, backgroundColor: "white" }} >
         {
-          result.image != "" &&
+          result.image != "" && config &&
           <View style={{ width: width, height: (width * 0.8) + STATUSBAR_HEIGHT_MASTER }} >
             <Animated.Image
               style={{
@@ -125,8 +152,8 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
               colors={["rgba(255,255,255,0.0)", "rgba(255,255,255,1)"]} />
           </View>
         }
-        <Text style={[styles.title]} >{result.title}</Text>
-        {result.created != "" && <Text note style={styles.created}>{moment(result.created).format("dddd, DD MMMM YYYY kk:mm")}</Text>}
+        {config.title == 1 && <Text style={[styles.title]} >{result.title}</Text>}
+        {result.created != "" && config.created && <Text note style={styles.created}>{moment(result.created).format("dddd, DD MMMM YYYY HH:mm")}</Text>}
       </View>
     }
 
@@ -199,15 +226,21 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
             <View
               style={
                 styles.scrollViewContent}>
-              <Text
-                style={styles.title}>
-                {result.title}
-              </Text>
-              <Text
-                note
-                style={styles.created}>
-                {moment(result.created).format("dddd, DD MMMM YYYY kk:mm")}
-              </Text>
+              {
+                config.title == 1 &&
+                <Text
+                  style={styles.title}>
+                  {result.title}
+                </Text>
+              }
+              {
+                config.created &&
+                <Text
+                  note
+                  style={styles.created}>
+                  {moment(result.created).format("dddd, DD MMMM YYYY HH:mm")}
+                </Text>
+              }
               <LibWebview
                 source={{ html: result.content }}
                 style={{ flex: 1, marginVertical: 20 }}
@@ -217,7 +250,7 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                 this.state.isPageReady ?
                   <View>
                     {
-                      result.comment == 1 ?
+                      config.comment == 1 ?
                         <Button
                           small
                           style={{ alignSelf: "center", backgroundColor: colorPrimary }}
@@ -226,30 +259,34 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
                         </Button>
                         : null
                     }
-                    <ScrollView bounces={false}
-                      showsHorizontalScrollIndicator={false}
-                      horizontal
-                      contentContainerStyle={styles.isPageReady} >
-                      {
-                        result.cats.map((cat: any, i: number) => {
-                          return (
-                            <Button
-                              key={cat + i}
-                              style={{ margin: 5, borderColor: colorPrimary }} success small bordered
-                              onPress={() => this.props.navigation.push("content/list", { url: cat.url, title: cat.title })} >
-                              <Text style={{ color: colorPrimary }} >{cat.title}</Text>
-                            </Button>
-                          )
-                        })
-                      }
-                    </ScrollView>
+                    {
+                      config.tag == 1 &&
+                      <ScrollView bounces={false}
+                        showsHorizontalScrollIndicator={false}
+                        horizontal
+                        contentContainerStyle={styles.isPageReady} >
+                        {
+                          result.cats.map((cat: any, i: number) => {
+                            return (
+                              <Button
+                                key={cat + i}
+                                disabled={config.tag_link != 1}
+                                success small bordered
+                                style={{ margin: 5, borderColor: colorPrimary }}
+                                onPress={() => this.props.navigation.push("content/list", { url: cat.url, title: '#' + cat.title })} >
+                                <Text style={{ color: colorPrimary }} >#{cat.title}</Text>
+                              </Button>
+                            )
+                          })
+                        }
+                      </ScrollView>
+                    }
                     <View>
                       {
-                        (result.related.length > 0) ?
-                          <ListItem itemDivider first>
-                            <Text>{esp.lang("Artikel Terkait", "Related Content")}</Text>
-                          </ListItem>
-                          : null
+                        (result.related.length > 0) &&
+                        <ListItem itemDivider first>
+                          <Text>{esp.lang("Artikel Terkait", "Related Content")}</Text>
+                        </ListItem>
                       }
                       {
                         result.related.map((rel: any, i: number) => {
@@ -318,13 +355,16 @@ export default class edetail extends LibComponent<ContentDetailProps, ContentDet
             { height: this.state.toolbarHeight - STATUSBAR_HEIGHT_MASTER, opacity: isVideo ? 0 : titleOpacity, },
           ]}>
           <Left>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode={"tail"}
-              onLayout={(event: any) => {
-                var { x, y, width, height } = event.nativeEvent.layout;
-                this.setState({ toolbarHeight: HEADER_MIN_HEIGHT > height ? HEADER_MIN_HEIGHT : /*height*/ HEADER_MIN_HEIGHT })
-              }} style={styles.toolbarTitle} >{result.title}</Text>
+            {
+              config.title == 1 &&
+              <Text
+                numberOfLines={1}
+                ellipsizeMode={"tail"}
+                onLayout={(event: any) => {
+                  var { x, y, width, height } = event.nativeEvent.layout;
+                  this.setState({ toolbarHeight: HEADER_MIN_HEIGHT > height ? HEADER_MIN_HEIGHT : /*height*/ HEADER_MIN_HEIGHT })
+                }} style={styles.toolbarTitle} >{result.title}</Text>
+            }
           </Left>
         </Animated.View>
         <Button transparent

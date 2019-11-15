@@ -130,6 +130,7 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
           contextProvider={this.contextProvider}
           rowRenderer={(type: any, data: any) => this.rowRenderer(type, data, w)}
           {...this.props}
+          scrollViewProps={{ showsVerticalScrollIndicator: false, showsHorizontalScrollIndicator: false, ...this.props.scrollViewProps }}
         />
       </View>
     )

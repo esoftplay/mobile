@@ -1,11 +1,11 @@
-// 
+//
 
 import React from "react";
 import { Component } from "react";
 import { Image, Linking, TouchableWithoutFeedback, View, StyleSheet } from "react-native";
 import { Text } from "native-base";
 import moment from "moment/min/moment-with-locales";
-import { esp, LibComponent, LibStyle } from "esoftplay";
+import { esp, LibComponent, LibStyle, LibUtils } from "esoftplay";
 const { defaultStyle, width } = LibStyle
 
 export interface ContentItemProps {
@@ -29,6 +29,23 @@ export interface ContentItemState {
 
 export default class eitem extends LibComponent<ContentItemProps, ContentItemState> {
 
+
+  /*
+   template: "list.html.php",
+   title: "1",
+   title_link: "1",
+   intro: "1",
+   created: "1",
+   modified: "1",
+   author: "0",
+   tag: "1",
+   tag_link: "1",
+   rating: "1",
+   read_more: "1",
+   tot_list: "12",
+   thumbnail: "1"
+  */
+
   props: ContentItemProps
   constructor(props: ContentItemProps) {
     super(props);
@@ -38,9 +55,9 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
 
   goToDetail(): void {
     const { navigation, id, title, url, created, image, data } = this.props
-    if (!data){
+    if (!data) {
       navigation.push("content/detail", { id, title, url, created, image })
-    }else{
+    } else {
       navigation.push("content/details", { id, title, url, created, image, data })
     }
   }
@@ -48,6 +65,7 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
   render(): any {
     const props = this.props
     const { id, title, intro, description, image, created, updated, url, publish } = props
+    let config = LibUtils.getReduxState('content_config', 'list')
     if (created == "sponsor") {
       const goToSponsor = (url?: string) => {
         if (url)
@@ -121,7 +139,7 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
           <View>
             <View>
               {
-                image == "" ?
+                (image == "" || config.thumbnail != 1) ?
                   <View
                     style={{ height: width * 9 / 16, width: width }}>
                     <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: "rgba(3,3,3,0.4)", }} >
@@ -129,7 +147,7 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
                         numberOfLines={2}
                         style={{ color: "white" }} >{title}</Text>
                       <Text
-                        style={[styles.text11, { color: "white" }]} note>{moment(created).format("dddd, DD MMMM YYYY kk:mm")}</Text>
+                        style={[styles.text11, { color: "white" }]} note>{moment(created).format("dddd, DD MMMM YYYY HH:mm")}</Text>
                     </View>
                   </View>
                   :
@@ -140,11 +158,17 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
               }
             </View>
             <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: "rgba(3,3,3,0.4)", }} >
-              <Text
-                numberOfLines={2}
-                style={{ color: "white" }} >{title}</Text>
-              <Text
-                style={[styles.text11, { color: "white" }]} note>{moment(created).format("dddd, DD MMMM YYYY kk:mm")}</Text>
+              {
+                config.title == 1 &&
+                <Text
+                  numberOfLines={2}
+                  style={{ color: "white" }} >{title}</Text>
+              }
+              {
+                config.created == 1 &&
+                <Text
+                  style={[styles.text11, { color: "white" }]} note>{moment(created).format("dddd, DD MMMM YYYY HH:mm")}</Text>
+              }
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -160,15 +184,21 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
             style={styles.containerRow}>
             <View
               style={styles.wrapper} >
-              <Text
-                style={{ color: "#353535" }}
-                numberOfLines={2}
-                ellipsizeMode={"tail"}>{title}</Text>
+              {
+                config.title == 1 &&
+                <Text
+                  style={{ color: "#353535" }}
+                  numberOfLines={2}
+                  ellipsizeMode={"tail"}>{title}</Text>
+              }
               <View
                 style={defaultStyle.container} >
               </View>
-              <Text
-                style={styles.text11} note>{created}</Text>
+              {
+                config.created == 1 &&
+                <Text
+                  style={styles.text11} note>{created}</Text>
+              }
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -183,19 +213,28 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
           style={styles.containerRow}>
           <View
             style={styles.wrapper} >
-            <Text
-              style={{ color: "#353535" }}
-              numberOfLines={2}
-              ellipsizeMode={"tail"}>{title}</Text>
+            {
+              config.title == 1 &&
+              <Text
+                style={{ color: "#353535" }}
+                numberOfLines={2}
+                ellipsizeMode={"tail"}>{title}</Text>
+            }
             <View
               style={defaultStyle.container} >
             </View>
-            <Text
-              style={styles.text11} note>{moment(created).format("dddd, DD MMMM YYYY kk:mm")}</Text>
+            {
+              config.created == 1 &&
+              <Text
+                style={styles.text11} note>{moment(created).format("dddd, DD MMMM YYYY HH:mm")}</Text>
+            }
           </View>
-          <View>
-            <Image style={{ width: 110, height: 110, resizeMode: "cover" }} source={{ uri: image }} />
-          </View>
+          {
+            config.thumbnail == 1 &&
+            <View>
+              <Image style={{ width: 110, height: 110, resizeMode: "cover" }} source={{ uri: image }} />
+            </View>
+          }
         </View>
       </TouchableWithoutFeedback>
     );

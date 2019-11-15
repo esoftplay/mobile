@@ -131,7 +131,7 @@ export default class ecurl {
       body: this.post
     }
     if (debug == 1) esp.log(this.url + this.uri, options)
-    this.fetchConf = this.url + this.uri, options
+    this.fetchConf = this.url + this.uri + '\n' + options
     // if (!upload) {
     //   LibWorker.curl(this.url + this.uri, options, async (resText) => {
     //     this.onFetched(resText, onDone, onFailed, debug)
