@@ -58,6 +58,7 @@ export default class icon extends LibComponent<LibIconProps, LibIconState>{
   }
 
   render(): any {
-    return <MaterialCommunityIcons size={23} color={'#222'} {...this.props} />
+    const size = this.props.size || 23
+    return <MaterialCommunityIcons size={size} color={'#222'} {...this.props} style={{ width: size, height: size }} />
   }
 }

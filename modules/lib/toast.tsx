@@ -60,7 +60,7 @@ export default function m(props: LibToastProps): any {
   return (
     <View style={{ position: 'absolute', bottom: 58 + (LibStyle.isIphoneX ? 30 : 0), left: 36, right: 36, alignItems: 'center' }}>
       <View style={{ borderRadius: 30, backgroundColor: '#323232', padding: 16 }} >
-        <Text style={{ fontFamily: "Arial", fontSize: 12, fontWeight: "normal", fontStyle: "normal", letterSpacing: 0, textAlign: "center", color: "white" }} >{data.message}</Text>
+        <Text style={{ fontSize: 12, fontWeight: "normal", fontStyle: "normal", letterSpacing: 0, textAlign: "center", color: "white" }} >{data.message}</Text>
       </View>
     </View>
   )

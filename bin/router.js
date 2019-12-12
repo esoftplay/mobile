@@ -7,7 +7,10 @@ var tmpDir = "./node_modules/esoftplay/cache/";
 var typesDir = "./"
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js|ts|tsx)$/);
 var Text = "";
-
+const rngh = "./node_modules/react-native-gesture-handler/react-native-gesture-handler.d.ts"
+if (fs.existsSync(rngh)){
+  fs.unlink(rngh, (err) => { })
+}
 /* CREATE DIRECTORY CACHE && types IF NOT EXISTS */
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);

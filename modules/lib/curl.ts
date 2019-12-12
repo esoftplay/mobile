@@ -93,7 +93,7 @@ export default class ecurl {
       if (debug == 1)
         esp.log(this.url + this.uri, options)
       var res
-      this.fetchConf = this.url + this.uri, options
+      this.fetchConf = { url: this.url + this.uri, options: options }
       res = await fetch(this.url + this.uri, options)
       var resText = await res.text()
       var resJson = (resText.startsWith("{") || resText.startsWith("[")) ? JSON.parse(resText) : null
@@ -131,7 +131,7 @@ export default class ecurl {
       body: this.post
     }
     if (debug == 1) esp.log(this.url + this.uri, options)
-    this.fetchConf = this.url + this.uri + '\n' + options
+    this.fetchConf = { url: this.url + this.uri, options: options }
     // if (!upload) {
     //   LibWorker.curl(this.url + this.uri, options, async (resText) => {
     //     this.onFetched(resText, onDone, onFailed, debug)

@@ -4,14 +4,14 @@ import React from "react";
 import { TouchableOpacity, View, StatusBar } from "react-native";
 import {
   esp,
-  DbNotification,
   LibCrypt,
   LibCurl,
-  UserClass,
   LibList,
   LibComponent,
   LibNotification,
   LibStyle,
+  LibUtils,
+  UserNotification_item,
 } from "esoftplay";
 import { store } from "../../../../App";
 import { connect } from "react-redux"
@@ -33,6 +33,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
   props: UserNotificationProps
 
+  static persist = true
   static reducer(state: any, action: any): any {
     if (!state) state = { data: [] };
     switch (action.type) {
@@ -41,10 +42,10 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
           data: action.payload
         }
       case "user_notification_setRead":
-        var data = state.data
-        var itemData = data.filter((item: any) => item.id == action.payload)[0]
+        var data: any[] = state.data
+        var index = data.findIndex((item: any) => item.id == action.payload)
         var query = {
-          [data.indexOf(itemData)]: {
+          [index]: {
             status: { $set: 2 }
           }
         }
@@ -57,58 +58,54 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 
 
-  static user_notification_loadData(): void {
-    const config = esp.config()
-    var uri = config.protocol + "://" + config.domain + config.uri + "user/push-notif"
-    try { Enotification.user_notification_parseData() } catch (error) { }
-    const db = new DbNotification();
-    db.execute("SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1", (res: any) => {
-      if (res.rows.length > 0) {
-        uri += "?last_id=" + res.rows._array[0].notif_id
-      }
-      const salt = esp.config("salt");
-      var post = {
-        user_id: "",
-        secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
-      }
-      UserClass.load((user: any) => {
-        if (user) {
-          post["user_id"] = user.id
-          post["group_id"] = esp.config('group_id')
-        }
-        Enotification.user_notification_fetchData(uri, post, db);
-      })
+  static drop(): void {
+    store.dispatch({
+      type: "user_notification_parseData",
+      payload: []
     })
   }
 
-  static user_notification_fetchData(uri: string, post: any, db: any): void {
+  static user_notification_loadData(): void {
+    const { protocol, domain, uri, salt } = esp.config()
+    var _uri = protocol + "://" + domain + uri + "user/push-notif"
+    const data = LibUtils.getReduxState('user_notification', 'data')
+    const user = LibUtils.getReduxState('user_class')
+    if (data && data.length > 0) {
+      const lastData = data[data.length - 1]
+      _uri += "?last_id=" + lastData.id
+    }
+    let post: any = {
+      user_id: "",
+      secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
+    }
+    if (user) {
+      post["user_id"] = user.id
+      post["group_id"] = esp.config('group_id')
+    }
+    Enotification.user_notification_fetchData(_uri, post);
+  }
+
+  static user_notification_fetchData(uri: string, post: any): void {
     new LibCurl(uri, post,
-      (res: any, msg: string) => {
-        var list = res.list
-        list.map((row: any) => {
-          db.insertOrUpdate(row)
-        })
+      (res: any) => {
+        Enotification.user_notification_parseData(res.list)
         if (res.next != "") {
-          Enotification.user_notification_fetchData(res.next, post, db)
+          Enotification.user_notification_fetchData(res.next, post)
         }
-        if (list.length > 0) {
-          try { Enotification.user_notification_parseData() } catch (error) { }
-        }
-        // esp.log(res)
-      }, (msg: any) => {
-        // esp.log(msg)
+      }, () => {
+
       }
     )
   }
 
-  static user_notification_parseData(): void {
-    const db = new DbNotification();
-    db.getAll_().then((res) => {
+  static user_notification_parseData(res: any): void {
+    if (res.length > 0) {
+      const data = LibUtils.getReduxState('user_notification', 'data')
       store.dispatch({
         type: "user_notification_parseData",
-        payload: res
+        payload: data && data.length > 0 ? LibUtils.uniqueArray([...data, ...res]) : res
       })
-    })
+    }
   }
 
   static user_notification_setRead(id: string | number): void {
@@ -136,9 +133,9 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 
   render(): any {
-    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
+    const { colorPrimary, colorAccent, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
-    const data = this.props.data.reverse()
+    const data = [...this.props.data].reverse()
     return (
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <StatusBar barStyle={"light-content"} />
@@ -162,15 +159,10 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
         </View>
         <LibList
           data={data}
-          renderItem={(item: any, index: number) => (
+          onRefresh={() => Enotification.user_notification_loadData()}
+          renderItem={(item: any) => (
             <TouchableOpacity onPress={() => LibNotification.openNotif(item)} >
-              <View style={[{ padding: 16, flexDirection: "row", backgroundColor: "white", marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
-                <View style={{}} >
-                  <Text style={{ color: item.status == 2 ? "#999" : colorPrimary, fontFamily: item.status == 2 ? "Roboto" : "Roboto_medium", marginBottom: 8 }} >{item.title}</Text>
-                  <Text note ellipsizeMode="tail" numberOfLines={2} >{item.message}</Text>
-                  <Text note style={{ fontSize: 9, marginTop: 5 }} >{moment(item.updated).fromNow()}</Text>
-                </View>
-              </View>
+              <UserNotification_item {...item} />
             </TouchableOpacity>
           )}
         />

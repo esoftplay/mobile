@@ -1,38 +1,40 @@
 import React from 'react';
 import { View, RefreshControl } from 'react-native';
-import { LibComponent, LibList, LibLoading, LibCurl, LibTextstyle, esp } from 'esoftplay';
+import { LibComponent, LibList, LibLoading, LibCurl, LibTextstyle, esp, LibListItemLayout } from 'esoftplay';
 
 export interface LibInfiniteProps {
   url: string,
-  renderItem: (item: any, index: number) => any,
   post?: any,
   onDataChange?: (data: any, counter: number) => void
   error?: string,
   errorView?: any,
-  staticWidth?: number,
-  staticHeight?: number,
-  onEndReached?: () => void,
-  renderFooter?: () => any,
-  numColumns?: number,
+  mainIndex?: string,
   bounces?: boolean,
-  initialOffset?: number,
-  renderAheadOffset?: number,
-  isHorizontal?: boolean,
-  onScroll?: (rawEvent: any, offsetX: number, offsetY: number) => void,
-  onRecreate?: Function,
-  onEndReachedThreshold?: number,
-  initialRenderIndex?: number,
-  scrollThrottle?: number,
-  canChangeSize?: boolean,
-  distanceFromWindow?: number,
-  useWindowScroll?: boolean,
-  disableRecycling?: boolean,
-  forceNonDeterministicRendering?: boolean,
-  extendedState?: any,
-  itemAnimator?: any,
-  optimizeForInsertDeleteAnimations?: boolean,
-  style?: any,
-  scrollViewProps?: any
+  staticHeight?: number,
+  ItemSeparatorComponent?: any,
+  ListEmptyComponent?: any,
+  ListFooterComponent?: any,
+  ListHeaderComponent?: any,
+  columnWrapperStyle?: any,
+  keyboardShouldPersistTaps?: boolean | "always" | "never" | "handled",
+  extraData?: any,
+  getItemLayout?: (data: any, index: number) => LibListItemLayout,
+  horizontal?: boolean,
+  initialNumToRender?: number,
+  initialScrollIndex?: number,
+  keyExtractor?: (item: any, index: number) => string,
+  legacyImplementation?: boolean,
+  numColumns?: number,
+  onEndReached?: (() => void) | null,
+  onEndReachedThreshold?: number | null,
+  pagingEnabled?: boolean,
+  onRefresh?: (() => void) | null,
+  refreshing?: boolean | null,
+  renderFooter?: () => any,
+  renderItem: (item: any, index: number) => any,
+  viewabilityConfig?: any,
+  removeClippedSubviews?: boolean,
+  style?: any
 }
 
 export interface LibInfiniteState {
@@ -84,13 +86,27 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
     if (!this.pages.includes(page))
       new LibCurl(url, post,
         (res, msg) => {
-          this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
-            return {
-              data: page == 0 ? res.list : [...state.data, ...res.list],
-              page: page,
-              isStop: (page || 0) >= res.pages - 1
+          let mainIndex: any = this.props.mainIndex && res[this.props.mainIndex] || res
+          if (mainIndex.list.length == 0 || res.list == '') {
+            this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
+              return {
+                error: this.props.error || 'Belum ada data',
+                isStop: true,
+                data: page == 0 ? [] : [...state.data, ...mainIndex.list],
+                page: page,
+              }
+            })
+            if (page == 0) {
+              return
             }
-          })
+          } else
+            this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
+              return {
+                data: page == 0 ? mainIndex.list : [...state.data, ...mainIndex.list],
+                page: page,
+                isStop: (page || 0) >= mainIndex.pages - 1
+              }
+            })
         },
         (msg) => {
           this.setState({ error: msg, isStop: true })
@@ -123,7 +139,8 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
               :
               <LibList
                 data={data}
-                scrollViewProps={{ refreshControl: <RefreshControl refreshing={refreshing} onRefresh={() => this.loadData()} /> }}
+                onRefresh={() => this.loadData(0)}
+                refreshing={false}
                 renderFooter={() => !isStop ? <View style={{ padding: 20 }} ><LibLoading /></View> : <View style={{ height: 50 }} />}
                 onEndReached={() => !isStop ? this.loadData(page + 1) : {}}
                 renderItem={(item, index) => renderItem(item, index)}

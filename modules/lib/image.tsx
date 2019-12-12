@@ -106,7 +106,7 @@ class m extends LibComponent<LibImageProps, LibImageState> {
   async takePicture(): Promise<void> {
     if (this.camera) {
       this.setState({ loading: true })
-      const result = await this.camera.takePictureAsync()
+      const result = await this.camera.takePictureAsync({})
       this.setState({ image: result, loading: false })
     }
   }
@@ -224,12 +224,14 @@ class m extends LibComponent<LibImageProps, LibImageState> {
           <Camera
             ref={(camera: any) => this.camera = camera}
             type={type}
-            style={{ flex: 1 }}>
+            ratio={'4:3'}
+            zoom={0.1}
+            style={{ height: LibStyle.width * 4 / 3, width: LibStyle.width }}>
             <View style={{ height: height, width: width, backgroundColor: 'transparent' }} >
-              {image ? <Image source={image} style={{ height: height, width: width, transform: [{ scaleX: this.state.type == Camera.Constants.Type.back ? 1 : -1 }] }} /> : null}
+              {image ? <Image source={image} style={{ height: LibStyle.width * 4 / 3, width: width, resizeMode: 'contain', transform: [{ scaleX: this.state.type == Camera.Constants.Type.back ? 1 : -1 }] }} /> : null}
             </View>
           </Camera>
-          <View style={{ position: 'absolute', top: width * 4 / 3, bottom: 0, left: 0, right: 0, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', flex: 1 }} >
+          <View style={{ position: 'absolute', top: width * 4 / 3, bottom: 0, left: 0, right: 0, justifyContent: 'center', backgroundColor: 'black', alignItems: 'center', flex: 1 }} >
             <View style={{ flexDirection: 'row', alignItems: 'center' }} >
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
                 {

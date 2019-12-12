@@ -25,6 +25,7 @@ import {
   UserMain,
   LibToast
 } from 'esoftplay';
+import firebase from 'firebase'
 
 export interface UserIndexProps {
 
@@ -81,6 +82,10 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
         esp.log(notifObj);
       })
     }
+    if (esp.config().hasOwnProperty('firebase')) {
+      firebase.initializeApp(esp.config('firebase'));
+      firebase.auth().signInAnonymously();
+    }
     var push_id = await AsyncStorage.getItem("push_id");
     if (!push_id) {
       UserClass.pushToken();
@@ -124,7 +129,8 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
   setFonts(): Promise<void> {
     let fonts: any = {
       "Roboto": require("../../assets/Roboto.ttf"),
-      "Roboto_medium": require("../../assets/Roboto_medium.ttf")
+      "Roboto_medium": require("../../assets/Roboto_medium.ttf"),
+      "digital": require("../../assets/digital.ttf")
     }
     let fontsConfig = esp.config("fonts")
     if (fontsConfig) {

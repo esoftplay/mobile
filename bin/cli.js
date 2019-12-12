@@ -2,6 +2,9 @@
 
 const { spawn } = require('child_process');
 const fs = require('fs');
+const exec = require('child_process').exec;
+
+
 var modpath = ["templates/", "modules/", "node_modules/esoftplay/modules/"];
 var syspath = ["./assets/", "./modules/", "./templates/"]
 var cacheDir = "./node_modules/esoftplay/cache/";
@@ -11,7 +14,6 @@ var action = args[0];
 
 // console.log(modpath, "sdofsjdofjsd")
 function execution() {
-	const exec = require('child_process').exec;
 	var yourscript = exec(
 		'node ./node_modules/esoftplay/bin/router.js && watchman -j < ' + watcherConf,
 		(error, stdout, stderr) => {
@@ -113,6 +115,18 @@ export default connect({$ClassName$}.mapStateToProps)({$ClassName$});"
 }
 switch (action) {
 	// esoftplay help
+	case "builder":
+		args.shift()
+		exec(
+			'node ./node_modules/esoftplay/bin/builder.js ' + args.join(' '),
+			(error, stdout, stderr) => {
+				console.log(stdout);
+				console.log(stderr);
+				if (error !== null) {
+					console.log(`exec error: ${error}`);
+				}
+			});
+		break;
 	case 'help':
 		var Help = "esp(1)                    BSD General Commands Manual                    esp(1)\n\
 \n\

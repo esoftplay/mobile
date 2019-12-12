@@ -5,6 +5,8 @@ import { esp, LibNavigation, LibToastProperty } from "esoftplay"
 import shorthash from "shorthash"
 import { StackActions, NavigationActions } from 'react-navigation';
 import { store } from "../../../../App";
+const Buffer = require('buffer/').Buffer
+
 
 
 export interface LibUtilsDate {
@@ -21,6 +23,21 @@ export default class eutils {
   static debounce(func: () => any, delay: number): void {
     clearTimeout(inDebounce)
     inDebounce = setTimeout(() => func(), delay)
+  }
+
+  static decodeBase64(chipper: string): string {
+    return Buffer.from(chipper, 'base64').toString('ascii')
+  }
+  static encodeBase64(plain: string): string {
+    return Buffer.from(plain, 'ascii').toString('base64')
+  }
+
+  static qrGenerate(string: string): string {
+    return 'http://qrcode.kaywa.com/img.php?s=20&d=' + string
+  }
+
+  static uniqueArray(array: any[]): any[] {
+    return [...new Set(array)]
   }
 
   static getArgs(props: any, key: string, defOutput?: any): any {
@@ -53,6 +70,22 @@ export default class eutils {
     return state;
   }
 
+  static objectToUrlParam(obj: any): string {
+    return Object.keys(obj).map((key, index) => {
+      let out = ''
+      out += index == 0 ? '?' : '&'
+      out += [key] + '=' + obj[key]
+      return out
+    }).join('')
+  }
+
+  static moment(date?: string, locale?: string): any {
+    if (locale) {
+      moment.locale(locale)
+    }
+    return moment(date)
+  }
+
   static getUrlParams(url: string): any {
     let hashes = url.slice(url.indexOf('?') + 1).split('&')
     let params = {}
@@ -75,6 +108,21 @@ export default class eutils {
       }
     }
     return keyBack
+  }
+
+  static getRatingValue(rating: string): number {
+    return rating.split(',').map((item) => parseInt(item)).reduce((acc, curr, index) => acc + (curr * (index + 1)))
+  }
+
+  static getRatingCount(rating: string): number {
+    return rating.split(',').map((item) => parseInt(item)).reduce((acc, curr) => acc + curr)
+  }
+
+  static getRating(rating: string, decimalPlaces?: number): string {
+    if (decimalPlaces == undefined) {
+      decimalPlaces = 1
+    }
+    return (eutils.getRatingValue(rating) / eutils.getRatingCount(rating)).toFixed(decimalPlaces)
   }
 
   static navGetKey(routeName: string): string {

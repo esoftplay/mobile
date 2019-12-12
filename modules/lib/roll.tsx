@@ -4,34 +4,35 @@ import { LibComponent, LibCurl, LibScroll, LibTextstyle, LibLoading } from 'esof
 
 export interface LibRollProps {
   url: string,
-  renderData: (data: any) => any[],
+  renderData: (data: any) => any,
   onDataChange?: (data: any) => void,
   post?: any,
   msg?: string,
-  numColumns?: number,
   defaultHeight?: number,
-  children?: any,
-  onEndReached?: () => void,
-  renderFooter?: () => any,
   bounces?: boolean,
-  initialOffset?: number,
-  renderAheadOffset?: number,
-  isHorizontal?: boolean,
-  onScroll?: (rawEvent: any, offsetX: number, offsetY: number) => void,
-  onRecreate?: Function,
-  onEndReachedThreshold?: number,
-  initialRenderIndex?: number,
-  scrollThrottle?: number,
-  canChangeSize?: boolean,
-  distanceFromWindow?: number,
-  useWindowScroll?: boolean,
-  disableRecycling?: boolean,
-  forceNonDeterministicRendering?: boolean,
-  extendedState?: any,
-  itemAnimator?: any,
-  optimizeForInsertDeleteAnimations?: boolean,
-  style?: any,
-  scrollViewProps?: any
+  staticHeight?: number,
+  ItemSeparatorComponent?: any,
+  ListEmptyComponent?: any,
+  ListFooterComponent?: any,
+  ListHeaderComponent?: any,
+  columnWrapperStyle?: any,
+  keyboardShouldPersistTaps?: boolean | "always" | "never" | "handled",
+  children?: any[],
+  pagingEnabled?: boolean,
+  extraData?: any,
+  horizontal?: boolean,
+  initialNumToRender?: number,
+  initialScrollIndex?: number,
+  keyExtractor?: (item: any, index: number) => string,
+  legacyImplementation?: boolean,
+  numColumns?: number,
+  onEndReached?: (() => void) | null,
+  onEndReachedThreshold?: number | null,
+  onRefresh?: (() => void) | null,
+  refreshing?: boolean | null,
+  viewabilityConfig?: any,
+  removeClippedSubviews?: boolean,
+  style?: any
 }
 
 export interface LibRollState {
@@ -91,7 +92,7 @@ export default class m extends LibComponent<LibRollProps, LibRollState>{
               <LibLoading />
               :
               <LibScroll
-                scrollViewProps={{ refreshControl: <RefreshControl refreshing={false} onRefresh={() => this.loadData()} /> }}
+                onRefresh={() => this.loadData()}
                 {...this.props}>
                 {renderData(data)}
               </LibScroll>

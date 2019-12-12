@@ -2,7 +2,7 @@
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions'
 import { Platform, Alert, Linking } from "react-native";
-import { esp, UserNotification, LibCurl, LibCrypt, DbNotification, LibNavigation } from "esoftplay";
+import { esp, UserNotification, LibCurl, LibCrypt, LibNavigation } from "esoftplay";
 import moment from 'moment';
 import Constants from 'expo-constants';
 /*
@@ -137,11 +137,9 @@ export default class enotification {
     const config = esp.config();
     var uri = config.protocol + "://" + config.domain + config.uri + "user/push-read"
     new LibCurl(uri, {
-      notif_id: data.notif_id,
+      notif_id: data.id,
       secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
     }, () => {
-      const db = new DbNotification();
-      db.setRead(data.id)
       UserNotification.user_notification_setRead(data.id)
     }, () => {
       // esp.log(msg)
