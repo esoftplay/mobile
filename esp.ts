@@ -6,7 +6,7 @@ import navs from './cache/navigations';
 import routers from './cache/routers';
 var app = require('../../app.json');
 var conf = require('../../config.json');
-import { store } from '../../App';
+import App from '../../App';
 import { connect } from 'react-redux';
 var notif: any = undefined
 var token: any = undefined
@@ -55,7 +55,7 @@ export default class esp {
   }
 
   static lang(...strings: string[]): string {
-    const _store: any = store.getState()
+    const _store: any = App.getStore().getState()
     const _langId = _store.lib_locale.lang_id
     const _langIds: string[] = esp.config('langIds')
     const _langIndex = _langIds.indexOf(_langId)
@@ -66,7 +66,7 @@ export default class esp {
   }
 
   static langId(): string {
-    const _store: any = store.getState()
+    const _store: any = App.getStore().getState()
     return _store.lib_locale.lang_id
   }
 
@@ -176,7 +176,7 @@ export default class esp {
   }
 
   static routes(): any {
-    var _store: any = store.getState();
+    var _store: any = App.getStore().getState();
     return _store.user_index;
   }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { LibUtils } from 'esoftplay';
-import { store } from "../../../../App";
+import App from "../../../../App";
 import { AsyncStorage } from 'react-native';
 
 
@@ -22,7 +22,7 @@ export default class local {
   }
 
   static setLanguage(langId: string, navigation: any, isLogin?: boolean): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: 'lib_locale_set_id',
       payload: langId
     })
@@ -33,7 +33,7 @@ export default class local {
   static getLanguage(): void {
     AsyncStorage.getItem('locale').then((locale) => {
       if (locale) {
-        store.dispatch({
+        App.getStore().dispatch({
           type: 'lib_locale_set_id',
           payload: locale
         })

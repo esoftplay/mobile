@@ -12,6 +12,7 @@ const gitignore = DIR + ".gitignore"
 const tsconfig = DIR + "tsconfig.json"
 const appjs = DIR + "App.js"
 const appts = DIR + "App.tsx"
+const store = DIR + "store.ts"
 const pathScript = DIR + "node_modules/react-native-scripts/build/bin/react-native-scripts.js"
 if (fs.existsSync(packjson)) {
 	var txt = fs.readFileSync(packjson, 'utf8');
@@ -250,19 +251,23 @@ yarn.lock\n\
 		});
 
 		const AppJS = `import React from 'react';\n\
-import { createStore } from 'redux';\n\
+import { createStore, Store } from 'redux';\n\
 import { persistStore } from 'redux-persist'\n\
 import { PersistGate } from 'redux-persist/integration/react'\n\
 import { Provider } from 'react-redux'\n\
 import { esp } from 'esoftplay';\n\
 import * as ErrorReport from 'esoftplay/error'\n\
-import { ErrorRecovery } from 'expo';\n\
+import * as ErrorRecovery from 'expo-error-recovery';\n\
 \n\
-export const store = createStore(esp.reducer())\n\
+const store = createStore(esp.reducer())\n\
 const persistor = persistStore(store)\n\
 \n\
 export default class App extends React.Component {\n\
 	Home = esp.home()\n\
+\n\
+	static getStore(): Store{
+		return store;
+	}
 \n\
 	constructor(props: any) {\n\
 		super(props)\n\
@@ -293,12 +298,15 @@ export default class App extends React.Component {\n\
 			"expo-file-system",
 			"expo-constants",
 			"expo-font",
+			"expo-error-recovery",
+			"@react-native-community/netinfo",
 			"react-native-gesture-handler",
 			"react-native-reanimated",
 			"expo-document-picker",
 			'react-native-webview',
 			"@expo/vector-icons",
 			"buffer",
+			"firebase",
 			"immutability-helper",
 			"moment",
 			"moment-timezone",
@@ -317,7 +325,7 @@ export default class App extends React.Component {\n\
 			bashScript += element + ' '
 		}
 		// bashScript += ' && npm install react-native-gesture-handler@1.0.14'
-		bashScript += ' && npm install --save-dev @types/expo @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
+		bashScript += ' && npm install --save-dev @types/expo__vector-icons @types/node @types/react @types/react-native @types/react-redux babel-preset-expo react-native-typescript-transformer tslib typescript'
 		fs.writeFile(appts, AppJS, (err) => {
 			if (err) throw err;
 			fs.unlink(appjs, (err) => { })

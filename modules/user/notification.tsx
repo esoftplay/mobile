@@ -13,7 +13,7 @@ import {
   LibUtils,
   UserNotification_item,
 } from "esoftplay";
-import { store } from "../../../../App";
+import App from "../../../../App";
 import { connect } from "react-redux"
 import moment from "moment/min/moment-with-locales"
 import update from "immutability-helper"
@@ -29,17 +29,29 @@ export interface UserNotificationState {
 }
 
 
-class Enotification extends LibComponent<UserNotificationProps, UserNotificationState> {
+class m extends LibComponent<UserNotificationProps, UserNotificationState> {
 
   props: UserNotificationProps
 
   static persist = true
   static reducer(state: any, action: any): any {
-    if (!state) state = { data: [] };
+    if (!state)
+      state = {
+        data: [],
+        urls: []
+      };
     switch (action.type) {
+      case "user_notification_reset":
+        return {
+          ...state,
+          data: [],
+          urls: []
+        }
       case "user_notification_parseData":
         return {
-          data: action.payload
+          ...state,
+          data: [...state.data, ...action.payload.data],
+          urls: [...state.urls, action.payload.url]
         }
       case "user_notification_setRead":
         var data: any[] = state.data
@@ -50,7 +62,13 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
           }
         }
         return {
+          ...state,
           data: update(data, query)
+        }
+      case "user_notification_add":
+        return {
+          ...state,
+          data: [...state.data, action.payload]
         }
       default:
         return state
@@ -58,9 +76,16 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 
 
+  static add(id: number, user_id: number, group_id: number, title: string, message: string, params: string, status: 0 | 1 | 2, created?: string, updated?: string): void {
+    App.getStore().dispatch({
+      type: "user_notification_add",
+      payload: { id, user_id, group_id, title, message, params, status, created, updated }
+    })
+  }
+
   static drop(): void {
-    store.dispatch({
-      type: "user_notification_parseData",
+    App.getStore().dispatch({
+      type: "user_notification_reset",
       payload: []
     })
   }
@@ -72,25 +97,26 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     const user = LibUtils.getReduxState('user_class')
     if (data && data.length > 0) {
       const lastData = data[data.length - 1]
-      _uri += "?last_id=" + lastData.id
+      if (lastData.id)
+        _uri += "?last_id=" + lastData.id || 0
     }
     let post: any = {
       user_id: "",
       secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
     }
     if (user) {
-      post["user_id"] = user.id
+      post["user_id"] = user.id || user.user_id
       post["group_id"] = esp.config('group_id')
     }
-    Enotification.user_notification_fetchData(_uri, post);
+    m.user_notification_fetchData(_uri, post);
   }
 
   static user_notification_fetchData(uri: string, post: any): void {
     new LibCurl(uri, post,
       (res: any) => {
-        Enotification.user_notification_parseData(res.list)
+        m.user_notification_parseData(res.list, uri)
         if (res.next != "") {
-          Enotification.user_notification_fetchData(res.next, post)
+          m.user_notification_fetchData(res.next, post)
         }
       }, () => {
 
@@ -98,18 +124,23 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
     )
   }
 
-  static user_notification_parseData(res: any): void {
+  static user_notification_parseData(res: any, uri: string): void {
     if (res.length > 0) {
-      const data = LibUtils.getReduxState('user_notification', 'data')
-      store.dispatch({
-        type: "user_notification_parseData",
-        payload: data && data.length > 0 ? LibUtils.uniqueArray([...data, ...res]) : res
-      })
+      const urls = LibUtils.getReduxState('user_notification', 'urls')
+      if (urls && urls.indexOf(uri) < 0) {
+        App.getStore().dispatch({
+          type: "user_notification_parseData",
+          payload: {
+            data: res,
+            url: uri
+          }
+        })
+      }
     }
   }
 
   static user_notification_setRead(id: string | number): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: "user_notification_setRead",
       payload: id
     })
@@ -129,7 +160,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   componentDidMount(): void {
     super.componentDidMount()
     moment.locale(esp.langId());
-    Enotification.user_notification_loadData()
+    m.user_notification_loadData()
   }
 
   render(): any {
@@ -159,7 +190,7 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
         </View>
         <LibList
           data={data}
-          onRefresh={() => Enotification.user_notification_loadData()}
+          onRefresh={() => m.user_notification_loadData()}
           renderItem={(item: any) => (
             <TouchableOpacity onPress={() => LibNotification.openNotif(item)} >
               <UserNotification_item {...item} />
@@ -171,4 +202,4 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 }
 
-export default connect(Enotification.mapStateToProps)(Enotification);
+export default connect(m.mapStateToProps)(m);

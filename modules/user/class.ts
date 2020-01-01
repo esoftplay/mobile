@@ -1,7 +1,7 @@
 //
 import React from "react"
 import { AsyncStorage } from 'react-native';
-import { store } from "../../../../App";
+import App from "../../../../App";
 import { LibNotification, esp, UserClass, LibCrypt, LibCurl } from "esoftplay";
 import moment from "moment";
 import Constants from 'expo-constants';
@@ -24,7 +24,7 @@ export default class eclass {
 
   static create(user: any): Promise<void> {
     return new Promise((r, j) => {
-      store.dispatch({ type: "user_class_create", payload: user });
+      App.getStore().dispatch({ type: "user_class_create", payload: user });
       AsyncStorage.setItem("user", JSON.stringify(user))
       if (esp.config('notification') == 1) {
         UserClass.pushToken()
@@ -38,7 +38,7 @@ export default class eclass {
       AsyncStorage.getItem("user").then((user: any) => {
         if (user) {
           r(JSON.parse(user));
-          store.dispatch({ type: "user_class_create", payload: JSON.parse(user) });
+          App.getStore().dispatch({ type: "user_class_create", payload: JSON.parse(user) });
           if (callback) callback(JSON.parse(user))
         } else {
           j()
@@ -62,7 +62,7 @@ export default class eclass {
 
   static delete(): Promise<any> {
     return new Promise((r) => {
-      store.dispatch({ type: "user_class_delete" });
+      App.getStore().dispatch({ type: "user_class_delete" });
       AsyncStorage.removeItem("user");
       if (esp.config('notification') == 1) {
         UserClass.pushToken()

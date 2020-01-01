@@ -8,7 +8,9 @@ var typesDir = "./"
 var replacer = new RegExp(/(?:\-|\.(?:ios|android))?\.(?:jsx|js|ts|tsx)$/);
 var Text = "";
 const rngh = "./node_modules/react-native-gesture-handler/react-native-gesture-handler.d.ts"
-if (fs.existsSync(rngh)){
+
+console.log("DICALL")
+if (fs.existsSync(rngh)) {
   fs.unlink(rngh, (err) => { })
 }
 /* CREATE DIRECTORY CACHE && types IF NOT EXISTS */
@@ -264,11 +266,12 @@ Text = 'function assets(File) {' + "\n\t" +
   'return Out;' + "\n" +
   '}' + "\n" +
   'module.exports = assets;';
-fs.writeFile(tmpDir + "assets.js", Text, { flag: 'w' }, function (err) {
-  if (err) {
-    return console.log(err);
-  }
-});
+if (isChange(tmpDir + "assets.js", Text))
+  fs.writeFile(tmpDir + "assets.js", Text, { flag: 'w' }, function (err) {
+    if (err) {
+      return console.log(err);
+    }
+  });
 
 /* CREATE INDEX.D.TS */
 function createIndex() {
@@ -277,6 +280,7 @@ function createIndex() {
     "import { ContextProvider } from 'recyclerlistview';\n" +
     "\n" +
     "declare module \"esoftplay\" {\n" +
+    "  function useSafeState<S>(initialState?: S | (() => S)): [S, (a: S) => void];\n" +
     "  class esp {\n" +
     "    static assets(path: string): any;\n" +
     "    static config(param?: string, ...params: string[]): any;\n" +
@@ -341,11 +345,24 @@ function createIndex() {
     }
   }
   Text += "}"
-  fs.writeFile(typesDir + "index.d.ts", Text, { flag: 'w' }, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-  })
+
+  if (isChange(typesDir + "index.d.ts", Text)) {
+    fs.writeFile(typesDir + "index.d.ts", Text, { flag: 'w' }, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+    })
+  }
+}
+
+function isChange(path, compare) {
+  let hasChanged = true
+  let old = fs.existsSync(path) && fs.readFileSync(path)
+  hasChanged = old.toString().length !== compare.length
+  if (hasChanged) {
+    console.log(path, 'CHANGED')
+  }
+  return hasChanged
 }
 
 /* CREATE REDUCER LIST */
@@ -381,12 +398,13 @@ function createReducer() {
       "\n\treturn combiner(state, action)" +
       "\n}" +
       "\nexport default persistReducer(persistConfig, reducers)";
-
-    fs.writeFile(tmpDir + "reducers.js", Text, { flag: 'w' }, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-    })
+    if (isChange(tmpDir + "reducers.js", Text)) {
+      fs.writeFile(tmpDir + "reducers.js", Text, { flag: 'w' }, function (err) {
+        if (err) {
+          return console.log(err);
+        }
+      })
+    }
     createRouter()
     createIndex();
   } else {
@@ -408,6 +426,7 @@ function createRouter() {
   var nav = "";
   var Navigations = [];
   var staticImport = []
+  staticImport.push("export { default as useSafeState } from '../../../node_modules/esoftplay/state';\n")
   staticImport.push("export { default as esp } from '../../../node_modules/esoftplay/esp';\n")
   for (const module in Modules) {
     for (const task in Modules[module]) {
@@ -415,12 +434,14 @@ function createRouter() {
       Navigations.push(nav);
       Task += "\t\t" + 'case "' + nav + '":' + "\n\t\t\t" + 'Out = require("../../.' + Modules[module][task] + '").default' + "\n\t\t\t" + 'break;' + "\n";
       /* ADD ROUTER EACH FILE FOR STATIC IMPORT */
-      var item = "export { default as " + ucword(module) + ucword(task) + " } from '../../." + Modules[module][task] + "';\n"
+      var item = "import { default as _" + ucword(module) + ucword(task) + " } from '../../." + Modules[module][task] + "';\n"
       if (HookModules.includes(nav)) {
         item += "" +
           "import * as " + ucword(module) + ucword(task) + SuffixHooksProperty + " from '../../." + Modules[module][task] + "';\n" +
-          // "delete " + ucword(module) + ucword(task) + SuffixHooksProperty + ".default;\n" +
-          "export { " + ucword(module) + ucword(task) + SuffixHooksProperty + " };\n"
+          "const " + ucword(module) + ucword(task) + " = React.memo(_" + ucword(module) + ucword(task) + "); \n" +
+          "export { " + ucword(module) + ucword(task) + SuffixHooksProperty + ", " + ucword(module) + ucword(task) + " };\n"
+      } else {
+        item += "export { _" + ucword(module) + ucword(task) + " as " + ucword(module) + ucword(task) + " };\n"
       }
       if (module == 'lib' && task == 'component') {
         staticImport.splice(0, 0, item)
@@ -433,12 +454,14 @@ function createRouter() {
       }
     }
   }
-
-  fs.writeFile(tmpDir + 'index.js', staticImport.join(''), { flag: 'w' }, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-  });
+  staticImport.splice(0, 0, "import React from 'react';\n")
+  const x = staticImport.join('')
+  if (isChange(tmpDir + 'index.js', x))
+    fs.writeFile(tmpDir + 'index.js', x, { flag: 'w' }, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+    });
 
   Text = 'function routers(modtask) {' + "\n\t" +
     'var Out = {}' + "\n\t" +
@@ -448,18 +471,19 @@ function createRouter() {
     'return Out;' + "\n" +
     '}' + "\n" +
     'module.exports = routers;';
-  fs.writeFile(tmpDir + "routers.js", Text, { flag: 'w' }, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-  });
-
-  /* CREATE NAVIGATION LIST */
-  Text = "export default [\"" + Navigations.join('", "') + "\"]";
-  fs.writeFile(tmpDir + "navigations.js", Text, { flag: 'w' }, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-  });
+  if (isChange(tmpDir + "routers.js", Text)) {
+    fs.writeFile(tmpDir + "routers.js", Text, { flag: 'w' }, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+    });
+    /* CREATE NAVIGATION LIST */
+    Text = "export default [\"" + Navigations.join('", "') + "\"]";
+    fs.writeFile(tmpDir + "navigations.js", Text, { flag: 'w' }, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+    });
+  }
 
 }

@@ -7,12 +7,12 @@ import {
   Platform,
 } from 'react-native';
 import { Icon } from 'native-base';
-import { LibStyle, LibComponent, LibCurl, esp, LibProgress } from 'esoftplay';
+import { LibStyle, LibComponent, LibCurl, esp, LibProgress, LibIcon } from 'esoftplay';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
-import { store } from '../../../../App';
+import App from '../../../../App';
 import { connect } from 'react-redux';
 import { SaveFormat } from 'expo-image-manipulator';
 const { height, width } = LibStyle;
@@ -25,7 +25,8 @@ export interface LibImageProps {
 export interface LibImageState {
   type: any,
   loading: boolean,
-  image: any
+  image: any,
+  flashLight: 'on' | 'off'
 }
 
 class m extends LibComponent<LibImageProps, LibImageState> {
@@ -73,20 +74,20 @@ class m extends LibComponent<LibImageProps, LibImageState> {
 
   static setResult(image: string): void {
     // console.log(image)/
-    store.dispatch({
+    App.getStore().dispatch({
       type: 'lib_image_result',
       payload: image
     })
   }
 
   static show(): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: 'lib_image_camera_show'
     })
   }
 
   static hide(): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: 'lib_image_camera_hide'
     })
   }
@@ -97,7 +98,8 @@ class m extends LibComponent<LibImageProps, LibImageState> {
     this.state = {
       type: Camera.Constants.Type.back,
       loading: false,
-      image: null
+      image: null,
+      flashLight: 'off'
     }
     this.camera = React.createRef()
     this.takePicture = this.takePicture.bind(this);
@@ -134,7 +136,7 @@ class m extends LibComponent<LibImageProps, LibImageState> {
           async function checkImage(): Promise<string> {
             return new Promise(async (__r) => {
               setTimeout(async () => {
-                const state: any = store.getState()
+                const state: any = App.getStore().getState()
                 const image = state.lib_image.image
                 const show = state.lib_image.show
                 if (image) {
@@ -182,7 +184,7 @@ class m extends LibComponent<LibImageProps, LibImageState> {
     return new Promise((r) => {
       if (!result.cancelled) {
         LibProgress.show("MOHON TUNGGU, SEDANG MENGUNGGAH FOTO ")
-        var wantedMaxSize = 1280
+        var wantedMaxSize = 780
         var rawheight = result.height
         var rawwidth = result.width
         var ratio = rawwidth / rawheight
@@ -215,7 +217,7 @@ class m extends LibComponent<LibImageProps, LibImageState> {
   }
 
   render(): any {
-    const { image, type, loading } = this.state
+    const { image, type, loading, flashLight } = this.state
     const { show } = this.props
     if (!show) return null
     return (
@@ -225,12 +227,18 @@ class m extends LibComponent<LibImageProps, LibImageState> {
             ref={(camera: any) => this.camera = camera}
             type={type}
             ratio={'4:3'}
+            flashMode={flashLight}
             zoom={0.1}
             style={{ height: LibStyle.width * 4 / 3, width: LibStyle.width }}>
             <View style={{ height: height, width: width, backgroundColor: 'transparent' }} >
-              {image ? <Image source={image} style={{ height: LibStyle.width * 4 / 3, width: width, resizeMode: 'contain', transform: [{ scaleX: this.state.type == Camera.Constants.Type.back ? 1 : -1 }] }} /> : null}
+              {image ? <Image source={image} style={{ height: LibStyle.width * 4 / 3, width: width, resizeMode: 'cover', transform: [{ scaleX: this.state.type == Camera.Constants.Type.back ? 1 : -1 }] }} /> : null}
             </View>
           </Camera>
+          <View style={{ position: 'absolute', top: 10 + LibStyle.STATUSBAR_HEIGHT, left: 10 }} >
+            <TouchableOpacity onPress={() => this.setState({ flashLight: flashLight == 'on' ? 'off' : 'on' })} >
+              <LibIcon color={'white'} size={24} name={flashLight == 'on' ? 'flash' : "flash-off"} />
+            </TouchableOpacity>
+          </View>
           <View style={{ position: 'absolute', top: width * 4 / 3, bottom: 0, left: 0, right: 0, justifyContent: 'center', backgroundColor: 'black', alignItems: 'center', flex: 1 }} >
             <View style={{ flexDirection: 'row', alignItems: 'center' }} >
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >

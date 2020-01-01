@@ -6,7 +6,6 @@ import { Text, Button, Container, Icon } from "native-base";
 import moment from "moment/min/moment-with-locales"
 const { colorPrimaryDark, colorAccent, STATUSBAR_HEIGHT_MASTER } = LibStyle;
 import { esp, LibSociallogin, ContentComment_list, LibComponent, LibStyle } from "esoftplay";
-import { store } from "../../../../App";
 const config = esp.config();
 
 export interface ContentCommentProps {

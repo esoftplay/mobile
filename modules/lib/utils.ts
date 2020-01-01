@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import { esp, LibNavigation, LibToastProperty } from "esoftplay"
 import shorthash from "shorthash"
 import { StackActions, NavigationActions } from 'react-navigation';
-import { store } from "../../../../App";
+import App from "../../../../App";
 const Buffer = require('buffer/').Buffer
 
 
@@ -54,7 +54,7 @@ export default class eutils {
   }
 
   static getReduxState(key: string, ...keys: string[]): any {
-    let state: any = store.getState()
+    let state: any = App.getStore().getState()
     if (key) {
       var _params = [key, ...keys]
       if (_params.length > 0)
@@ -156,7 +156,7 @@ export default class eutils {
   }
 
   static navReplace(store: any, navigation: any, routeName: string, params?: any): void {
-    (store.getState().user_index.routes).some((item: any) => item.routeName == routeName) && navigation.goBack(eutils.navGetKey(routeName))
+    (App.getStore().getState().user_index.routes).some((item: any) => item.routeName == routeName) && navigation.goBack(eutils.navGetKey(routeName))
     navigation.navigate(routeName, params)
   }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { LibComponent, LibTheme, LibStyle, LibTextstyle, esp } from 'esoftplay';
-import { store } from '../../../../App';
+import App from '../../../../App';
 import { connect } from 'react-redux';
 
 export interface LibProgressProps {
@@ -43,14 +43,14 @@ class m extends LibComponent<LibProgressProps, LibProgressState>{
   }
 
   static show(message?: string): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: 'lib_progress_show',
       payload: message
     })
   }
 
   static hide(): void {
-    store.dispatch({ type: 'lib_progress_hide' })
+    App.getStore().dispatch({ type: 'lib_progress_hide' })
   }
 
 

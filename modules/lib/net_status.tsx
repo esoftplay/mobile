@@ -1,7 +1,8 @@
 import React from "react";
 import { LibComponent } from "esoftplay";
-import { Animated, View, Text, NetInfo } from "react-native";
-import { store } from "../../../../App";
+import { Animated, View, Text } from "react-native";
+import NetInfo from '@react-native-community/netinfo';
+import App from "../../../../App";
 import { connect } from "react-redux";
 
 export interface LibNet_statusProps {
@@ -37,7 +38,7 @@ class net_status extends LibComponent<LibNet_statusProps, LibNet_statusState> {
   }
 
   static setOnline(isOnline: boolean): void {
-    store.dispatch({ type: isOnline ? "lib_net_status_online" : "lib_net_status_offline" })
+    App.getStore().dispatch({ type: isOnline ? "lib_net_status_online" : "lib_net_status_offline" })
   }
 
   static mapStateToProps(state: any): any {

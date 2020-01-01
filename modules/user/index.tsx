@@ -2,11 +2,12 @@
 
 import React from "react";
 import navs from "../../cache/navigations";
-import { View } from "react-native";
+import { View, Platform } from "react-native";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from 'react-navigation-stack';
-import { store } from "../../../../App";
+import App from "../../../../App";
 import * as Font from "expo-font";
+const appjson = require('../../../../app.json')
 import { AsyncStorage } from 'react-native';
 import {
   esp,
@@ -26,6 +27,7 @@ import {
   LibToast
 } from 'esoftplay';
 import firebase from 'firebase'
+import { Notifications } from "expo";
 
 export interface UserIndexProps {
 
@@ -51,7 +53,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
   }
 
   static user_nav_change(state: any): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: "user_nav_change",
       payload: state
     })
@@ -78,13 +80,19 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
     LibTheme.getTheme()
     LibLocale.getLanguage()
     if (esp.config().notification == 1) {
+      if (Platform.OS == 'android')
+        Notifications.createChannelAndroidAsync('android', { sound: true, name: appjson.expo.name, badge: true, priority: 'max', vibrate: true })
       LibNotification.listen((notifObj: any) => {
         esp.log(notifObj);
       })
     }
     if (esp.config().hasOwnProperty('firebase')) {
-      firebase.initializeApp(esp.config('firebase'));
-      firebase.auth().signInAnonymously();
+      try {
+        firebase.initializeApp(esp.config('firebase'));
+        firebase.auth().signInAnonymously();
+      } catch (error) {
+
+      }
     }
     var push_id = await AsyncStorage.getItem("push_id");
     if (!push_id) {
@@ -104,7 +112,7 @@ export default class euser extends LibComponent<UserIndexProps, UserIndexState> 
       esp.log(initRoute);
       var config: any = {
         headerMode: "none",
-        initialRouteName: initRoute
+        initialRouteName: String(initRoute)
       }
       Router = await createAppContainer(createStackNavigator(navigations, config))
       await this.setFonts()

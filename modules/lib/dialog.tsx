@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { LibComponent, LibTheme, LibStyle, LibTextstyle, LibIcon, LibIconStyle } from 'esoftplay';
 import { connect } from 'react-redux';
-import { store } from '../../../../App';
+import App from '../../../../App';
 
 export interface LibDialogProps {
   visible?: boolean,
@@ -89,7 +89,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   }
 
   static hide(): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: "lib_dialog_hide"
     })
   }
@@ -115,7 +115,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   }
 
   static show(style: 'default' | 'danger', icon: LibIconStyle, title: string, msg: string, ok?: string, cancel?: string, onPressOK?: () => void, onPressCancel?: () => void): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: "lib_dialog_show",
       payload: {
         style: style,
@@ -131,7 +131,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   }
 
   static custom(view: any): void {
-    store.dispatch({
+    App.getStore().dispatch({
       type: "lib_dialog_show",
       payload: {
         view: view,

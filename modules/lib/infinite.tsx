@@ -104,7 +104,7 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
               return {
                 data: page == 0 ? mainIndex.list : [...state.data, ...mainIndex.list],
                 page: page,
-                isStop: (page || 0) >= mainIndex.pages - 1
+                isStop: (page || 0) >= (mainIndex.pages || mainIndex.total_page) - 1
               }
             })
         },

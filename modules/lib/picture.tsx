@@ -6,7 +6,7 @@ import { esp, LibUtils } from 'esoftplay'
 import * as FileSystem from 'expo-file-system';
 import shorthash from 'shorthash'
 import * as ImageManipulator from 'expo-image-manipulator';
-import { store } from '../../../../App'
+import App from '../../../../App'
 
 export interface LibPictureSource {
   uri: string
@@ -38,7 +38,7 @@ export function reducer(state: any, action: any): any {
 }
 
 export function save(key: string, url: string): void {
-  store.dispatch({
+  App.getStore().dispatch({
     type: "lib_picture_images",
     payload: {
       [key]: url

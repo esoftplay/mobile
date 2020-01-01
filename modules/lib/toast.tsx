@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
-import { store } from '../../../../App';
+import App from '../../../../App';
 import { useSelector } from 'react-redux';
 import { LibStyle } from 'esoftplay';
 
@@ -34,11 +34,11 @@ export function reducer(state: any, action: any): any {
 let _timeout: any = undefined
 
 export function hide(): void {
-  store.dispatch({ type: 'lib_toast_hide' })
+  App.getStore().dispatch({ type: 'lib_toast_hide' })
 }
 
 export function show(message: string, timeout?: number): void {
-  store.dispatch({
+  App.getStore().dispatch({
     type: 'lib_toast_show',
     payload: {
       message: message,
@@ -50,7 +50,7 @@ export function show(message: string, timeout?: number): void {
     _timeout = undefined
   }
   _timeout = setTimeout(() => {
-    store.dispatch({ type: 'lib_toast_hide' })
+    App.getStore().dispatch({ type: 'lib_toast_hide' })
   }, timeout || initState.timeout);
 }
 
