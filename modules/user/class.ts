@@ -74,7 +74,7 @@ export default class eclass {
   static pushToken(): Promise<any> {
     return new Promise((resolve, reject) => {
       LibNotification.requestPermission(async (token) => {
-        if (token) {
+        if (token && token.includes("ExponentPushToken")) {
           const config = esp.config();
           var post: any = {
             user_id: 0,

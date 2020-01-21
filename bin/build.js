@@ -318,7 +318,8 @@ export default class App extends React.Component {\n\
 			"recyclerlistview",
 			"redux",
 			"redux-persist",
-			"shorthash"
+			"shorthash",
+			"react-native-picker-scrollview"
 		]
 		for (let i = 0; i < expoLib.length; i++) {
 			const element = expoLib[i];
