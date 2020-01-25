@@ -281,6 +281,7 @@ function createIndex() {
     "\n" +
     "declare module \"esoftplay\" {\n" +
     "  function useSafeState<S>(initialState?: S | (() => S)): [S, (a: S) => void];\n" +
+    "  function usePersistState<S>(key: string, initialState?: S | (() => S)): [S, (a: S) => void, () => void, () => void];\n" +
     "  class esp {\n" +
     "    static assets(path: string): any;\n" +
     "    static config(param?: string, ...params: string[]): any;\n" +
@@ -427,6 +428,7 @@ function createRouter() {
   var Navigations = [];
   var staticImport = []
   staticImport.push("export { default as useSafeState } from '../../../node_modules/esoftplay/state';\n")
+  staticImport.push("export { default as usePersistState } from '../../../node_modules/esoftplay/persist';\n")
   staticImport.push("export { default as esp } from '../../../node_modules/esoftplay/esp';\n")
   for (const module in Modules) {
     for (const task in Modules[module]) {

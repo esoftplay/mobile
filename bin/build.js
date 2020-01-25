@@ -265,7 +265,7 @@ const persistor = persistStore(store)\n\
 export default class App extends React.Component {\n\
 	Home = esp.home()\n\
 \n\
-	static getStore(): Store{
+	static getStore(): Store {
 		return store;
 	}
 \n\
