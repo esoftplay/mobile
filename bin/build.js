@@ -313,6 +313,7 @@ export default class App extends React.Component {\n\
 			"native-base",
 			"react-native-modal",
 			"react-navigation",
+			"react-native-screens",
 			"react-navigation-stack",
 			"react-redux",
 			"recyclerlistview",

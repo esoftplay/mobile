@@ -26,6 +26,7 @@ var Modules = {}; // Object semua module/task yang bisa dipanggil
 var HookModules = []
 var Reducers = {}; // Object semua reducer yang akan dikumpulkan
 var HookReducers = []
+var UseLibs = []
 var SuffixHooksProperty = ('Property').trim()
 var Persistor = {};
 var Extender = {};
@@ -70,8 +71,42 @@ checks.forEach(modules => {
                 var isIndexed = (tmpExp.indexOf(clsName) > -1) ? false : true;
                 // console.log(isIndexed, clsName);
                 var isHooks = false
-
+                var isUseLibs = false
                 /* REGEX HOOKS */
+
+                if (isIndexed) {
+                  if (n = (/\n?(?:(?:\/\/\s{0,})|(?:\/\*\s{0,}))useLibs/).exec(data)) {
+                    isUseLibs = true
+                    tmpTask[clsName]['class'] = ""
+                    tmpTask[clsName]['function'] = {}
+                    UseLibs.push(module + "/" + name) /* get export default */
+                    if (m = (/\nexport\sdefault\sfunction\s(([a-zA-Z0-9]+).*)\{\n/).exec(data)) {
+                      tmpTask[clsName]['uselibs'] = ' function ' + m[1].replace(m[2], clsName).trim() + ";"
+                      tmpTask[clsName]['namespaces'] = " namespace " + clsName.trim() + SuffixHooksProperty
+                    }
+                    /* get exported funtion */
+                    if (f = data.match(/\nexport\s(?!default)(function\s([a-zA-Z0-9]+).*)\s\{\n/g)) {
+                      for (let i = 0; i < f.length; i++) {
+                        const _f = (/\nexport\s(?!default)(function\s([a-zA-Z0-9]+).*)\s\{\n/g).exec(f[i]);
+                        tmpTask[clsName]['function'][_f[2]] = _f[1] + ';'
+                      }
+                    }
+                    if (m = data.match(/\n{0,}\s{0,}export\s+(type\s+[a-zA-Z0-9_]+\s\=.*\n)/g)) {
+                      for (let i = 0; i < m.length; i++) {
+                        tmpTask[clsName]["type"].push(m[i].replace('export ', '').trim());
+                      }
+                    }
+                    /* get exported const / var / let */
+                    if (f = data.match(/\nexport\s(?!default)(?:((const|let|var)\s([a-zA-Z0-9]+):\s{0,}[a-zA-Z]+))/g)) {
+                      for (let i = 0; i < f.length; i++) {
+                        const _f = (/\nexport\s(?!default)(?:((const|let|var)\s([a-zA-Z0-9]+):\s{0,}[a-zA-Z]+))/g).exec(f[i]);
+                        tmpTask[clsName]['var'][_f[3]] = _f[1] + ';'
+                      }
+                    }
+
+                  }
+                }
+
                 if (isIndexed) {
                   if (n = (/\n?(?:(?:\/\/\s{0,})|(?:\/\*\s{0,}))withHooks/).exec(data)) {
                     // console.log('masmun');
@@ -88,6 +123,11 @@ checks.forEach(modules => {
                       for (let i = 0; i < f.length; i++) {
                         const _f = (/\nexport\s(?!default)(function\s([a-zA-Z0-9]+).*)\s\{\n/g).exec(f[i]);
                         tmpTask[clsName]['function'][_f[2]] = _f[1] + ';'
+                      }
+                    }
+                    if (m = data.match(/\n{0,}\s{0,}export\s+(type\s+[a-zA-Z0-9_]+\s\=.*\n)/g)) {
+                      for (let i = 0; i < m.length; i++) {
+                        tmpTask[clsName]["type"].push(m[i].replace('export ', '').trim());
                       }
                     }
                     /* get exported const / var / let */
@@ -130,7 +170,7 @@ checks.forEach(modules => {
                 }
 
                 /* REGEX CLASS NAME */
-                if (!isHooks)
+                if (!isHooks && !isUseLibs)
                   if (m = /\n\s{0,}(?:export\s+default\s+)?(class\s+([^\s]+)[^\{]+)/.exec(data)) {
                     if (tmpTask[clsName]["class"] == "") {
                       tmpTask[clsName]["class"] = m[1].replace(m[2], clsName).trim();
@@ -164,7 +204,7 @@ checks.forEach(modules => {
                     }
                   }
                   /* REGEX All Functions */
-                  if (!isHooks) {
+                  if (!isHooks && !isUseLibs) {
                     var r = /\n(\s+)((?:(?:static|public|private|async)\s+)?[a-zA-Z0-9_]{3,}\s{0,}(?:=\s{0,})?\([^{\n]+)/g; // 1=spaces 2=FunctionObject
                     if (s = r.exec(data)) {
                       if (m = data.match(r)) {
@@ -199,7 +239,7 @@ checks.forEach(modules => {
                   if ((new RegExp(/\nconst\s+persist\s{0,}=\s{0,}true/g)).test(data)) {
                     Persistor[key] = path
                   }
-                } else if (!isHooks) { // not contained 'reducer'
+                } else if (!isHooks && !isUseLibs) { // not contained 'reducer'
                   grabClass = data.match(new RegExp(/\n\s{0,}export\s+default\s+connect\\([^\\)]+\\)\\(\s{0,}(.*?)\s{0,}\\)/g));
                   delReducer = true;
                   if (grabClass) { // find MainClass
@@ -326,12 +366,32 @@ function createIndex() {
         Text += "\n  " + tmpTask[clsName]["interface"][i].replace(/\n/g, "\n  ");
       }
       Text += "\n " + tmpTask[clsName]["hooks"];
-      Text += "\n " + tmpTask[clsName]["namespaces"] + " {";
-      var isFilled = false;
       for (var i = 0; i < tmpTask[clsName]["type"].length; i++) {
         Text += "\n    " + tmpTask[clsName]["type"][i].replace(/\n/g, "\n  ");
-        isFilled = true
       }
+      var isFilled = false;
+      Text += "\n " + tmpTask[clsName]["namespaces"] + " {";
+      for (fun in tmpTask[clsName]["var"]) {
+        Text += "\n    " + tmpTask[clsName]["var"][fun];
+      }
+      for (fun in tmpTask[clsName]["function"]) {
+        Text += "\n    " + tmpTask[clsName]["function"][fun];
+        isFilled = true;
+      }
+      if (isFilled) {
+        Text += "\n  ";
+      }
+      Text += "}";
+    } else if (tmpTask[clsName]["uselibs"]) {
+      for (var i = 0; i < tmpTask[clsName]["interface"].length; i++) {
+        Text += "\n  " + tmpTask[clsName]["interface"][i].replace(/\n/g, "\n  ");
+      }
+      Text += "\n " + tmpTask[clsName]["uselibs"];
+      for (var i = 0; i < tmpTask[clsName]["type"].length; i++) {
+        Text += "\n  " + tmpTask[clsName]["type"][i].replace(/\n/g, "\n  ");
+      }
+      var isFilled = false;
+      Text += "\n " + tmpTask[clsName]["namespaces"] + " {";
       for (fun in tmpTask[clsName]["var"]) {
         Text += "\n    " + tmpTask[clsName]["var"][fun];
       }
@@ -441,6 +501,11 @@ function createRouter() {
         item += "" +
           "import * as " + ucword(module) + ucword(task) + SuffixHooksProperty + " from '../../." + Modules[module][task] + "';\n" +
           "const " + ucword(module) + ucword(task) + " = React.memo(_" + ucword(module) + ucword(task) + "); \n" +
+          "export { " + ucword(module) + ucword(task) + SuffixHooksProperty + ", " + ucword(module) + ucword(task) + " };\n"
+      } else if (UseLibs.includes(nav)) {
+        item += "" +
+          "import * as " + ucword(module) + ucword(task) + SuffixHooksProperty + " from '../../." + Modules[module][task] + "';\n" +
+          "const " + ucword(module) + ucword(task) + " = _" + ucword(module) + ucword(task) + "; \n" +
           "export { " + ucword(module) + ucword(task) + SuffixHooksProperty + ", " + ucword(module) + ucword(task) + " };\n"
       } else {
         item += "export { _" + ucword(module) + ucword(task) + " as " + ucword(module) + ucword(task) + " };\n"

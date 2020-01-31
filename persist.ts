@@ -6,7 +6,7 @@ export default function usePersistState(key: string, def?: any): any[] {
   const [a, b] = useState(def)
 
   function c(value: any) {
-    if (r.current) {
+    if (r.current && value != undefined) {
       AsyncStorage.setItem(key, JSON.stringify(value))
       b(value)
     }
