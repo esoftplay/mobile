@@ -250,41 +250,42 @@ yarn.lock\n\
 			console.log('.gitignore has been created');
 		});
 
-		const AppJS = `import React from 'react';\n\
-import { createStore, Store } from 'redux';\n\
-import { persistStore } from 'redux-persist'\n\
-import { PersistGate } from 'redux-persist/integration/react'\n\
-import { Provider } from 'react-redux'\n\
-import { esp } from 'esoftplay';\n\
-import * as ErrorReport from 'esoftplay/error'\n\
-import * as ErrorRecovery from 'expo-error-recovery';\n\
-\n\
-const store = createStore(esp.reducer())\n\
-const persistor = persistStore(store)\n\
-\n\
-export default class App extends React.Component {\n\
-	Home = esp.home()\n\
-\n\
+		const AppJS = `import React from 'react';
+import { createStore, Store } from 'redux';
+import { persistStore } from 'redux-persist'
+import { PersistGate } from 'redux-persist/integration/react'
+import { Provider } from 'react-redux'
+import { esp, _global } from 'esoftplay';
+import * as ErrorReport from 'esoftplay/error'
+import * as ErrorRecovery from 'expo-error-recovery';
+
+_global.store = createStore(esp.reducer())
+_global.persistor = persistStore(_global.store)
+
+export default class App extends React.Component {
+	Home = esp.home()
+
 	static getStore(): Store {
-		return store;
+		return _global.store;
 	}
-\n\
-	constructor(props: any) {\n\
-		super(props)\n\
-		ErrorRecovery.setRecoveryProps(props)\n\
-		ErrorReport.getError(props.exp.errorRecovery)\n\
-	}\n\
-\n\
-	render() {\n\
-		return (\n\
-			<Provider store={store}>\n\
-				<PersistGate loading={null} persistor={persistor}>\n\
-					<this.Home />\n\
-				</PersistGate>\n\
-			</Provider>\n\
-		)\n\
-	}\n\
-}`;
+
+	constructor(props: any) {
+		super(props)
+		ErrorRecovery.setRecoveryProps(props)
+		ErrorReport.getError(props.exp.errorRecovery)
+	}
+
+	render() {
+		return (
+			<Provider store={_global.store}>
+				<PersistGate loading={null} persistor={_global.persistor}>
+					<this.Home />
+				</PersistGate>
+			</Provider>
+		)
+	}
+}
+`;
 		var bashScript = 'cd ../../ && expo install ';
 		var expoLib = [
 			"expo-av",
@@ -315,6 +316,7 @@ export default class App extends React.Component {\n\
 			"react-navigation",
 			"react-native-screens",
 			"react-navigation-stack",
+			"react-native-safe-area-context",
 			"react-redux",
 			"recyclerlistview",
 			"redux",

@@ -2,7 +2,7 @@
 
 import React, { useContext } from 'react';
 import { NavigationContext, StackActions, NavigationActions } from 'react-navigation';
-import { esp, useSafeState } from 'esoftplay';
+import { esp, useSafeState, _global } from 'esoftplay';
 
 export interface UseNavigationReturn {
   back: (deep?: number) => void,
@@ -17,25 +17,35 @@ export interface UseNavigationReturn {
   push: (routeName: string, params?: any) => void,
 }
 
-var useBackResult51017: any = {}
 export default function m(): UseNavigationReturn {
   const { navigate, dispatch, isFirstRouteInParent, isFocused, goBack } = useContext(NavigationContext)
 
   function navigateForResult(routeName: string, params: any, key?: number): Promise<any> {
-    const _key = key || 51017
-    useBackResult51017[_key] = undefined
+    const _key = key || 1
+    if (!_global.hasOwnProperty('_backResult')) {
+      _global._backResult = {}
+    }
+    if (!_global.hasOwnProperty('_task')) {
+      _global._task = {}
+    }
+    _global._task = {}
+    _global._backResult[_key] = undefined
     return new Promise((r) => {
       navigate(routeName, params)
       function check() {
         setTimeout(() => {
-          if (useBackResult51017[_key] != undefined) {
-            r(useBackResult51017[_key])
+          if (_global._backResult[_key] != undefined) {
+            delete _global._task[key]
+            r(_global._backResult[_key])
           } else {
             check()
           }
         }, 300);
       }
-      check()
+      if (!_global._task.hasOwnProperty(key)) {
+        _global._task[key] = 1
+        check()
+      }
     })
   }
 
@@ -79,9 +89,9 @@ export default function m(): UseNavigationReturn {
   }
 
   function sendBackResult(result: any, key?: number): void {
-    const _key = key || 51017
+    const _key = key || 1
     goBack()
-    useBackResult51017[_key] = result
+    _global._backResult[_key] = result
   }
 
   return {

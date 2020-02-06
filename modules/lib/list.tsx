@@ -31,6 +31,8 @@ export interface LibListProps {
   keyExtractor?: (item: any, index: number) => string,
   legacyImplementation?: boolean,
   numColumns?: number,
+  onScroll?: (e: any) => void,
+  scrollEventThrottle?: number,
   onEndReached?: (() => void) | null,
   onEndReachedThreshold?: number | null,
   onRefresh?: (() => void) | null,

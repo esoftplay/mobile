@@ -16,6 +16,8 @@ export interface LibInfiniteProps {
   ListFooterComponent?: any,
   ListHeaderComponent?: any,
   columnWrapperStyle?: any,
+  onScroll?: (e: any) => void,
+  scrollEventThrottle?: number,
   keyboardShouldPersistTaps?: boolean | "always" | "never" | "handled",
   extraData?: any,
   getItemLayout?: (data: any, index: number) => LibListItemLayout,

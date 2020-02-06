@@ -1,24 +1,23 @@
 import React from 'react'
 import { InteractionManager } from 'react-native'
+import { _global } from 'esoftplay'
 
-
-let updater: any
 export default class m {
   static set(callback: () => void, duration?: number): void {
-    if (updater != undefined) {
-      clearInterval(updater)
-      updater = undefined
+    if (_global.updater != undefined) {
+      clearInterval(_global.updater)
+      _global.updater = undefined
     }
-    updater = setInterval(() => {
+    _global.updater = setInterval(() => {
       InteractionManager.runAfterInteractions(() => {
         callback()
       });
     }, duration || 6000)
   }
   static clear(): void {
-    if (updater != undefined) {
-      clearInterval(updater)
-      updater = undefined
+    if (_global.updater != undefined) {
+      clearInterval(_global.updater)
+      _global.updater = undefined
     }
   }
 }

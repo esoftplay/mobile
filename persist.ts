@@ -12,12 +12,14 @@ export default function usePersistState(key: string, def?: any): any[] {
     }
   }
 
-  function e() {
+  function e(callback?: (a?: typeof def) => void) {
     if (r.current)
       AsyncStorage.getItem(key).then((x) => {
         if (x) {
+          callback(JSON.parse(x))
           c(JSON.parse(x))
         } else {
+          callback(def)
           c(def)
         }
       })

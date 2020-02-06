@@ -320,6 +320,7 @@ function createIndex() {
     "import { ContextProvider } from 'recyclerlistview';\n" +
     "\n" +
     "declare module \"esoftplay\" {\n" +
+    "  var _global: any;\n" +
     "  function useSafeState<S>(initialState?: S | (() => S)): [S, (a: S) => void];\n" +
     "  function usePersistState<S>(key: string, initialState?: S | (() => S)): [S, (a: S) => void, () => void, () => void];\n" +
     "  class esp {\n" +
@@ -452,12 +453,12 @@ function createReducer() {
       "\n\tstorage: AsyncStorage," +
       "\n\twhitelist: ['" + Object.keys(Persistor).join('\',\'') + "']" +
       "\n}" +
-      "\n\nconst reducers = (state, action) => {" +
+      "\nconst reducers = (state, action) => {" +
       "\n\tif (action.type === 'user_class_delete') {" +
       "\n\t\tstate = undefined" +
       "\n\t}" +
       "\n\treturn combiner(state, action)" +
-      "\n}" +
+      "\n	}" +
       "\nexport default persistReducer(persistConfig, reducers)";
     if (isChange(tmpDir + "reducers.js", Text)) {
       fs.writeFile(tmpDir + "reducers.js", Text, { flag: 'w' }, function (err) {
@@ -487,6 +488,7 @@ function createRouter() {
   var nav = "";
   var Navigations = [];
   var staticImport = []
+  staticImport.push("export { default as _global } from '../../../node_modules/esoftplay/_global';\n")
   staticImport.push("export { default as useSafeState } from '../../../node_modules/esoftplay/state';\n")
   staticImport.push("export { default as usePersistState } from '../../../node_modules/esoftplay/persist';\n")
   staticImport.push("export { default as esp } from '../../../node_modules/esoftplay/esp';\n")

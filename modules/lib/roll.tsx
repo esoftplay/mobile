@@ -20,6 +20,8 @@ export interface LibRollProps {
   children?: any[],
   pagingEnabled?: boolean,
   extraData?: any,
+  onScroll?: (e: any) => void,
+  scrollEventThrottle?: number,
   horizontal?: boolean,
   initialNumToRender?: number,
   initialScrollIndex?: number,
