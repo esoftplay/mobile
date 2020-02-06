@@ -322,7 +322,7 @@ function createIndex() {
     "declare module \"esoftplay\" {\n" +
     "  var _global: any;\n" +
     "  function useSafeState<S>(initialState?: S | (() => S)): [S, (a: S) => void];\n" +
-    "  function usePersistState<S>(key: string, initialState?: S | (() => S)): [S, (a: S) => void, () => void, () => void];\n" +
+    "  function usePersistState<S>(key: string, initialState?: S | (() => S)): [S, (a: S) => void, (a?: (x: S)=> void) => void, () => void];\n" +
     "  class esp {\n" +
     "    static assets(path: string): any;\n" +
     "    static config(param?: string, ...params: string[]): any;\n" +
@@ -330,7 +330,7 @@ function createIndex() {
     "    static mod(path: string): any;\n" +
     "    static reducer(): any;\n" +
     "    static navigations(): any;\n" +
-    "    static lang(...string:string[]): string;\n" +
+    "    static lang(...string: string[]): string;\n" +
     "    static langId(): string;\n" +
     "    static connect(mapStateToProps:any,cls:any): any;\n" +
     "    static home(): any;\n" +
