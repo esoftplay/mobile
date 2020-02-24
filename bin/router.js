@@ -323,21 +323,23 @@ function createIndex() {
     "  var _global: any;\n" +
     "  function useSafeState<S>(initialState?: S | (() => S)): [S, (a: S) => void];\n" +
     "  function usePersistState<S>(key: string, initialState?: S | (() => S)): [S, (a: S) => void, (a?: (x: S)=> void) => void, () => void];\n" +
-    "  class esp {\n" +
-    "    static assets(path: string): any;\n" +
-    "    static config(param?: string, ...params: string[]): any;\n" +
-    "    static _config(): string | number | boolean;\n" +
-    "    static mod(path: string): any;\n" +
-    "    static reducer(): any;\n" +
-    "    static navigations(): any;\n" +
-    "    static lang(...string: string[]): string;\n" +
-    "    static langId(): string;\n" +
-    "    static connect(mapStateToProps:any,cls:any): any;\n" +
-    "    static home(): any;\n" +
-    "    static log(message?: any, ...optionalParams: any[]): void;\n" +
-    "    static routes(): any;\n" +
-    "    static getTokenAsync(callback: (token: string) => void): void;\n" +
-    "    static notif(): any;\n" +
+    "  namespace esp {\n" +
+    "    function appjson(): any;\n" +
+    "    function assets(path: string): any;\n" +
+    "    function dispatch(action: any): any;\n" +
+    "    function config(param?: string, ...params: string[]): any;\n" +
+    "    function _config(): string | number | boolean;\n" +
+    "    function mod(path: string): any;\n" +
+    "    function reducer(): any;\n" +
+    "    function navigations(): any;\n" +
+    "    function lang(...string: string[]): string;\n" +
+    "    function langId(): string;\n" +
+    "    function connect(mapStateToProps:any,cls:any): any;\n" +
+    "    function home(): any;\n" +
+    "    function log(message?: any, ...optionalParams: any[]): void;\n" +
+    "    function routes(): any;\n" +
+    "    function getTokenAsync(callback: (token: string) => void): void;\n" +
+    "    function notif(): any;\n" +
     "  }";
   for (clsName in tmpTask) {
     if (tmpTask[clsName]["class"]) {
@@ -488,6 +490,8 @@ function createRouter() {
   var nav = "";
   var Navigations = [];
   var staticImport = []
+
+  staticImport.push("import { isEqual } from 'lodash';\n")
   staticImport.push("export { default as _global } from '../../../node_modules/esoftplay/_global';\n")
   staticImport.push("export { default as useSafeState } from '../../../node_modules/esoftplay/state';\n")
   staticImport.push("export { default as usePersistState } from '../../../node_modules/esoftplay/persist';\n")
@@ -502,7 +506,7 @@ function createRouter() {
       if (HookModules.includes(nav)) {
         item += "" +
           "import * as " + ucword(module) + ucword(task) + SuffixHooksProperty + " from '../../." + Modules[module][task] + "';\n" +
-          "const " + ucword(module) + ucword(task) + " = React.memo(_" + ucword(module) + ucword(task) + "); \n" +
+          "const " + ucword(module) + ucword(task) + " = React.memo(_" + ucword(module) + ucword(task) + ", isEqual); \n" +
           "export { " + ucword(module) + ucword(task) + SuffixHooksProperty + ", " + ucword(module) + ucword(task) + " };\n"
       } else if (UseLibs.includes(nav)) {
         item += "" +

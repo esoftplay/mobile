@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { isEqual } from 'lodash'
 
 export default class SaveComponent <K, S, U = any> extends Component<K, S, U>{
   _isMounted: boolean = false
@@ -16,7 +17,7 @@ export default class SaveComponent <K, S, U = any> extends Component<K, S, U>{
   }
 
   shouldComponentUpdate(nextProps: any, nextState: any): boolean {
-    return this.props != nextProps || this.state != nextState;
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
   }
 
   onBackPress(): boolean {

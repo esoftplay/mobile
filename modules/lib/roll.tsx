@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, RefreshControl } from 'react-native';
+import { View } from 'react-native';
 import { LibComponent, LibCurl, LibScroll, LibTextstyle, LibLoading } from 'esoftplay';
 
 export interface LibRollProps {

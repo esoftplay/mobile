@@ -103,9 +103,8 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
         delete user.ok
         this.setState({ isSend: true })
         var post = { ...user, content: this.state.comment }
-        esp.log(post)
         new LibCurl(this.state.url_post, post,
-          (res: any, msg: string) => {            
+          (res: any, msg: string) => {
             this.setState({
               page: 0,
               isSend: false,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { AsyncStorage } from 'react-native';
-import { esp, LibUtils, LibStyle } from 'esoftplay';
-import App from '../../../../App';
+import { esp, LibUtils, LibStyle, _global } from 'esoftplay';
 
 const { colorPrimary, colorAccent } = LibStyle
 
@@ -26,7 +25,7 @@ export default class m {
   }
 
   static setTheme(themeName: string, navigation: any, isLogin?: any): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'lib_theme_switch',
       payload: themeName
     })
@@ -37,7 +36,7 @@ export default class m {
   static getTheme(): void {
     AsyncStorage.getItem('theme').then((theme) => {
       if (theme) {
-        App.getStore().dispatch({
+        esp.dispatch({
           type: 'lib_theme_switch',
           payload: theme
         })
@@ -109,7 +108,7 @@ export default class m {
   }
 
   static colors(colors: string[]): string {
-    const _store: any = App.getStore().getState();
+    const _store: any = _global.store.getState();
     const _themeName = _store.lib_theme.theme;
     const _themes: string[] = esp.config('theme');
     const _themeIndex = _themes.indexOf(_themeName);

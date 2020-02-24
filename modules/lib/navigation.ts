@@ -1,6 +1,7 @@
-import { esp, LibUtils, _global } from 'esoftplay';
 import React from "react";
-import { NavigationActions } from 'react-navigation';
+import { esp, LibUtils, _global } from 'esoftplay';
+import { StackActions, CommonActions } from '@react-navigation/native';
+
 
 // var _navigator: any = React.createRef()
 // var _navigation: any
@@ -22,7 +23,7 @@ export default class m {
 
   static navigate(route: string, params?: any): void {
     _global._navigator.dispatch(
-      NavigationActions.navigate({ routeName: route, params: params })
+      CommonActions.navigate({ name: route, params: params })
     )
   }
 
@@ -77,13 +78,58 @@ export default class m {
     })
   }
 
-  static back(key?: string): void {
-    let _key
-    if (key) {
-      _key = LibUtils.navGetKey(key)
-    }
+  static replace(routeName: string, params?: any): void {
     _global._navigator.dispatch(
-      NavigationActions.back({ key: _key })
+      StackActions.replace(routeName, params)
     )
   }
+
+  static push(routeName: string, params?: any): void {
+    _global._navigator.dispatch(
+      StackActions.push(routeName, params)
+    )
+  }
+
+  static reset(routeName?: string, ...routeNames: string[]): void {
+    const user = LibUtils.getReduxState('user_class')
+    let _routeName = [routeName || esp.config('home', (user && (user.id || user.user_id)) ? 'member' : 'public')]
+    if (routeNames && routeNames.length > 0) {
+      _routeName = [..._routeName, ...routeNames]
+    }
+
+    const resetAction = CommonActions.reset({
+      index: _routeName.length - 1,
+      routes: _routeName.map((x) => ({ name: x })),
+    });
+    _global._navigator.dispatch(resetAction);
+  }
+
+  static back(deep?: number): void {
+    let _deep = deep || 1
+    if (_deep == 1) {
+      _global._navigator.goBack()
+      return
+    }
+    const popAction = StackActions.pop(_deep);
+    _global._navigator.dispatch(popAction)
+  }
+
+  /* return `root` on initialRoute otherwise return the routeName was active  */
+  static getCurrentRouteName(): string {
+    const routes = LibUtils.getReduxState('user_index')
+    let currentRouteName = 'root'
+    if (routes.hasOwnProperty('index') && routes.index > 0) {
+      currentRouteName = routes.routes[routes.routes.length - 1].routeName
+    }
+    return currentRouteName
+  }
+
+  static isFirstRoute(): boolean {
+    return m.getCurrentRouteName() == 'root'
+  }
+
+  static backToRoot(): void {
+    _global._navigator.dispatch(StackActions.popToTop());
+  }
+
 }

@@ -87,7 +87,6 @@ export default class euserLogin extends LibComponent<UserLoginProps, UserLoginSt
     if (post.hasOwnProperty("email") || post.hasOwnProperty("username") || post.hasOwnProperty("password")) {
       new LibCurl(config.content + uri, post,
         (res, msg) => {
-          esp.log(res, "pesan");
           // console.log(res)
           this.onSuccessLogin(res)
           this.inputUsername.setNativeProps({ text: "" })

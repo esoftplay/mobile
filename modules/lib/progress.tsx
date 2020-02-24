@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, BackHandler } from 'react-native';
 import { LibComponent, LibTheme, LibStyle, LibTextstyle, esp } from 'esoftplay';
-import App from '../../../../App';
 import { connect } from 'react-redux';
 
 export interface LibProgressProps {
@@ -43,14 +42,14 @@ class m extends LibComponent<LibProgressProps, LibProgressState>{
   }
 
   static show(message?: string): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'lib_progress_show',
       payload: message
     })
   }
 
   static hide(): void {
-    App.getStore().dispatch({ type: 'lib_progress_hide' })
+    esp.dispatch({ type: 'lib_progress_hide' })
   }
 
 
@@ -63,6 +62,20 @@ class m extends LibComponent<LibProgressProps, LibProgressState>{
 
   constructor(props: LibProgressProps) {
     super(props);
+    this.handleBack = this.handleBack.bind(this);
+  }
+
+
+  handleBack(): boolean {
+    return true
+  }
+
+  componentDidUpdate(prevProps: LibProgressProps, prevState: LibProgressState): void {
+    if (prevProps.show == false && this.props.show == true) {
+      BackHandler.addEventListener("hardwareBackPress", this.handleBack)
+    } else if (prevProps.show == true && this.props.show == false) {
+      BackHandler.removeEventListener("hardwareBackPress", this.handleBack)
+    }
   }
 
   render(): any {

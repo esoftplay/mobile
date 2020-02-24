@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { LibComponent } from 'esoftplay';
 import { connect } from 'react-redux';
-import App from '../../../../App'
+import { esp } from 'esoftplay';
 export interface ContentConfigProps {
   navigation: any
 }
@@ -71,14 +71,14 @@ class m extends LibComponent<ContentConfigProps, ContentConfigState> {
   }
 
   static setList(config: any): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'content_config_list',
       payload: config
     })
   }
 
   static setDetail(config: any): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'content_config_detail',
       payload: config
     })

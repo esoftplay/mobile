@@ -1,10 +1,7 @@
 //
 import React from "react"
-import { Component } from "react";
-import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider } from "recyclerlistview";
 import { Dimensions, View, FlatList } from 'react-native';
-const { width } = Dimensions.get("window")
-import { LibContext, LibComponent } from "esoftplay";
+import { LibComponent } from "esoftplay";
 
 export interface LibListItemLayout {
   length: number,
@@ -54,11 +51,21 @@ export default class EList extends LibComponent<LibListProps, LibListState> {
   constructor(props: LibListProps) {
     super(props);
     this.scrollToIndex = this.scrollToIndex.bind(this);
+    this.rowRenderer = this.rowRenderer.bind(this);
+    this.keyExtractor = this.keyExtractor.bind(this);
   }
 
   scrollToIndex(x: number, anim?: boolean): void {
     if (!anim) anim = true;
     this.flatlist.current!.scrollToIndex({ index: x, animated: anim })
+  }
+
+  rowRenderer({ item, index }): any {
+    return this.props.renderItem(item, index)
+  }
+
+  keyExtractor(item, index): string {
+    return item.hasOwnProperty('id') && item.id || index.toString()
   }
 
   render(): any {
@@ -71,15 +78,16 @@ export default class EList extends LibComponent<LibListProps, LibListState> {
         <FlatList
           ref={this.flatlist}
           data={this.props.data}
-          keyExtractor={(_, i) => i.toString()}
-          windowSize={5}
+          keyExtractor={this.keyExtractor}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           refreshing={false}
+          removeClippedSubviews
+          windowSize={7}
           {...this.props}
           {...isStatic()}
           ListFooterComponent={this.props.renderFooter && this.props.renderFooter()}
-          renderItem={({ item, index }) => this.props.renderItem(item, index)}
+          renderItem={this.rowRenderer}
         />
       </View>
     )

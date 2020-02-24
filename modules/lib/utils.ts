@@ -1,10 +1,9 @@
 import moment from "moment/min/moment-with-locales"
 import { Linking, Platform, Clipboard, CameraRoll, Share } from "react-native"
 import * as FileSystem from 'expo-file-system';
-import { esp, LibNavigation, LibToastProperty, _global } from "esoftplay"
+import { esp, LibToastProperty, _global } from "esoftplay"
 import shorthash from "shorthash"
-import { StackActions, NavigationActions } from 'react-navigation';
-import App from "../../../../App";
+import { CommonActions } from '@react-navigation/native';
 const Buffer = require('buffer/').Buffer
 
 
@@ -43,23 +42,23 @@ export default class eutils {
     if (!defOutput) {
       defOutput = "";
     }
-    return props && props.navigation && props.navigation.state && props.navigation.state.params && props.navigation.state.params[key] || defOutput;
+    return props && props.route && props.route.params && props.route.params[key] || defOutput;
   }
   static getArgsAll(props: any, defOutput?: any): any {
     if (!defOutput) {
       defOutput = "";
     }
-    return props && props.navigation && props.navigation.state && props.navigation.state.params || defOutput;
+    return props && props.route && props.route.params || defOutput;
   }
 
   static getReduxState(key: string, ...keys: string[]): any {
-    let state: any = App.getStore().getState()
+    let state: any = _global.store.getState()
     if (key) {
       var _params = [key, ...keys]
       if (_params.length > 0)
         for (let i = 0; i < _params.length; i++) {
           const key = _params[i];
-          if (state.hasOwnProperty(key)) {
+          if (state && state.hasOwnProperty(key)) {
             state = state[key];
           } else {
             state = {};
@@ -138,24 +137,26 @@ export default class eutils {
   }
 
   static navReset(navigation: any, isLogin?: boolean): void {
+    console.warn('LibUtils.navReset is deprecated, use LibNavigation.reset instead')
     const home = esp.config('home')
-    const resetAction = StackActions.reset({
+    const resetAction = CommonActions.reset({
       index: 0,
-      actions: [NavigationActions.navigate({ routeName: isLogin ? home.member : home.public })],
+      routes: [{ name: isLogin ? home.member : home.public }]
     });
     navigation.dispatch(resetAction);
   }
 
   static navResetCustom(navigation: any, routeName: string): void {
-    const resetAction = StackActions.reset({
+    console.warn('LibUtils.navResetCustom is deprecated, use LibNavigation.reset(\'customRouteName\') instead')
+    const resetAction = CommonActions.reset({
       index: 0,
-      actions: [NavigationActions.navigate({ routeName })],
+      routes: [{ name: routeName }]
     });
     navigation.dispatch(resetAction);
   }
 
   static navReplace(store: any, navigation: any, routeName: string, params?: any): void {
-    (App.getStore().getState().user_index.routes).some((item: any) => item.routeName == routeName) && navigation.goBack(eutils.navGetKey(routeName))
+    (_global.store.getState().user_index.routes).some((item: any) => item.routeName == routeName) && navigation.goBack(eutils.navGetKey(routeName))
     navigation.navigate(routeName, params)
   }
 

@@ -116,9 +116,27 @@ export default function m(props: LibDatepickerProps): any {
     if (props.onDateChange)
       props.onDateChange(dateSelected)
     else {
-      console.log(dateSelected)
       LibToastProperty.show(dateSelected)
     }
+  }
+
+
+  function itemRenderer(data: any, index: number, isSelected: boolean) {
+    return (
+      <View>
+        <Text style={{ fontWeight: isSelected ? 'bold' : 'normal' }} >{data}</Text>
+      </View>
+    )
+  }
+
+  function onYearChange(data: any, selectedIndex: number) {
+    setYear(data)
+  }
+  function onMonthChange(data: any, selectedIndex: number) {
+    setMonth(data)
+  }
+  function onDateChange(data: any, selectedIndex: number) {
+    setDate(data)
   }
 
   if (dates.length == 0) {
@@ -142,16 +160,8 @@ export default function m(props: LibDatepickerProps): any {
           wrapperHeight={175}
           wrapperColor={'#ffffff'}
           highlightColor={'#c8c7cc'}
-          renderItem={(data: any, index: number, isSelected: boolean) => {
-            return (
-              <View>
-                <Text style={{ fontWeight: isSelected ? 'bold' : 'normal' }} >{data}</Text>
-              </View>
-            )
-          }}
-          onValueChange={(data: any, selectedIndex: number) => {
-            setYear(data)
-          }}
+          renderItem={itemRenderer}
+          onValueChange={onYearChange}
         />
         <ScrollPicker
           ref={refMonth}
@@ -162,16 +172,8 @@ export default function m(props: LibDatepickerProps): any {
           wrapperHeight={175}
           wrapperColor={'#ffffff'}
           highlightColor={'#c8c7cc'}
-          renderItem={(data: any, index: number, isSelected: boolean) => {
-            return (
-              <View>
-                <Text style={{ fontWeight: isSelected ? 'bold' : 'normal' }} >{data}</Text>
-              </View>
-            )
-          }}
-          onValueChange={(data: any, selectedIndex: number) => {
-            setMonth(data)
-          }}
+          renderItem={itemRenderer}
+          onValueChange={onMonthChange}
         />
         <ScrollPicker
           ref={refDate}
@@ -182,16 +184,8 @@ export default function m(props: LibDatepickerProps): any {
           wrapperHeight={175}
           wrapperColor={'#ffffff'}
           highlightColor={'#c8c7cc'}
-          renderItem={(data: any, index: number, isSelected: boolean) => {
-            return (
-              <View>
-                <Text style={{ fontWeight: isSelected ? 'bold' : 'normal' }} >{data}</Text>
-              </View>
-            )
-          }}
-          onValueChange={(data: any, selectedIndex: number) => {
-            setDate(data)
-          }}
+          renderItem={itemRenderer}
+          onValueChange={onDateChange}
         />
       </View>
     </View>

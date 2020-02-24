@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, RefreshControl } from 'react-native';
-import { LibComponent, LibList, LibLoading, LibCurl, LibTextstyle, esp, LibListItemLayout } from 'esoftplay';
+import { View, FlatList } from 'react-native';
+import { LibComponent, LibLoading, LibCurl, LibTextstyle, esp, LibListItemLayout } from 'esoftplay';
 
 export interface LibInfiniteProps {
   url: string,
@@ -40,27 +40,25 @@ export interface LibInfiniteProps {
 }
 
 export interface LibInfiniteState {
-  isStop: boolean,
   data: any[],
-  refreshing: boolean,
-  page: number,
   error: string
 }
 
 export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
 
+  isStop: boolean = false
+  page: number = 0
   pages: number[]
   constructor(props: LibInfiniteProps) {
     super(props);
-    this.loadData = this.loadData.bind(this);
     this.state = {
-      isStop: false,
       data: [],
-      refreshing: false,
-      page: 0,
       error: ''
     }
     this.pages = []
+    this.loadData = this.loadData.bind(this);
+    this._renderItem = this._renderItem.bind(this);
+    this._keyExtractor = this._keyExtractor.bind(this);
   }
 
   componentDidMount(): void {
@@ -85,36 +83,40 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
       url += url.includes('?') ? '&' : '?'
       url += 'page=' + page
     }
-    if (!this.pages.includes(page))
+    if (!this.pages.includes(page)) {
+      this.pages.push(page)
       new LibCurl(url, post,
         (res, msg) => {
           let mainIndex: any = this.props.mainIndex && res[this.props.mainIndex] || res
           if (mainIndex.list.length == 0 || res.list == '') {
+            this.page = page
+            this.isStop = true
             this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
               return {
                 error: this.props.error || 'Belum ada data',
-                isStop: true,
-                data: page == 0 ? [] : [...state.data, ...mainIndex.list],
-                page: page,
+                data: page == 0 ? [] : state.data,
               }
             })
-            if (page == 0) {
-              return
-            }
-          } else
+          } else {
+            this.page = page
+            this.isStop = ([...this.state.data, ...mainIndex.list].length >= parseInt(mainIndex.total) || (this.page >= (mainIndex.pages || mainIndex.total_pages) - 1))
             this.setState((state: LibInfiniteState, props: LibInfiniteProps) => {
+              const latestData = [...state.data, ...mainIndex.list]
               return {
-                data: page == 0 ? mainIndex.list : [...state.data, ...mainIndex.list],
-                page: page,
-                isStop: (page || 0) >= (mainIndex.pages || mainIndex.total_page) - 1
+                data: page == 0 ? mainIndex.list : latestData,
               }
             })
+          }
         },
         (msg) => {
-          this.setState({ error: msg, isStop: true })
-        }, 1
+          this.page = page
+          this.isStop = true
+          this.setState({
+            error: msg,
+          })
+        }
       )
-    this.pages.push(page)
+    }
   }
 
   componentDidUpdate(prevProps: LibInfiniteProps, prevState: LibInfiniteState): void {
@@ -123,30 +125,49 @@ export default class m extends LibComponent<LibInfiniteProps, LibInfiniteState>{
     }
   }
 
+  _renderItem({ item, index }): any {
+    return this.props.renderItem(item, index)
+  }
+
+  _keyExtractor(item, index): string {
+    return item.hasOwnProperty('id') && item.id || index.toString()
+  }
+
   render(): any {
-    const { isStop, data, refreshing, page, error } = this.state
-    const { renderItem, errorView } = this.props
-    // esp.log('DDDDD', data);
+    const { data, error } = this.state
+    const { errorView } = this.props
     return (
       <View style={{ flex: 1 }} >
         {
-          (data && data.length == 0) && isStop && error != '' ?
+          (data && data.length == 0) && this.isStop && error != '' ?
             errorView ? errorView :
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
                 <LibTextstyle text={error} textStyle="body" style={{ textAlign: 'center' }} />
               </View>
             :
-            (!data || data.length) == 0 && !isStop ?
+            (!data || data.length) == 0 && !this.isStop ?
               <LibLoading />
               :
-              <LibList
+              <FlatList
                 data={data}
-                onRefresh={() => this.loadData(0)}
+                onRefresh={() => this.loadData()}
                 refreshing={false}
-                renderFooter={() => !isStop ? <View style={{ padding: 20 }} ><LibLoading /></View> : <View style={{ height: 50 }} />}
-                onEndReached={() => !isStop ? this.loadData(page + 1) : {}}
-                renderItem={(item, index) => renderItem(item, index)}
+                keyExtractor={this._keyExtractor}
+                removeClippedSubviews
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                windowSize={7}
+                ListFooterComponent={
+                  (!this.isStop) ? <View style={{ padding: 20 }} ><LibLoading /></View> : <View style={{ height: 50 }} />
+                }
+                onEndReachedThreshold={0.5}
+                onEndReached={() => {
+                  if (!this.isStop) {
+                    this.loadData(this.page + 1)
+                  }
+                }}
                 {...this.props}
+                renderItem={this._renderItem}
               />
         }
       </View>

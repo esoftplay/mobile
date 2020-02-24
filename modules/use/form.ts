@@ -1,28 +1,34 @@
 // useLibs
 
-import React, { useEffect } from 'react';
-import { usePersistState, esp, _global } from 'esoftplay';
-import { AsyncStorage } from 'react-native';
+import { useEffect } from 'react';
+import { _global, useSafeState } from 'esoftplay';
 
 export default function m<S>(formName: string, def?: S): [S, (a: string) => (v: any) => void, (a?: (x?: S) => void) => void, () => void] {
-  const [a, b, d, e] = usePersistState<S>('useForm-' + formName, def)
+  const [a, b] = useSafeState<S>(_global.use_form_state && _global.use_form_state[formName] || def)
   function c(field: any) {
-    _global.useFormState[formName] = {
-      ..._global.useFormState[formName],
+    _global.use_form_state[formName] = {
+      ..._global.use_form_state[formName],
       ...field
     }
     b({
-      ..._global.useFormState[formName],
-      ...a,
-      ...field
+      ..._global.use_form_state[formName],
     })
   }
 
-  useEffect(() => {
-    if (!_global.hasOwnProperty('useFormState')) {
-      _global.useFormState = {}
+  function init() {
+    if (!_global.hasOwnProperty('use_form_state')) {
+      _global.use_form_state = {}
     }
-    _global.useFormState[formName] = { ..._global.useFormState[formName], ...a }
+  }
+
+  useEffect(() => {
+    init()
+    c(_global.use_form_state[formName])
+  }, [])
+
+  useEffect(() => {
+    init()
+    _global.use_form_state[formName] = { ..._global.use_form_state[formName], ...a }
   }, [a])
 
   function g(field: string) {
@@ -32,21 +38,15 @@ export default function m<S>(formName: string, def?: S): [S, (a: string) => (v: 
   }
 
   function h() {
-    _global.useFormState[formName] = undefined
-    e()
+    delete _global.use_form_state[formName]
   }
 
   function f(callback?: (a?: S) => void) {
-    d()
-    if (callback) {
-      AsyncStorage.getItem('useForm-' + formName).then((r) => {
-        if (r) {
-          callback(JSON.parse(r))
-        } else {
-          callback(undefined)
-        }
-      })
+    const restate = {
+      ..._global.use_form_state[formName],
     }
+    if (callback)
+      callback(restate)
   }
   return [a, g, f, h]
 }

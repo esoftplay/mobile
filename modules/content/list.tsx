@@ -193,7 +193,6 @@ class elist extends LibComponent<ContentListProps, ContentListState>{
       if (Platform.OS == "ios") {
         return false;
       } else if (!this.state.searchView && (!routers.index || routers.index == 0)) {
-        esp.log("url", this.state.url, this.state.urlori);
         try {
           if (this.state.url != this.state.urlori) {
             this.setState({ url: this.state.urlori, title: menu[0].title })

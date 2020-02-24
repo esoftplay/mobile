@@ -1,10 +1,8 @@
 //
 
 import React from "react"
-import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider, ContextProvider } from "recyclerlistview";
-import { Dimensions, View, ScrollView, FlatList } from "react-native";
-import { LibComponent, LibContext } from "esoftplay";
-import { LibListItemLayout } from "esoftplay/modules/lib/list";
+import { View, FlatList } from "react-native";
+import { LibComponent } from "esoftplay";
 
 /*
 Using ScrollView
@@ -29,9 +27,6 @@ var Escroll = esp.mod("lib/scroll")
   //scrollable item
 </Escroll>
 */
-
-const { width } = Dimensions.get("window");
-
 
 export interface LibScrollProps {
   defaultHeight?: number,
@@ -73,10 +68,17 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
   flatscroll = React.createRef<FlatList<View>>();
   constructor(props: LibScrollProps) {
     super(props);
+    this.rowRenderer = this.rowRenderer.bind(this);
+    this.scrollToIndex = this.scrollToIndex.bind(this);
+    this.keyExtractor = this.keyExtractor.bind(this);
   }
 
-  rowRenderer(index: any, data: any): any {
-    return <View key={index.toString()}>{data}</View>
+  rowRenderer({ item, index }): any {
+    return item
+  }
+
+  keyExtractor(item, index): string {
+    return index.toString()
   }
 
   scrollToIndex(x: number, anim?: boolean): void {
@@ -91,12 +93,12 @@ export default class escroll extends LibComponent<LibScrollProps, LibScrollState
           ref={this.flatscroll}
           data={this.props.children}
           refreshing={false}
-          windowSize={5}
+          windowSize={7}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(_, i) => i.toString()}
+          keyExtractor={this.keyExtractor}
           {...this.props}
-          renderItem={({ item, index }) => this.rowRenderer(index, item)}
+          renderItem={this.rowRenderer}
         />
       </View>
     )

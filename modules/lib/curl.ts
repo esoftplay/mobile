@@ -2,8 +2,7 @@
 import react from "react";
 import momentTimeZone from "moment-timezone"
 import moment from "moment/min/moment-with-locales"
-import { esp, LibCrypt, LibWorker, LibProgress } from 'esoftplay';
-import App from "../../../../App";
+import { esp, LibCrypt, LibWorker, LibProgress, _global } from 'esoftplay';
 import { reportApiError } from "../../error";
 
 export default class ecurl {
@@ -20,7 +19,7 @@ export default class ecurl {
     this.onFetched = this.onFetched.bind(this)
     this.header = {}
     this.setHeader = this.setHeader.bind(this);
-    const str: any = App.getStore().getState()
+    const str: any = _global.store.getState()
     if (uri && str.lib_net_status.isOnline) {
       this.init(uri, post, onDone, onFailed, debug);
     } else if (!str.lib_net_status.isOnline && onFailed) {
@@ -65,7 +64,7 @@ export default class ecurl {
   }
 
   async custom(uri: string, post?: any, onDone?: (res: any) => void, debug?: number): Promise<void> {
-    const str: any = App.getStore().getState()
+    const str: any = _global.store.getState()
     if (str.lib_net_status.isOnline) {
       if (post) {
         let fd = new FormData();

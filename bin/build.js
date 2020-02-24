@@ -143,6 +143,11 @@ if (fs.existsSync(packjson)) {
 			rewrite = true;
 			$config.config = {
 				"domain": "domain.com",
+				"errorReport": {
+					"telegramIds": [
+						"-1001212227631",
+					]
+				},
 				"salt": "CHANGE_INTO_YOUR_OWN_SALT",
 				"home": {
 					"public": "content/index",
@@ -250,8 +255,8 @@ yarn.lock\n\
 			console.log('.gitignore has been created');
 		});
 
-		const AppJS = `import React from 'react';
-import { createStore, Store } from 'redux';
+		const AppJS = `import React, { useEffect, useMemo } from 'react';
+import { createStore } from 'redux';
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
 import { Provider } from 'react-redux'
@@ -262,30 +267,23 @@ import * as ErrorRecovery from 'expo-error-recovery';
 _global.store = createStore(esp.reducer())
 _global.persistor = persistStore(_global.store)
 
-export default class App extends React.Component {
-	Home = esp.home()
+export default function App(props: any) {
+	const Home = useMemo(() => esp.home(), [])
 
-	static getStore(): Store {
-		return _global.store;
-	}
-
-	constructor(props: any) {
-		super(props)
+	useEffect(() => {
 		ErrorRecovery.setRecoveryProps(props)
 		ErrorReport.getError(props.exp.errorRecovery)
-	}
+	}, [])
 
-	render() {
-		return (
-			<Provider store={_global.store}>
-				<PersistGate loading={null} persistor={_global.persistor}>
-					<this.Home />
-				</PersistGate>
-			</Provider>
-		)
-	}
-}
-`;
+	return (
+		<Provider store={_global.store}>
+			<PersistGate loading={null} persistor={_global.persistor}>
+				<Home />
+			</PersistGate>
+		</Provider>
+	)
+}`
+			;
 		var bashScript = 'cd ../../ && expo install ';
 		var expoLib = [
 			"expo-av",
@@ -296,6 +294,7 @@ export default class App extends React.Component {
 			"expo-image-picker",
 			"expo-permissions",
 			"expo-sqlite",
+			"lodash",
 			"expo-file-system",
 			"expo-constants",
 			"expo-font",
@@ -313,9 +312,10 @@ export default class App extends React.Component {
 			"moment-timezone",
 			"native-base",
 			"react-native-modal",
-			"react-navigation",
 			"react-native-screens",
-			"react-navigation-stack",
+			"@react-navigation/native",
+			"@react-navigation/stack",
+			"@react-native-community/masked-view",
 			"react-native-safe-area-context",
 			"react-redux",
 			"recyclerlistview",

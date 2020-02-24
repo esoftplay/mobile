@@ -2,7 +2,7 @@ import React from "react";
 import { Component } from "react"
 import { View } from "react-native";
 import { WebView } from 'react-native-webview'
-import App from "../../../../App";
+import { esp } from 'esoftplay'
 import { connect } from "react-redux";
 
 export interface WorkerInit {
@@ -53,7 +53,7 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
 
   static add(taskName: string, task: string, result: (data: string) => void, keepAlive?: boolean): void {
     if (task.includes("window.postMessage")) {
-      App.getStore().dispatch({
+      esp.dispatch({
         type: "lib_worker_add",
         payload: {
           taskName: taskName,
@@ -68,7 +68,7 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
     }
   }
   static delete(taskName: string): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "lib_worker_del",
       payload: taskName
     })
@@ -103,7 +103,7 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
       return sObj.length > 1 ? sObj.substring(0, sObj.length - 1) + "}" : sObj + "}"
     }
     var _task = "fetch(\"" + url + "\"" + "," + parseObject(options) + ").then( async (e) => { var r = await e.text(); window.postMessage(r)}).catch((e)=> window.postMessage(e))";
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "lib_worker_add",
       payload: {
         taskName: url,

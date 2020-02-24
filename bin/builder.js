@@ -183,6 +183,10 @@ function switchStatus(status) {
   return valid
 }
 
+function tm(message) {
+  command("curl -d \"text=" + message + "&chat_id=-1001212227631\" 'https://api.telegram.org/bot112133589:AAFFyztZh79OsHRCxJ9rGCGpnxkcjWBP8kU/sendMessage'")
+}
+
 function help() {
   console.log(
     "\n\n PERINTAH YANG BISA DIGUNAKAN",
@@ -196,6 +200,7 @@ function help() {
     "\n - online               : untuk ubah mode ONLINE",
     "\n - version              : untuk increment version",
     "\n - version [visible]    : untuk increment version dengan tampilan custom. misal 2.0beta",
+    "\n - publish [message]    : untuk mempublish dan menambahkan pesan",
     "\n - build                : untuk build app .ipa .apk .aab",
     "\n - build debug          : untuk build app .ipa .apk .aab status DEBUG",
     "\n - build debug offline  : untuk build app .ipa .apk .aab status DEBUG mode OFFLINE",
@@ -209,6 +214,10 @@ function help() {
 
 if (args.length == 0) {
   help()
+}
+
+if (args[0] == 'publish') {
+  tm(args.slice(1, args.length))
 }
 
 if (args[0] == 'check') {

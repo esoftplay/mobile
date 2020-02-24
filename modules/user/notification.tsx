@@ -13,7 +13,7 @@ import {
   LibUtils,
   UserNotification_item,
 } from "esoftplay";
-import App from "../../../../App";
+
 import { connect } from "react-redux"
 import moment from "moment/min/moment-with-locales"
 import update from "immutability-helper"
@@ -77,14 +77,14 @@ class m extends LibComponent<UserNotificationProps, UserNotificationState> {
 
 
   static add(id: number, user_id: number, group_id: number, title: string, message: string, params: string, status: 0 | 1 | 2, created?: string, updated?: string): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "user_notification_add",
       payload: { id, user_id, group_id, title, message, params, status, created, updated }
     })
   }
 
   static drop(): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "user_notification_reset",
       payload: []
     })
@@ -128,7 +128,7 @@ class m extends LibComponent<UserNotificationProps, UserNotificationState> {
     if (res.length > 0) {
       const urls = LibUtils.getReduxState('user_notification', 'urls')
       if (urls && urls.indexOf(uri) < 0) {
-        App.getStore().dispatch({
+        esp.dispatch({
           type: "user_notification_parseData",
           payload: {
             data: res,
@@ -140,7 +140,7 @@ class m extends LibComponent<UserNotificationProps, UserNotificationState> {
   }
 
   static user_notification_setRead(id: string | number): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "user_notification_setRead",
       payload: id
     })

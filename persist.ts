@@ -16,10 +16,10 @@ export default function usePersistState(key: string, def?: any): any[] {
     if (r.current)
       AsyncStorage.getItem(key).then((x) => {
         if (x) {
-          callback(JSON.parse(x))
+          if (callback) callback(JSON.parse(x))
           c(JSON.parse(x))
         } else {
-          callback(def)
+          if (callback) callback(def)
           c(def)
         }
       })

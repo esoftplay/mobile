@@ -7,12 +7,11 @@ import {
   Platform,
 } from 'react-native';
 import { Icon } from 'native-base';
-import { LibStyle, LibComponent, LibCurl, esp, LibProgress, LibIcon } from 'esoftplay';
+import { LibStyle, LibComponent, LibCurl, esp, LibProgress, LibIcon, _global } from 'esoftplay';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
-import App from '../../../../App';
 import { connect } from 'react-redux';
 import { SaveFormat } from 'expo-image-manipulator';
 const { height, width } = LibStyle;
@@ -74,20 +73,20 @@ class m extends LibComponent<LibImageProps, LibImageState> {
 
   static setResult(image: string): void {
     // console.log(image)/
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'lib_image_result',
       payload: image
     })
   }
 
   static show(): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'lib_image_camera_show'
     })
   }
 
   static hide(): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: 'lib_image_camera_hide'
     })
   }
@@ -136,7 +135,7 @@ class m extends LibComponent<LibImageProps, LibImageState> {
           async function checkImage(): Promise<string> {
             return new Promise(async (__r) => {
               setTimeout(async () => {
-                const state: any = App.getStore().getState()
+                const state: any = _global.store.getState()
                 const image = state.lib_image.image
                 const show = state.lib_image.show
                 if (image) {

@@ -3,10 +3,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import navs from "../../cache/navigations";
 import { View, Platform } from "react-native";
-import { createAppContainer } from "react-navigation";
-import { createStackNavigator } from 'react-navigation-stack';
 import * as Font from "expo-font";
-const appjson = require('../../../../app.json')
 import { AsyncStorage } from 'react-native';
 import {
   esp,
@@ -22,13 +19,13 @@ import {
   LibImage,
   LibProgress,
   UserMain,
-  LibNavigation,
   LibToast,
-  useSafeState
+  useSafeState,
+  UserNavigation
 } from 'esoftplay';
 import firebase from 'firebase'
 import { Notifications } from "expo";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export interface UserIndexProps {
 
@@ -50,27 +47,14 @@ export function reducer(state: any, action: any): any {
   return _action ? _action : state
 }
 
-const persistenceFunctions = (() => {
-  return __DEV__
-    ? {
-      async persistNavigationState(value: any) {
-        _global.__nav__state = value;
-      },
-      async loadNavigationState() {
-        if (_global.__nav__state == null) {
-          await Promise.reject('no data');
-        }
-        return _global.__nav__state;
-      },
-    }
-    : {};
-})();
-
-var Router
 export default function m(props: UserIndexProps): any {
   const dispatch = useDispatch()
+  const econf = esp.config()
   const [loading, setLoading] = useSafeState(true)
-  function handler(prevState: any, currentState: any): void {
+  const [initialRouteName, setInitialRouteName] = useSafeState(econf.home.public)
+  const [nav, setNav] = useSafeState(undefined)
+
+  function handler(currentState: any): void {
     dispatch({ type: "user_nav_change", payload: currentState })
   }
 
@@ -90,14 +74,14 @@ export default function m(props: UserIndexProps): any {
       Font.loadAsync(fonts).then(() => r())
     })
   }
-
+  let navigations: any = {}
   useEffect(() => {
     setTimeout(async () => {
       LibTheme.getTheme()
       LibLocale.getLanguage()
       if (esp.config().notification == 1) {
         if (Platform.OS == 'android')
-          Notifications.createChannelAndroidAsync('android', { sound: true, name: appjson.expo.name, badge: true, priority: 'max', vibrate: true })
+          Notifications.createChannelAndroidAsync('android', { sound: true, name: esp.appjson().expo.name, badge: true, priority: 'max', vibrate: true })
         LibNotification.listen((notifObj: any) => {
           esp.log(notifObj);
         })
@@ -115,18 +99,14 @@ export default function m(props: UserIndexProps): any {
         UserClass.pushToken();
       }
       let econf = esp.config()
-      var navigations: any = {}
       for (let i = 0; i < navs.length; i++) {
         const nav = navs[i];
         navigations[nav] = esp.mod(nav);
       }
+      setNav(navigations)
       UserClass.isLogin(async (user) => {
         const initRoute = (user && (user.id || user.user_id)) ? econf.home.member : econf.home.public
-        var config: any = {
-          headerMode: "none",
-          initialRouteName: String(initRoute)
-        }
-        Router = createAppContainer(createStackNavigator(navigations, config))
+        setInitialRouteName(initRoute)
         await setFonts()
         setLoading(false)
       })
@@ -137,7 +117,7 @@ export default function m(props: UserIndexProps): any {
   return (
     <View style={{ flex: 1, paddingBottom: LibStyle.isIphoneX ? 30 : 0 }}>
       <LibWorker />
-      <Router {...persistenceFunctions} ref={(r) => LibNavigation.setRef(r)} onNavigationStateChange={handler} />
+      <UserNavigation onStateChange={handler} initialRouteName={initialRouteName} routeNames={nav} />
       <LibNet_status />
       <LibDialog style={'default'} />
       <LibImage />

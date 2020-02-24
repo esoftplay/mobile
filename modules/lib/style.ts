@@ -1,14 +1,15 @@
-import * as React from "react";
+import React from "react";
 import { Dimensions, StatusBar, Platform } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 const isIphoneX = Platform.OS === "ios" && ((height === 812 || width === 812) || (height === 896 || width === 896))
-const STATUSBAR_HEIGHT = Platform.OS === "ios" ? isIphoneX ? 44 : 20 : StatusBar.currentHeight;
-const STATUSBAR_HEIGHT_MASTER = Platform.OS === "ios" ? isIphoneX ? 44 : 20 : StatusBar.currentHeight;
+const STATUSBAR_HEIGHT = (Platform.OS === "ios" ? isIphoneX ? 44 : 20 : StatusBar.currentHeight) || 0;
+const STATUSBAR_HEIGHT_MASTER = (Platform.OS === "ios" ? isIphoneX ? 44 : 20 : StatusBar.currentHeight) || 0;
 const colorPrimary = "#3E50B4"
 const colorPrimaryDark = "#3E50B4"
 const colorAccent = "#FFF"
 const colorGrey = "#F1F1F3"
+const colorRed = "darkred"
 const colorTextPrimary = "#353535"
 const colorTextBody = "#353535"
 const colorTextCaption = "#686868"
@@ -23,7 +24,7 @@ function elevation(value: any): any {
 }
 
 // Add your default style here
-/* 
+/*
 Sample :
 
 ###################
@@ -71,6 +72,7 @@ export default class Style {
   static colorPrimaryDark: string = colorPrimaryDark;
   static colorAccent: string = colorAccent;
   static colorGrey: string = colorGrey;
+  static colorRed: string = colorRed;
   static colorTextPrimary: string = colorTextPrimary;
   static colorTextBody: string = colorTextBody;
   static colorTextCaption: string = colorTextCaption;

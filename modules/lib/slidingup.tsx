@@ -1,6 +1,6 @@
 import React from 'react';
 import { LibComponent, LibStyle } from 'esoftplay';
-import { View, KeyboardAvoidingView, Animated, TouchableOpacity } from 'react-native';
+import { View, KeyboardAvoidingView, Animated, TouchableOpacity, BackHandler } from 'react-native';
 
 export interface LibSlidingupProps {
 
@@ -19,7 +19,22 @@ export default class m extends LibComponent<LibSlidingupProps, LibSlidingupState
     }
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+    this.handleBack = this.handleBack.bind(this);
   }
+
+  handleBack(): boolean {
+    this.hide()
+    return true
+  }
+
+  componentDidUpdate(prevProps: LibSlidingupProps, prevState: LibSlidingupState): void {
+    if (prevState.show == false && this.state.show == true) {
+      BackHandler.addEventListener("hardwareBackPress", this.handleBack)
+    } else if (prevState.visible == true && this.state.show == false) {
+      BackHandler.removeEventListener("hardwareBackPress", this.handleBack)
+    }
+  }
+
 
   show(): void {
     if (this.props.children) {

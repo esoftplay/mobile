@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { LibComponent, LibTheme, LibStyle, LibTextstyle, LibIcon, LibIconStyle } from 'esoftplay';
+import { View, TouchableOpacity, BackHandler } from 'react-native';
+import { esp, LibComponent, LibTheme, LibStyle, LibTextstyle, LibIcon, LibIconStyle } from 'esoftplay';
 import { connect } from 'react-redux';
-import App from '../../../../App';
 
 export interface LibDialogProps {
   visible?: boolean,
@@ -89,7 +88,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   }
 
   static hide(): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "lib_dialog_hide"
     })
   }
@@ -115,7 +114,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   }
 
   static show(style: 'default' | 'danger', icon: LibIconStyle, title: string, msg: string, ok?: string, cancel?: string, onPressOK?: () => void, onPressCancel?: () => void): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "lib_dialog_show",
       payload: {
         style: style,
@@ -131,7 +130,7 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
   }
 
   static custom(view: any): void {
-    App.getStore().dispatch({
+    esp.dispatch({
       type: "lib_dialog_show",
       payload: {
         view: view,
@@ -141,7 +140,22 @@ class m extends LibComponent<LibDialogProps, LibDialogState>{
 
   constructor(props: LibDialogProps) {
     super(props);
+    this.handleBack = this.handleBack.bind(this);
   }
+
+
+  handleBack(): boolean {
+    return true
+  }
+
+  componentDidUpdate(prevProps: LibDialogProps, prevState: LibDialogState): void {
+    if (prevProps.visible == false && this.props.visible == true) {
+      BackHandler.addEventListener("hardwareBackPress", this.handleBack)
+    } else if (prevProps.visible == true && this.props.visible == false) {
+      BackHandler.removeEventListener("hardwareBackPress", this.handleBack)
+    }
+  }
+
 
   render(): any {
     const { visible, icon, view, style, title, msg, ok, cancel, onPressOK, onPressCancel } = this.props

@@ -23,10 +23,10 @@ export function setError(error?: any) {
 export function reportApiError(fetch: any, error: any) {
   config.config && config.config.errorReport && config.config.errorReport.telegramIds && config.config.errorReport.telegramIds.forEach((id: string) => {
     let post = {
-      text: JSON.stringify({ fetch, error, app: Constants.appOwnership, isDevice: Constants.isDevice }, undefined, 2),
+      text: JSON.stringify({ fetch, error, app: Constants.appOwnership, device: Platform.OS + ' - ' + Constants.deviceName }, undefined, 2),
       chat_id: id,
     }
-    new LibCurl().custom('https://api.telegram.org/bot923808407:AAEFBlllQNKCEn8E66fwEzCj5vs9qGwVGT4/sendMessage', post)
+    new LibCurl().custom('https://api.telegram.org/bot112133589:AAFFyztZh79OsHRCxJ9rGCGpnxkcjWBP8kU/sendMessage', post)
   })
 }
 
@@ -36,7 +36,7 @@ export function getError(adder: any) {
       let _e = JSON.parse(e)
       let msg = {
         name: app.expo.name + ' - sdk' + app.expo.sdkVersion,
-        domain: config.config.domain,
+        domain: config.config.domain + config.config.uri,
         module: _e.routes,
         package: (Platform.OS == 'ios' ? app.expo.ios.bundleIdentifier : app.expo.android.package) + ' - v' + (Platform.OS == 'ios' ? app.expo.ios.buildNumber : app.expo.android.versionCode),
         device: Platform.OS + ' - ' + Constants.deviceName,
@@ -51,7 +51,7 @@ export function getError(adder: any) {
         if (msg.error == '-') {
           msg.error = 'uncaught fatal error'
         }
-        new LibCurl().custom('https://api.telegram.org/bot923808407:AAEFBlllQNKCEn8E66fwEzCj5vs9qGwVGT4/sendMessage', post)
+        new LibCurl().custom('https://api.telegram.org/bot112133589:AAFFyztZh79OsHRCxJ9rGCGpnxkcjWBP8kU/sendMessage', post)
       });
       AsyncStorage.removeItem(config.config.domain + 'error')
     }
