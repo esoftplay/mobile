@@ -1,32 +1,66 @@
+// withHooks
+
 import React from 'react';
-import { LibComponent, LibTextstyle } from 'esoftplay';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
+import { useSelector } from 'react-redux';
+import { LibStyle, esp } from 'esoftplay';
+
 
 export interface LibToastProps {
-  show: boolean,
-  text?: string
-}
-export interface LibToastState {
 
 }
 
+const initState = {
+  message: undefined,
+  timeout: 2000
+}
 
-export default class Toast extends LibComponent<LibToastProps, LibToastState>{
-
-  constructor(props: LibToastProps) {
-    super(props)
+export function reducer(state: any, action: any): any {
+  if (state == undefined) state = initState
+  const actions: any = {
+    "lib_toast_show": {
+      ...state,
+      ...action.payload
+    },
+    "lib_toast_hide": {
+      ...state,
+      ...initState
+    }
   }
+  const _action = actions[action.type]
+  return _action ? _action : state
+}
+let _timeout: any = undefined
 
-  render(): any {
-    let text = this.props.text || 'Tekan sekali lagi untuk keluar'
-    if (!this.props.show)
-      return null
-    return (
-      <View style={{ position: 'absolute', bottom: 60, left: 24, right: 24, alignItems: 'center', justifyContent: 'center' }} >
-        <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', borderRadius: 5, paddingHorizontal: 26, paddingVertical: 5 }} >
-          <LibTextstyle text={text} textStyle={'body'} light />
-        </View>
+export function hide(): void {
+  esp.dispatch({ type: 'lib_toast_hide' })
+}
+
+export function show(message: string, timeout?: number): void {
+  esp.dispatch({
+    type: 'lib_toast_show',
+    payload: {
+      message: message,
+      timeout: timeout || initState.timeout
+    }
+  })
+  if (_timeout) {
+    clearTimeout(_timeout)
+    _timeout = undefined
+  }
+  _timeout = setTimeout(() => {
+    esp.dispatch({ type: 'lib_toast_hide' })
+  }, timeout || initState.timeout);
+}
+
+export default function m(props: LibToastProps): any {
+  const data = useSelector((state: any) => state.lib_toast)
+  if (!data.message) return null
+  return (
+    <View style={{ position: 'absolute', bottom: 58 + (LibStyle.isIphoneX ? 30 : 0), left: 36, right: 36, alignItems: 'center' }}>
+      <View style={{ borderRadius: 30, backgroundColor: '#323232', padding: 16 }} >
+        <Text style={{ fontSize: 12, fontWeight: "normal", fontStyle: "normal", letterSpacing: 0, textAlign: "center", color: "white" }} >{data.message}</Text>
       </View>
-    )
-  }
+    </View>
+  )
 }

@@ -1,6 +1,13 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { ContentList, LibComponent } from 'esoftplay';
+import React from "react";
+import { View, AppState } from "react-native";
+import {
+  ContentList,
+  LibComponent,
+  LibNotification,
+  UserNotification,
+  LibStyle
+} from "esoftplay";
+const { isIphoneX } = LibStyle
 
 export interface ContentIndexProps {
   navigation: any
@@ -20,16 +27,9 @@ export default class econtent extends LibComponent<ContentIndexProps, ContentInd
 
   render(): any {
     return (
-      <View
-        style={styles.container}>
+      <View style={{ flex: 1 }}>
         <ContentList navigation={this.props.navigation} />
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  }
-})

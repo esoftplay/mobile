@@ -1,18 +1,18 @@
-// 
+//
 
-import React from 'react';
-import { Component } from 'react';
-import { Image, Linking, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
-import { Text } from 'native-base';
-import moment from 'moment/min/moment-with-locales';
-import { esp, LibComponent, LibStyle } from 'esoftplay';
+import React from "react";
+import { Component } from "react";
+import { Image, Linking, TouchableWithoutFeedback, View, StyleSheet } from "react-native";
+import { Text } from "native-base";
+import moment from "moment/min/moment-with-locales";
+import { esp, LibComponent, LibStyle, LibUtils } from "esoftplay";
 const { defaultStyle, width } = LibStyle
 
 export interface ContentItemProps {
   index: number,
   navigation: any,
   id?: number | string,
-  url?: string | '',
+  url?: string | "",
   title?: string,
   created?: string,
   image?: string,
@@ -20,6 +20,7 @@ export interface ContentItemProps {
   description?: string,
   updated?: string,
   publish?: string,
+  data?: any[]
 }
 
 export interface ContentItemState {
@@ -27,6 +28,23 @@ export interface ContentItemState {
 }
 
 export default class eitem extends LibComponent<ContentItemProps, ContentItemState> {
+
+
+  /*
+   template: "list.html.php",
+   title: "1",
+   title_link: "1",
+   intro: "1",
+   created: "1",
+   modified: "1",
+   author: "0",
+   tag: "1",
+   tag_link: "1",
+   rating: "1",
+   read_more: "1",
+   tot_list: "12",
+   thumbnail: "1"
+  */
 
   props: ContentItemProps
   constructor(props: ContentItemProps) {
@@ -36,20 +54,25 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
   }
 
   goToDetail(): void {
-    const { navigation, id, title, url, created, image } = this.props
-    navigation.push('content/detail', { id, title, url, created, image, })
+    const { navigation, id, title, url, created, image, data } = this.props
+    if (!data) {
+      navigation.push("content/detail", { id, title, url, created, image })
+    } else {
+      navigation.push("content/details", { id, title, url, created, image, data })
+    }
   }
 
   render(): any {
     const props = this.props
     const { id, title, intro, description, image, created, updated, url, publish } = props
-    if (created == 'sponsor') {
+    let config = LibUtils.getReduxState('content_config', 'list')
+    if (created == "sponsor") {
       const goToSponsor = (url?: string) => {
         if (url)
           Linking.openURL(url)
       }
       /* FULL BANNER */
-      if (title === '') {
+      if (title === "") {
         return (
           <TouchableWithoutFeedback
             style={styles.overflow}
@@ -57,12 +80,12 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
             <View
               style={styles.containerRow}>
               <Image
-                style={{ width: width, height: 110, resizeMode: 'contain' }}
+                style={{ width: width, height: 110, resizeMode: "contain" }}
                 source={{ uri: image }} />
             </View>
           </TouchableWithoutFeedback>
         )
-      } else if (image === '') /* NO IMAGE */ {
+      } else if (image === "") /* NO IMAGE */ {
         return (
           <TouchableWithoutFeedback
             style={styles.overflow}
@@ -72,9 +95,9 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
               <View
                 style={[styles.wrapper, { width: width, height: 110 }]}>
                 <Text
-                  style={{ color: '#353535' }}
+                  style={{ color: "#353535" }}
                   numberOfLines={2}
-                  ellipsizeMode={'tail'}>{title}</Text>
+                  ellipsizeMode={"tail"}>{title}</Text>
                 <View
                   style={defaultStyle.container} >
                 </View>
@@ -94,16 +117,16 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
               <View
                 style={styles.wrapper} >
                 <Text
-                  style={{ color: '#353535' }}
+                  style={{ color: "#353535" }}
                   numberOfLines={2}
-                  ellipsizeMode={'tail'}>{title}</Text>
+                  ellipsizeMode={"tail"}>{title}</Text>
                 <View
                   style={defaultStyle.container} >
                 </View>
                 <Text
                   style={styles.text11} note>{created}</Text>
               </View>
-              <Image style={{ width: 110, height: 110, resizeMode: 'cover' }} source={{ uri: image }} />
+              <Image style={{ width: 110, height: 110, resizeMode: "cover" }} source={{ uri: image }} />
             </View>
           </TouchableWithoutFeedback>
         )
@@ -116,15 +139,15 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
           <View>
             <View>
               {
-                image == '' ?
+                (image == "" || config.thumbnail != 1) ?
                   <View
                     style={{ height: width * 9 / 16, width: width }}>
-                    <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: 'rgba(3,3,3,0.4)', }} >
+                    <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: "rgba(3,3,3,0.4)", }} >
                       <Text
                         numberOfLines={2}
-                        style={{ color: 'white' }} >{title}</Text>
+                        style={{ color: "white" }} >{title}</Text>
                       <Text
-                        style={[styles.text11, { color: 'white' }]} note>{moment(created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
+                        style={[styles.text11, { color: "white" }]} note>{moment(created).format("dddd, DD MMMM YYYY HH:mm")}</Text>
                     </View>
                   </View>
                   :
@@ -134,19 +157,25 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
                   </Image>
               }
             </View>
-            <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: 'rgba(3,3,3,0.4)', }} >
-              <Text
-                numberOfLines={2}
-                style={{ color: 'white' }} >{title}</Text>
-              <Text
-                style={[styles.text11, { color: 'white' }]} note>{moment(created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
+            <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: "rgba(3,3,3,0.4)", }} >
+              {
+                config.title == 1 &&
+                <Text
+                  numberOfLines={2}
+                  style={{ color: "white" }} >{title}</Text>
+              }
+              {
+                config.created == 1 &&
+                <Text
+                  style={[styles.text11, { color: "white" }]} note>{moment(created).format("dddd, DD MMMM YYYY HH:mm")}</Text>
+              }
             </View>
           </View>
         </TouchableWithoutFeedback>
       )
     }
 
-    if (image == '') {
+    if (image == "") {
       return (
         <TouchableWithoutFeedback
           style={styles.overflow}
@@ -155,15 +184,21 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
             style={styles.containerRow}>
             <View
               style={styles.wrapper} >
-              <Text
-                style={{ color: '#353535' }}
-                numberOfLines={2}
-                ellipsizeMode={'tail'}>{title}</Text>
+              {
+                config.title == 1 &&
+                <Text
+                  style={{ color: "#353535" }}
+                  numberOfLines={2}
+                  ellipsizeMode={"tail"}>{title}</Text>
+              }
               <View
                 style={defaultStyle.container} >
               </View>
-              <Text
-                style={styles.text11} note>{created}</Text>
+              {
+                config.created == 1 &&
+                <Text
+                  style={styles.text11} note>{created}</Text>
+              }
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -178,19 +213,28 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
           style={styles.containerRow}>
           <View
             style={styles.wrapper} >
-            <Text
-              style={{ color: '#353535' }}
-              numberOfLines={2}
-              ellipsizeMode={'tail'}>{title}</Text>
+            {
+              config.title == 1 &&
+              <Text
+                style={{ color: "#353535" }}
+                numberOfLines={2}
+                ellipsizeMode={"tail"}>{title}</Text>
+            }
             <View
               style={defaultStyle.container} >
             </View>
-            <Text
-              style={styles.text11} note>{moment(created).format('dddd, DD MMMM YYYY kk:mm')}</Text>
+            {
+              config.created == 1 &&
+              <Text
+                style={styles.text11} note>{moment(created).format("dddd, DD MMMM YYYY HH:mm")}</Text>
+            }
           </View>
-          <View>
-            <Image style={{ width: 110, height: 110, resizeMode: 'cover' }} source={{ uri: image }} />
-          </View>
+          {
+            config.thumbnail == 1 &&
+            <View>
+              <Image style={{ width: 110, height: 110, resizeMode: "cover" }} source={{ uri: image }} />
+            </View>
+          }
         </View>
       </TouchableWithoutFeedback>
     );
@@ -200,13 +244,13 @@ export default class eitem extends LibComponent<ContentItemProps, ContentItemSta
 const styles = StyleSheet.create({
   overflow: {
     margin: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   containerRow: {
     marginBottom: 0.5,
     flex: 1,
-    backgroundColor: 'white',
-    flexDirection: 'row'
+    backgroundColor: "white",
+    flexDirection: "row"
   },
   text11: {
     fontSize: 11
@@ -214,7 +258,7 @@ const styles = StyleSheet.create({
   image: {
     width: 110,
     height: 110,
-    resizeMode: 'cover'
+    resizeMode: "cover"
   },
   wrapper: {
     flex: 1,

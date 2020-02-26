@@ -1,8 +1,9 @@
-import React from 'react';
-import { Component } from 'react'
-import { WebView, View } from 'react-native';
-import { store } from '../../../../App';
-import { connect } from 'react-redux';
+import React from "react";
+import { Component } from "react"
+import { View } from "react-native";
+import { WebView } from 'react-native-webview'
+import { esp } from 'esoftplay'
+import { connect } from "react-redux";
 
 export interface WorkerInit {
   /** please use pure `javascript browser` function as string, dont load any react native module, and use `window.postMessage(value)` to return a `value` */
@@ -35,12 +36,12 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
       state = Worker.initState
     }
     switch (action.type) {
-      case 'lib_worker_add':
+      case "lib_worker_add":
         return {
           tasks: [...state.tasks, action.payload]
         }
         break;
-      case 'lib_worker_del':
+      case "lib_worker_del":
         return {
           tasks: state.tasks.filter((value: any) => value.taskName != action.payload)
         }
@@ -51,9 +52,9 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
   }
 
   static add(taskName: string, task: string, result: (data: string) => void, keepAlive?: boolean): void {
-    if (task.includes('window.postMessage')) {
-      store.dispatch({
-        type: 'lib_worker_add',
+    if (task.includes("window.postMessage")) {
+      esp.dispatch({
+        type: "lib_worker_add",
         payload: {
           taskName: taskName,
           task: task,
@@ -63,12 +64,12 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
         }
       })
     } else {
-      throw 'Please include window.postMessage on task'
+      throw "Please include window.postMessage on task"
     }
   }
   static delete(taskName: string): void {
-    store.dispatch({
-      type: 'lib_worker_del',
+    esp.dispatch({
+      type: "lib_worker_del",
       payload: taskName
     })
   }
@@ -86,24 +87,24 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
 
   static curl(url: string, options: any, result: (r: any) => void): void {
     function parseObject(obj: any): string {
-      var sObj = ''
+      var sObj = ""
       let objKeys = Object.keys(obj)
-      sObj += '{'
+      sObj += "{"
       objKeys.forEach((key: any, index: number) => {
         let value = obj[key]
-          if (!value) {
-            sObj += '\"' + key + '\":' + value + ','
-          } else if (typeof value != 'string') {
-            sObj += '\"' + key + '\":' + parseObject(value) + ','
-          } else {
-            sObj += '\"' + key + '\":\"' + value + '\",'
-          }
+        if (!value) {
+          sObj += "\"" + key + "\":" + value + ","
+        } else if (typeof value != "string") {
+          sObj += "\"" + key + "\":" + parseObject(value) + ","
+        } else {
+          sObj += "\"" + key + "\":\"" + value + "\","
+        }
       })
-      return sObj.substring(0, sObj.length - 1) + '}'
+      return sObj.length > 1 ? sObj.substring(0, sObj.length - 1) + "}" : sObj + "}"
     }
-    var _task = 'fetch(\"' + url + '\"' + ',' + parseObject(options) + ').then( async (e) => { var r = await e.text(); window.postMessage(r)}).catch((e)=> window.postMessage(e))';
-    store.dispatch({
-      type: 'lib_worker_add',
+    var _task = "fetch(\"" + url + "\"" + "," + parseObject(options) + ").then( async (e) => { var r = await e.text(); window.postMessage(r)}).catch((e)=> window.postMessage(e))";
+    esp.dispatch({
+      type: "lib_worker_add",
       payload: {
         taskName: url,
         task: _task,
@@ -123,10 +124,10 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
               key={item.taskName + i}
               style={{ width: 0, height: 0 }}
               javaScriptEnabled={true}
-              useWebKit
-              originWhitelist={['*']}
-              injectedJavaScript={item.task || `alert('wow')`}
-              source={item.isCurl ? { uri: item.taskName } : { html: '<html><body></body></html>' }}
+              useWebKit={true}
+              originWhitelist={["*"]}
+              injectedJavaScript={item.task || `alert("wow")`}
+              source={item.isCurl ? { uri: item.taskName } : { html: "<html><body></body></html>" }}
               onMessage={(e) => {
                 item.result(e.nativeEvent.data);
                 if (!item.keepAlive) Worker.delete(item.taskName)
@@ -140,3 +141,4 @@ class Worker extends Component<LibWorkerProps, LibWorkerState> {
 }
 
 export default connect(Worker.mapStateToProps)(Worker)
+

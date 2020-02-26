@@ -1,12 +1,13 @@
-// 
-import React from 'react'
-import { Component } from 'react';
-import { View, AsyncStorage, ScrollView, Image, Platform } from 'react-native';
-import { BlurView } from 'expo';
-import { esp, LibComponent, LibStyle } from 'esoftplay';
-const Curl = esp.mod('lib/curl')
+//
+import React from "react"
+import { Component } from "react";
+import { View, ScrollView, Image, Platform } from "react-native";
+import { AsyncStorage } from 'react-native';
+import { BlurView } from "expo-blur";
+import { esp, LibComponent, LibStyle } from "esoftplay";
+const Curl = esp.mod("lib/curl")
 const { STATUSBAR_HEIGHT_MASTER } = LibStyle;
-const Menu = esp.mod('lib/menu');
+const Menu = esp.mod("lib/menu");
 
 export interface ContentMenuProps {
   url: string,
@@ -33,14 +34,18 @@ export default class emenu extends LibComponent<ContentMenuProps, ContentMenuSta
       menu: [],
       selectedId: 999999999
     }
+    this.saveMenu = this.saveMenu.bind(this);
+    this.loadMenu = this.loadMenu.bind(this);
+    this.setSelectedId = this.setSelectedId.bind(this);
+    this.newData = this.newData.bind(this);
   }
 
   saveMenu(menu: any): void {
-    AsyncStorage.setItem('master_menu', JSON.stringify(menu))
+    AsyncStorage.setItem("master_menu", JSON.stringify(menu))
   }
 
   loadMenu(callback: (menu: any) => void): void {
-    AsyncStorage.getItem('master_menu').then((res) => {
+    AsyncStorage.getItem("master_menu").then((res) => {
       if (res) { callback(JSON.parse(res)) } else { callback(null) }
     })
   }
@@ -69,8 +74,8 @@ export default class emenu extends LibComponent<ContentMenuProps, ContentMenuSta
         var trimMenu = []
         if (res.home) {
           var home = res.home
-          home['id'] = 999999999
-          home['par_id'] = 0
+          home["id"] = 999999999
+          home["par_id"] = 0
           trimMenu.push(home)
         }
         if (res.list && res && res.list && res.list[0]) {
@@ -87,12 +92,12 @@ export default class emenu extends LibComponent<ContentMenuProps, ContentMenuSta
 
 
   render(): any {
-    const BGView = Platform.OS == 'ios' ? BlurView : View
+    const BGView = Platform.OS == "ios" ? BlurView : View
     return (
-      <BGView tint={'light'} intensity={99} style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.99)' }, this.props.style]}>
+      <BGView tint={"light"} intensity={99} style={[{ flex: 1, backgroundColor: "rgba(255,255,255,0.99)" }, this.props.style]}>
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: STATUSBAR_HEIGHT_MASTER }}>
-          <View style={{ backgroundColor: 'transparent', height: 100, padding: 20 }}>
-            <Image source={esp.assets('logo.png')} style={{ height: 60, width: '100%', resizeMode: 'contain' }} />
+          <View style={{ backgroundColor: "transparent", height: 100, padding: 20 }}>
+            <Image source={esp.assets("logo.png")} style={{ height: 60, width: "100%", resizeMode: "contain" }} />
           </View>
           <Menu
             onItemSelected={(e: any) => {

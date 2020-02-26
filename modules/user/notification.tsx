@@ -1,23 +1,23 @@
-// 
+//
 
-import React from 'react';
-import { Component } from 'react'
-import { TouchableOpacity, View, Alert, Linking, StatusBar } from 'react-native';
+import React from "react";
+import { TouchableOpacity, View, StatusBar } from "react-native";
 import {
   esp,
-  DbNotification,
   LibCrypt,
   LibCurl,
-  UserClass,
   LibList,
   LibComponent,
-  LibStyle
-} from 'esoftplay';
-import { store } from '../../../../App';
-import { connect } from 'react-redux'
-import moment from 'moment/min/moment-with-locales'
-import update from 'immutability-helper'
-import { Text, Button, Icon } from 'native-base';
+  LibNotification,
+  LibStyle,
+  LibUtils,
+  UserNotification_item,
+} from "esoftplay";
+
+import { connect } from "react-redux"
+import moment from "moment/min/moment-with-locales"
+import update from "immutability-helper"
+import { Text, Button, Icon } from "native-base";
 
 export interface UserNotificationProps {
   navigation: any,
@@ -29,27 +29,46 @@ export interface UserNotificationState {
 }
 
 
-class Enotification extends LibComponent<UserNotificationProps, UserNotificationState> {
+class m extends LibComponent<UserNotificationProps, UserNotificationState> {
 
   props: UserNotificationProps
 
+  static persist = true
   static reducer(state: any, action: any): any {
-    if (!state) state = { data: [] };
+    if (!state)
+      state = {
+        data: [],
+        urls: []
+      };
     switch (action.type) {
-      case 'user_notification_parseData':
+      case "user_notification_reset":
         return {
-          data: action.payload
+          ...state,
+          data: [],
+          urls: []
         }
-      case 'user_notification_setRead':
-        var data = state.data
-        var itemData = data.filter((item: any) => item.id == action.payload)[0]
+      case "user_notification_parseData":
+        return {
+          ...state,
+          data: [...state.data, ...action.payload.data],
+          urls: [...state.urls, action.payload.url]
+        }
+      case "user_notification_setRead":
+        var data: any[] = state.data
+        var index = data.findIndex((item: any) => item.id == action.payload)
         var query = {
-          [data.indexOf(itemData)]: {
+          [index]: {
             status: { $set: 2 }
           }
         }
         return {
+          ...state,
           data: update(data, query)
+        }
+      case "user_notification_add":
+        return {
+          ...state,
+          data: [...state.data, action.payload]
         }
       default:
         return state
@@ -57,64 +76,75 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 
 
-  static user_notification_loadData(): void {
-    var uri = 'user/push-notif'
-    try { Enotification.user_notification_parseData() } catch (error) { }
-    const db = new DbNotification();
-    db.execute('SELECT notif_id FROM notification WHERE 1 ORDER BY notif_id DESC LIMIT 1', (res: any) => {
-      if (res.rows.length > 0) {
-        uri += '?last_id=' + res.rows._array[0].notif_id
-      }
-      // esp.log(res);
-
-      const salt = esp.config('salt');
-      var post = {
-        user_id: '',
-        secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
-      }
-
-      UserClass.load((user: any) => {
-        if (user) post['user_id'] = user.id
-        Enotification.user_notification_fetchData(uri, post, db);
-      })
+  static add(id: number, user_id: number, group_id: number, title: string, message: string, params: string, status: 0 | 1 | 2, created?: string, updated?: string): void {
+    esp.dispatch({
+      type: "user_notification_add",
+      payload: { id, user_id, group_id, title, message, params, status, created, updated }
     })
   }
-  static user_notification_fetchData(uri: string, post: any, db: any): void {
+
+  static drop(): void {
+    esp.dispatch({
+      type: "user_notification_reset",
+      payload: []
+    })
+  }
+
+  static user_notification_loadData(): void {
+    const { protocol, domain, uri, salt } = esp.config()
+    var _uri = protocol + "://" + domain + uri + "user/push-notif"
+    const data = LibUtils.getReduxState('user_notification', 'data')
+    const user = LibUtils.getReduxState('user_class')
+    if (data && data.length > 0) {
+      const lastData = data[data.length - 1]
+      if (lastData.id)
+        _uri += "?last_id=" + lastData.id || 0
+    }
+    let post: any = {
+      user_id: "",
+      secretkey: new LibCrypt().encode(salt + "|" + moment().format("YYYY-MM-DD hh:mm:ss"))
+    }
+    if (user) {
+      post["user_id"] = user.id || user.user_id
+      post["group_id"] = esp.config('group_id')
+    }
+    m.user_notification_fetchData(_uri, post);
+  }
+
+  static user_notification_fetchData(uri: string, post: any): void {
     new LibCurl(uri, post,
-      (res: any, msg: string) => {
-        var list = res.list
-        list.map((row: any) => {
-          db.insertOrUpdate(row)
-        })
-        if (res.next != '') {
-          Enotification.user_notification_fetchData(res.next, post, db)
+      (res: any) => {
+        m.user_notification_parseData(res.list, uri)
+        if (res.next != "") {
+          m.user_notification_fetchData(res.next, post)
         }
-        if (list.length > 0) {
-          try { Enotification.user_notification_parseData() } catch (error) { }
-        }
-        // esp.log(res)
-      }, (msg: any) => {
-        // esp.log(msg)
+      }, () => {
+
       }
     )
   }
-  static user_notification_parseData(): void {
-    const db = new DbNotification();
-    db.getAll_().then((res) => {
-      store.dispatch({
-        type: 'user_notification_parseData',
-        payload: res
-      })
-    })
+
+  static user_notification_parseData(res: any, uri: string): void {
+    if (res.length > 0) {
+      const urls = LibUtils.getReduxState('user_notification', 'urls')
+      if (urls && urls.indexOf(uri) < 0) {
+        esp.dispatch({
+          type: "user_notification_parseData",
+          payload: {
+            data: res,
+            url: uri
+          }
+        })
+      }
+    }
   }
+
   static user_notification_setRead(id: string | number): void {
-    store.dispatch({
-      type: 'user_notification_setRead',
+    esp.dispatch({
+      type: "user_notification_setRead",
       payload: id
     })
   }
-
-
 
   static mapStateToProps(state: any): Object {
     return {
@@ -129,96 +159,41 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
 
   componentDidMount(): void {
     super.componentDidMount()
-    moment.locale('id')
-    Enotification.user_notification_loadData()
+    moment.locale(esp.langId());
+    m.user_notification_loadData()
   }
-
-  openNotif(data: any): void {
-    const salt = esp.config('salt');
-    new LibCurl('user/push-read', {
-      notif_id: data.notif_id,
-      secretkey: new LibCrypt().encode(salt + '|' + moment().format('YYYY-MM-DD hh:mm:ss'))
-    }, (res: any, msg: string) => {
-      // esp.log(res)
-      const db = new DbNotification();
-      db.setRead(data.id)
-      Enotification.user_notification_setRead(data.id)
-    }, (msg: string) => {
-      // esp.log(msg)
-    }, 1)
-    var param = JSON.parse(data.params)
-    switch (param.action) {
-      case 'alert':
-        var hasLink = param.arguments.hasOwnProperty('url') && param.arguments.url != ''
-        var btns = []
-        if (hasLink) {
-          btns.push({ text: 'OK', onPress: () => Linking.openURL(param.arguments.url) })
-        } else {
-          btns.push({ text: 'OK', onPress: () => { }, style: 'cancel' })
-        }
-        Alert.alert(
-          data.title,
-          data.message,
-          btns,
-          { cancelable: false }
-        )
-        break;
-      case 'default':
-        if (param.module != '') {
-          if (!String(param.module).includes('/')) param.module = param.module + "/index"
-          this.props.navigation.navigate(param.module, param.arguments)
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
-  // emptyView = ({ image, msg }) => {
-  //   const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-  //       <Typo colorPrimary />
-  //     </View>
-  //   )
-  // }
-
 
   render(): any {
-    const { colorPrimary, colorAccent, elevation, width, STATUSBAR_HEIGHT } = LibStyle;
+    const { colorPrimary, colorAccent, STATUSBAR_HEIGHT } = LibStyle;
     const { goBack } = this.props.navigation
+    const data = [...this.props.data].reverse()
     return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <StatusBar barStyle={'light-content'} />
+      <View style={{ flex: 1, backgroundColor: "white" }}>
+        <StatusBar barStyle={"light-content"} />
         <View
-          style={{ flexDirection: 'row', height: (STATUSBAR_HEIGHT) + 50, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: 'center', backgroundColor: colorPrimary }}>
+          style={{ flexDirection: "row", height: (STATUSBAR_HEIGHT) + 50, paddingTop: STATUSBAR_HEIGHT, paddingHorizontal: 0, alignItems: "center", backgroundColor: colorPrimary }}>
           <Button transparent
-            style={{ width: 50, height: 50, alignItems: 'center', margin: 0 }}
+            style={{ width: 50, height: 50, alignItems: "center", margin: 0 }}
             onPress={() => goBack()}>
             <Icon
               style={{ color: colorAccent }}
-              name='md-arrow-back' />
+              name="md-arrow-back" />
           </Button>
           <Text
             style={{
               marginHorizontal: 10,
               fontSize: 18,
-              textAlign: 'left',
+              textAlign: "left",
               flex: 1,
               color: colorAccent
             }}>Notifikasi</Text>
         </View>
         <LibList
-          data={this.props.data}
-          renderItem={(item: any, index: number) => (
-            <TouchableOpacity onPress={() => this.openNotif(item)} >
-              <View style={[{ padding: 16, flexDirection: 'row', backgroundColor: 'white', marginBottom: 3, marginHorizontal: 0, width: width }, elevation(1.5)]} >
-                <View style={{}} >
-                  <Text style={{ color: item.status == 2 ? '#999' : colorPrimary, fontFamily: item.status == 2 ? 'Roboto' : 'Roboto_medium', marginBottom: 8 }} >{item.title}</Text>
-                  <Text note ellipsizeMode="tail" numberOfLines={2} >{item.message}</Text>
-                  <Text note style={{ fontSize: 9, marginTop: 5 }} >{moment(item.updated).fromNow()}</Text>
-                </View>
-              </View>
+          data={data}
+          onRefresh={() => m.user_notification_loadData()}
+          renderItem={(item: any) => (
+            <TouchableOpacity onPress={() => LibNotification.openNotif(item)} >
+              <UserNotification_item {...item} />
             </TouchableOpacity>
           )}
         />
@@ -227,4 +202,4 @@ class Enotification extends LibComponent<UserNotificationProps, UserNotification
   }
 }
 
-export default connect(Enotification.mapStateToProps)(Enotification);
+export default connect(m.mapStateToProps)(m);

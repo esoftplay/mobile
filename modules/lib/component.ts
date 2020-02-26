@@ -1,16 +1,27 @@
-import { Component } from 'react';
+import { Component } from "react";
+import { isEqual } from 'lodash'
 
-export default class SaveComponent <K, S, U=any> extends Component<K, S, U>{
+export default class SaveComponent <K, S, U = any> extends Component<K, S, U>{
   _isMounted: boolean = false
+  state: any
+  props: any
   constructor(props: any) {
     super(props)
     this._isMounted = false
+    this.setState = this.setState.bind(this)
   }
 
   setState(obj: any, callback?: () => void): void {
-    // console.log(this._isMounted)
     if (this._isMounted)
       super.setState(obj, callback)
+  }
+
+  shouldComponentUpdate(nextProps: any, nextState: any): boolean {
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
+  }
+
+  onBackPress(): boolean {
+    return true
   }
 
   componentDidMount(): void {

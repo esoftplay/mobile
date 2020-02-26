@@ -1,8 +1,6 @@
-// 
-import React from 'react'
-import { Component } from 'react';
-import { Audio } from 'expo';
-import { LibComponent } from 'esoftplay';
+import React from "react"
+import { Audio } from "expo-av";
+import { LibComponent } from "esoftplay";
 
 export interface ContentAudioProps {
   onRef: (ref: any) => void,
@@ -32,7 +30,7 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
     this.props = props;
     this.playbackInstance = null;
     this.state = {
-      playbackInstanceName: 'loading...',
+      playbackInstanceName: "loading...",
       muted: false,
       playbackInstancePosition: null,
       playbackInstanceDuration: null,
@@ -42,6 +40,9 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       isLoading: true,
       volume: 1.0,
     };
+    this._onPlaybackStatusUpdate = this._onPlaybackStatusUpdate.bind(this)
+    this._loadNewPlaybackInstance = this._loadNewPlaybackInstance.bind(this)
+    this._onPlayPausePressed = this._onPlayPausePressed.bind(this)
   }
 
   componentDidMount(): void {
@@ -52,8 +53,9 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-      interruptionModeAndroid: true,
+      staysActiveInBackground: false,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+      playThroughEarpieceAndroid: false
     });
     this._loadNewPlaybackInstance(false);
   }
@@ -71,13 +73,13 @@ class eaudio extends LibComponent<ContentAudioProps, ContentAudioState> {
       this.playbackInstance = null;
     }
 
-    const source = { uri: 'https://api.soundcloud.com/tracks/' + this.props.code + '/stream?client_id=4a584e57dbc1c522b0ccdb68464f6ec3' };
+    const source = { uri: "https://api.soundcloud.com/tracks/" + this.props.code + "/stream?client_id=4a584e57dbc1c522b0ccdb68464f6ec3" };
     const initialStatus = {
       shouldPlay: playing,
       volume: this.state.volume,
       isMuted: this.state.muted,
     };
-    const { sound, status } = await Audio.Sound.create(
+    const { sound, status } = await Audio.Sound.createAsync(
       source,
       initialStatus,
       this._onPlaybackStatusUpdate

@@ -1,9 +1,9 @@
 {
   "name": "esoftplay",
-  "version": "0.0.73-l",
+  "version": "0.0.82-v",
   "description": "embedding data from esoftplay framework (web based) into mobile app",
   "main": "cache/index.js",
-  "types":"cache/index.d.ts",
+  "types": "../../index.d.ts",
   "scripts": {
     "postinstall": "node ./bin/build.js install",
     "preuninstall": "cd ../../ && node ./node_modules/.bin/esoftplay stop",
@@ -34,20 +34,5 @@
   "bin": {
     "esoftplay": "./bin/cli.js"
   },
-  "homepage": "https://github.com/esoftplay/mobile#readme",
-  "bundleDependencies": [
-    "@expo/vector-icons",
-    "buffer",
-    "immutability-helper",
-    "moment",
-    "moment-timezone",
-    "native-base",
-    "react-native-modal",
-    "react-navigation",
-    "react-redux",
-    "recyclerlistview",
-    "redux",
-    "redux-thunk",
-    "shorthash"
-  ]
+  "homepage": "https://github.com/esoftplay/mobile#readme"
 }

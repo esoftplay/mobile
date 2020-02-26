@@ -1,9 +1,9 @@
 // 
-import React, { ReactElement, createRef } from 'react';
-import { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, Icon, Input } from 'native-base';
-import { esp, LibUtils, LibStyle } from 'esoftplay';
+import React, { ReactElement, createRef } from "react";
+import { Component } from "react";
+import { View, StyleSheet } from "react-native";
+import { Button, Icon, Input } from "native-base";
+import { esp, LibUtils, LibStyle } from "esoftplay";
 const { elevation, colorPrimary } = LibStyle;
 // create a component
 
@@ -28,7 +28,7 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
   }
 
   componentDidMount(): void {
-    this.inputSearch = this.props.defaultValue || ''
+    this.inputSearch = this.props.defaultValue || ""
     setTimeout(() => {
       if (this.inputText) {
         this.inputText._root.focus()
@@ -40,10 +40,10 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
     return (
       <View>
         <View style={[{
-          backgroundColor: 'white',
+          backgroundColor: "white",
           height: 50,
-          alignItems: 'center',
-          flexDirection: 'row'
+          alignItems: "center",
+          flexDirection: "row"
         }, elevation(2)]} >
           <Button
             transparent={true}
@@ -53,16 +53,16 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
             }}
             onPress={() => this.props.close()}>
             <Icon
-              name={'md-arrow-back'}
+              name={"md-arrow-back"}
               style={{
                 fontSize: 24,
-                color: '#353535'
+                color: "#353535"
               }} />
           </Button>
           <Input
             ref={(e) => this.inputText = e}
-            style={{ height: 50, width: '100%', fontSize: 17, color: '#555' }}
-            placeholderTextColor={'#999'}
+            style={{ height: 50, width: "100%", fontSize: 17, color: "#555" }}
+            placeholderTextColor={"#999"}
             selectionColor={LibUtils.colorAdjust(colorPrimary, 1)}
             defaultValue={this.inputSearch}
             returnKeyType="search"
@@ -71,7 +71,7 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
               this.props.close()
             }}
             onChangeText={(e: any) => this.inputSearch = e}
-            placeholder={'Temukan Berita ...'} />
+            placeholder={esp.lang("Temukan Berita ...", "Search Article...")} />
           <Button
             transparent={true}
             style={{
@@ -83,10 +83,10 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
               this.props.close()
             }}>
             <Icon
-              name='ios-search'
+              name="ios-search"
               style={{
                 fontSize: 24,
-                color: '#353535'
+                color: "#353535"
               }} />
           </Button>
         </View>
@@ -99,9 +99,9 @@ export default class esearch extends Component<ContentSearchProps, ContentSearch
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#2c3e50',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#2c3e50",
   },
 });
 

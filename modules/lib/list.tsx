@@ -1,103 +1,95 @@
-// 
-import React from 'react'
-import { Component } from 'react';
-import { RecyclerListView, BaseItemAnimator, LayoutProvider, DataProvider } from 'recyclerlistview';
-import { Dimensions } from 'react-native';
-const { width } = Dimensions.get('window')
-import { LibContext, LibComponent } from 'esoftplay';
+//
+import React from "react"
+import { Dimensions, View, FlatList } from 'react-native';
+import { LibComponent } from "esoftplay";
+
+export interface LibListItemLayout {
+  length: number,
+  offset: number,
+  index: number
+}
 
 export interface LibListProps {
-  staticWidth?: number,
-  staticHeight?: number,
-  data: any[],
-  renderItem: (data: any, index: number) => void,
-  onEndReached?: () => void,
-  renderFooter?: () => any,
   bounces?: boolean,
-  layoutProvider?: any,
-  dataProvider?: any,
-  contextProvider?: any,
-  initialOffset?: number,
-  renderAheadOffset?: number,
-  isHorizontal?: boolean,
-  onScroll?: (rawEvent: any, offsetX: number, offsetY: number) => void,
-  onRecreate?: Function,  
-  onEndReachedThreshold?: number,
-  initialRenderIndex?: number,
-  scrollThrottle?: number,
-  canChangeSize?: boolean,
-  distanceFromWindow?: number,
-  useWindowScroll?: boolean,
-  disableRecycling?: boolean,
-  forceNonDeterministicRendering?: boolean,
-  extendedState?: any,
-  itemAnimator?: any,
-  optimizeForInsertDeleteAnimations?: boolean,
+  staticHeight?: number,
+  ItemSeparatorComponent?: any,
+  ListEmptyComponent?: any,
+  ListFooterComponent?: any,
+  ListHeaderComponent?: any,
+  columnWrapperStyle?: any,
+  keyboardShouldPersistTaps?: boolean | "always" | "never" | "handled",
+  data: any[],
+  pagingEnabled?: boolean,
+  extraData?: any,
+  getItemLayout?: (data: any, index: number) => LibListItemLayout,
+  horizontal?: boolean,
+  initialNumToRender?: number,
+  initialScrollIndex?: number,
+  keyExtractor?: (item: any, index: number) => string,
+  legacyImplementation?: boolean,
+  numColumns?: number,
+  onScroll?: (e: any) => void,
+  scrollEventThrottle?: number,
+  onEndReached?: (() => void) | null,
+  onEndReachedThreshold?: number | null,
+  onRefresh?: (() => void) | null,
+  refreshing?: boolean | null,
+  renderFooter?: () => any,
+  renderItem: (item: any, index: number) => any,
+  viewabilityConfig?: any,
   style?: any,
-  scrollViewProps?: any
+  removeClippedSubviews?: boolean,
 }
 
 export interface LibListState {
-  data: any[]
 }
 
 export default class EList extends LibComponent<LibListProps, LibListState> {
-  layoutProvider: any;
-  contextProvider: any;
-  dataProvider: any;
-  fastList: any;
-  props: LibListProps
-  state: LibListState
+
+  view: any = React.createRef()
+  flatlist = React.createRef<FlatList<View>>()
   constructor(props: LibListProps) {
     super(props);
-    this.props = props;
-    this.layoutProvider = new LayoutProvider(
-      (index: number) => {
-        return index;
-      },
-      (type: number, dim: any) => {
-        dim.width = this.props.staticWidth || width;
-        dim.height = this.props.staticHeight || width;
-      }
-    )
-
-    this.contextProvider = new LibContext('parent')
-    this.rowRenderer = this.rowRenderer.bind(this)
-    this.dataProvider = new DataProvider((a: any, b: any) => a !== b)
-    this.state = { data: this.dataProvider.cloneWithRows(props.data) }
-  }
-
-  rowRenderer(type: number, data: any): any {
-    return this.props.renderItem(data, type)
+    this.scrollToIndex = this.scrollToIndex.bind(this);
+    this.rowRenderer = this.rowRenderer.bind(this);
+    this.keyExtractor = this.keyExtractor.bind(this);
   }
 
   scrollToIndex(x: number, anim?: boolean): void {
     if (!anim) anim = true;
-    this.fastList.scrollToIndex(x, anim)
+    this.flatlist.current!.scrollToIndex({ index: x, animated: anim })
   }
 
-  componentDidUpdate(prevProps: LibListProps, prevState: LibListState): void {
-    if (prevProps.data !== this.props.data) {
-      this.setState({
-        data: this.props.data
-      })
-    }
+  rowRenderer({ item, index }): any {
+    return this.props.renderItem(item, index)
+  }
+
+  keyExtractor(item, index): string {
+    return item.hasOwnProperty('id') && item.id || index.toString()
   }
 
   render(): any {
+    const isStatic = () => {
+      if (this.props.staticHeight)
+        return { getItemLayout: (data, index) => this.props.staticHeight ? ({ length: this.props.staticHeight, offset: this.props.staticHeight, index: index }) : undefined }
+    }
     return (
-      <RecyclerListView
-        ref={(e) => this.fastList = e}
-        layoutProvider={this.layoutProvider}
-        dataProvider={this.dataProvider.cloneWithRows(this.state.data)}
-        itemAnimator={new BaseItemAnimator()}
-        forceNonDeterministicRendering={this.props.staticHeight == null}
-        contextProvider={this.contextProvider}
-        rowRenderer={this.rowRenderer}
-        renderAheadOffset={1000}
-        {...this.props}
-
-      />
+      <View ref={(e) => this.view = e} style={[{ flex: 1 }]} >
+        <FlatList
+          ref={this.flatlist}
+          data={this.props.data}
+          keyExtractor={this.keyExtractor}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          refreshing={false}
+          removeClippedSubviews
+          windowSize={7}
+          {...this.props}
+          {...isStatic()}
+          ListFooterComponent={this.props.renderFooter && this.props.renderFooter()}
+          renderItem={this.rowRenderer}
+        />
+      </View>
     )
   }
 }

@@ -1,9 +1,8 @@
-import React from 'react';
-import { Component } from 'react';
-import { View, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
-import { Text, Button, Icon, Item, Input, Thumbnail } from 'native-base';
+import React from "react";
+import { View, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
+import { Text, Button, Icon, Item, Input, Thumbnail } from "native-base";
 const { colorPrimary, width } = LibStyle;
-import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
+import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
 import {
   esp,
   LibUtils,
@@ -13,7 +12,7 @@ import {
   ContentComment_item,
   LibComponent,
   LibStyle
-} from 'esoftplay';
+} from "esoftplay";
 const config = esp.config();
 
 export interface ContentComment_listProps {
@@ -43,8 +42,8 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
   layoutProvider: any = undefined
   contextProvider: any
   dataProvider: any
-  input1: any
   input2: any
+  list: any
   state: ContentComment_listState
   props: ContentComment_listProps
   constructor(props: ContentComment_listProps) {
@@ -61,7 +60,7 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
       url_post: props.url_post,
       user: props.user || 1,
       data: [],
-      comment: ''
+      comment: ""
     };
     this.layoutProvider = new LayoutProvider(
       (index: number) => 0,
@@ -73,8 +72,11 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
         }
       }
     )
+    this.input2 = React.createRef()
+    this.list = React.createRef()
     this.loadData = this.loadData.bind(this);
-    this.contextProvider = new LibContext('parent');
+    this.postComment = this.postComment.bind(this);
+    this.contextProvider = new LibContext("parent");
     this.dataProvider = new DataProvider((a: any, b: any) => a !== b);
   }
 
@@ -84,42 +86,59 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
         user: this.props.user,
         url_post: this.props.url_post,
         url: this.props.url
+      }, () => {
+        setTimeout(() => {
+          if (this.input2) {
+            this.input2._root.focus()
+          }
+        }, 500)
       })
     }
   }
 
   postComment(): void {
     if (this.state.user !== 1) {
-      if (this.state.comment != '') {
+      if (this.state.comment != "") {
         var user = this.state.user
         delete user.ok
         this.setState({ isSend: true })
         var post = { ...user, content: this.state.comment }
-        esp.log(post)
         new LibCurl(this.state.url_post, post,
           (res: any, msg: string) => {
             this.setState({
               page: 0,
               isSend: false,
               isStop: false,
-              comment: ''
+              comment: ""
             }, () => {
               this.loadData()
-              if (this.input1) this.input1._root.setNativeProps({ text: '' })
-              if (this.input2) this.input2._root.setNativeProps({ text: '' })
+              if (this.list) {
+                try {
+                  this.list.scrollToTop(true)
+                } catch (error) {
+
+                }
+              }
+              if (this.input2) this.input2._root.setNativeProps({ text: "" })
             })
           },
           (msg: string) => {
+            const success = msg.includes('<div class="alert alert-success" role="alert">')
+            let _msg = (/<\/span>(.*)<\/div>/g).exec(msg)
             this.setState({
               page: 0,
               isSend: false,
               isStop: false,
-              comment: ''
+              comment: success ? "" : this.state.comment
             }, () => {
               this.loadData()
-              if (this.input1) this.input1._root.setNativeProps({ text: '' })
-              if (this.input2) this.input2._root.setNativeProps({ text: '' })
+              if (success) {
+                if (this.list) try { this.list.scrollToTop(true) } catch (error) { }
+                if (this.input2) this.input2._root.setNativeProps({ text: "" })
+              }
             })
+            if (!success)
+              Alert.alert(esp.lang('Komentar gagal dikirim', "Comment failed to send"), _msg[1])
           }, 1
         )
       }
@@ -130,7 +149,7 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
 
   loadData(): void {
     this.setState({ isLoading: true })
-    new LibCurl(this.state.url + ((/\?/g).test(this.state.url) ? '&page=' : '?page=') + this.state.page, null,
+    new LibCurl(this.state.url + ((/\?/g).test(this.state.url) ? "&page=" : "?page=") + this.state.page, null,
       (res: any, msg: string) => {
         this.setState({
           total: res.total,
@@ -149,30 +168,30 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
   }
 
   render(): any {
-    var replyText = ''
-    var replySend = 'Kirim'
+    var replyText = " "
+    var replySend = esp.lang("Kirim", "Send")
     if (this.props.par_id != 0) {
-      replyText = ' Balasan'
-      replySend = 'Balas'
+      replyText = esp.lang(" Balasan ", " Reply ")
+      replySend = esp.lang("Balas", "Reply")
     }
-    const comment_login = esp.config('comment_login');
+    const comment_login = esp.config("comment_login");
     if (comment_login == 1 && this.state.user == 1 && this.state.showLogin) {
       return (
-        <View style={{ flex: 1, backgroundColor: 'white' }} >
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} >
-            <Text note style={{ flex: 1, padding: 10 }} >Silakan login dengan salah satu akun sosial media berikut untuk dapat mengirimkan komentar</Text>
-            <View style={{ justifyContent: 'center' }} >
+        <View style={{ flex: 1, backgroundColor: "white" }} >
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }} >
+            <Text note style={{ flex: 1, padding: 10 }} >{esp.lang("Silakan login dengan salah satu akun sosial media berikut untuk dapat mengirimkan komentar", "Please log in with one of the following social media accounts to submit comments")}</Text>
+            <View style={{ justifyContent: "center" }} >
               <Button primary transparent small
-                style={{ alignSelf: 'flex-end' }}
+                style={{ alignSelf: "flex-end" }}
                 onPress={() => {
                   this.setState({ showLogin: false, user: this.props.user })
                 }} >
-                <Text style={{ color: colorPrimary }} >BATAL</Text>
+                <Text style={{ color: colorPrimary }} >{esp.lang("BATAL", "CANCEL")}</Text>
               </Button>
             </View>
           </View>
           <LibSociallogin
-            url={config.content + 'user/commentlogin'}
+            url={config.content + "user/commentlogin"}
             onResult={(user: any) => {
               this.setState({ user: user });
               this.props.setUser(user)
@@ -183,12 +202,13 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
     }
     return (
       <View
-        style={{ flex: 1, backgroundColor: 'white' }} >
+        style={{ flex: 1, backgroundColor: "white" }} >
         {
           (this.state.total == 0 && !this.state.isLoading && this.state.data.length == 0) ?
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} ><Text note >Belum ada{replyText} Komentar</Text></View>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} ><Text note >{esp.lang("Belum ada", "")}{replyText}{esp.lang("Komentar", "Comment not found")}</Text></View>
             :
             <RecyclerListView
+              ref={(e => this.list = e)}
               layoutProvider={this.layoutProvider}
               dataProvider={this.dataProvider.cloneWithRows(this.state.data)}
               forceNonDeterministicRendering={true}
@@ -207,35 +227,35 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
           style={{
             borderRadius: 2,
             borderWidth: 0.5,
-            borderColor: '#f9f9f9',
-            backgroundColor: 'white',
-            flexDirection: 'row',
-            alignItems: 'center'
+            borderColor: "#f9f9f9",
+            backgroundColor: "white",
+            flexDirection: "row",
+            alignItems: "center"
           }}>
           <Item
             style={{
-              borderBottomColor: 'white',
+              borderBottomColor: "white",
               flex: 1,
-              alignItems: 'center'
+              alignItems: "center"
             }}>
-            <View style={{ alignItems: 'center' }} >
+            <View style={{ alignItems: "center" }} >
               {
                 this.state.user !== 1 && comment_login == 1
                   ?
                   <TouchableOpacity onPress={() => {
                     Alert.alert(
                       null,
-                      'Hi ' + this.state.user.name,
+                      "Hi " + this.state.user.name,
                       [
                         {
-                          text: 'Logout Akun', onPress: () => {
+                          text: "Logout Akun", onPress: () => {
                             LibSociallogin.delUser()
                             this.setState({ user: 1, showLogin: false })
                             this.props.setUser(1)
-                          }, style: 'cancel'
+                          }, style: "cancel"
                         },
                         {
-                          text: 'Ubah Akun', onPress: () => {
+                          text: "Ubah Akun", onPress: () => {
                             this.setState({ user: 1, showLogin: true })
                           }
                         },
@@ -244,40 +264,40 @@ export default class commentList extends LibComponent<ContentComment_listProps, 
                     )
                   }} >
                     <Thumbnail small
-                      source={this.state.user.image != '' ? { uri: this.state.user.image } : null}
+                      source={this.state.user.image != "" ? { uri: this.state.user.image } : null}
                       style={{ margin: 5, height: 30, width: 30, borderRadius: 15 }} />
                   </TouchableOpacity>
                   :
                   comment_login == 1 ?
                     <TouchableOpacity onPress={() => { this.setState({ showLogin: true }) }}>
-                      <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+                      <Icon name={"md-chatbubbles"} style={{ color: "#999", marginLeft: 10 }} />
                     </TouchableOpacity>
                     :
-                    <Icon name={'md-chatbubbles'} style={{ color: '#999', marginLeft: 10 }} />
+                    <Icon name={"md-chatbubbles"} style={{ color: "#999", marginLeft: 10 }} />
 
               }
             </View>
-            <View style={{ borderRadius: 5, backgroundColor: '#f5f5f5', flex: 1, height: 40, marginVertical: 5, marginLeft: 5 }} >
+            <View style={{ borderRadius: 5, backgroundColor: "#f5f5f5", flex: 1, height: 40, marginVertical: 5, marginLeft: 5 }} >
               <Input
                 ref={(e) => this.input2 = e}
                 onSubmitEditing={() => this.postComment()}
                 onFocus={() => this.setState({ showLogin: true })}
-                placeholder='Tulis komentar'
+                placeholder={esp.lang("Tulis komentar", "Write Comment")}
                 selectionColor={LibUtils.colorAdjust(colorPrimary, 1)}
-                returnKeyType={'send'}
-                placeholderTextColor={'#999'}
-                style={{ color: '#444', fontSize: 15, lineHeight: 20 }}
+                returnKeyType={"send"}
+                placeholderTextColor={"#999"}
+                style={{ color: "#444", fontSize: 15, lineHeight: 20 }}
                 onChangeText={(text: string) => this.setState({ comment: text })} />
             </View>
           </Item>
           <Button primary transparent small
-            style={{ alignSelf: 'center' }}
+            style={{ alignSelf: "center" }}
             onPress={() => this.state.isSend ? {} : this.postComment()} >
             {
               this.state.isSend ?
                 <View>
                   <Text style={{ color: colorPrimary, opacity: 0 }} >{replySend}</Text>
-                  <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+                  <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, flex: 1, alignItems: "center", justifyContent: "center" }} >
                     <ActivityIndicator color={colorPrimary} />
                   </View>
                 </View>
